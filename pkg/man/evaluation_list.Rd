@@ -17,14 +17,14 @@ plot.evaluation_list(x, plot_type=c("ROC", "prec/rec"),
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{x}{ an object of class \code{evaluation_list}. For the 
-  \code{evaluation_list} creator, a list of \code{evaluation_results}.}
-  \item{plot_type} {type of plot}
-  \item{xlim, ylim} {limits for the x and y-axes (see \code{plot.default}).
-  For \code{NULL} the optimal limits are calculated.}
-  \item{annodate} {vector with indices of the results that should 
+  \item{x}{ an object of class \code{evaluation_list}.} 
+  \code{evaluation_list}{creator, a list of \code{evaluation_results}.}
+  \item{plot_type}{type of plot}
+  \item{xlim, ylim}{limits for the x and y-axes (see \code{plot.default}).
+  For \code{NULL}the optimal limits are calculated.}
+  \item{annodate}{vector with indices of the results that should 
   have N annodated}
-  \item{legend} { position of the legend (see \code{legend}).}
+  \item{legend}{ position of the legend (see \code{legend}).}
 }
 %\details{
 %}

@@ -52,7 +52,7 @@ more visualization the package \pkg{ROCR} can be used (for details see
 function \code{evaluation_scheme}).
 }
 \value{
-  \code{evaluation} returns an object of class 
+  \code{evaluation} returns an object of class. 
   \code{evaluation_results} which is a list of matrices. Each list
   element corresponds to one run (e.g., one fold of k-fold cross-validation) 
   and contains a matrix. Each matrix
