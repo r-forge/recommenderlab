@@ -1,33 +1,58 @@
-importFrom("arules", "sort")
-importFrom("Matrix", "colSums", "rowSums", "crossprod")
+#importFrom("stats", "predict")  ## otherwise predict in stats does not work
+importFrom("arules", "predict", "nitems", "sample", "LIST", "dissimilarity")  ## we get it via arules
+importFrom("graphics", "plot") ## we need the generics
+import("Matrix")
+#importFrom("Matrix", "summary", "image") ## we need the generics
+#importClassesFrom("Matrix", "dgCMatrix", "CsparseMatrix")
 
 ## exports
 export(
-        "recommender_registry",      ### registry
-        "evaluation_scheme",
-        "evaluation_data",
-        "evaluate",
-        "recommender",
-        "recommender_model",
-        "ROCR_prediction",
-        "evaluation_list"
-      )
+		"recommenderRegistry"			### registry
+	  )
 
-S3method(predict, recommender)
-S3method(recommender_model, recommender)
-S3method(print, recommender)
+S3method("print", "recommender_method") ### registry
 
-S3method(print, recommender_method)
 
-S3method(print, evaluation_scheme)
+exportClasses(
+		"ratingMatrix",
+		"realRatingMatrix",
+		"binaryRatingMatrix",
+		"Recommender",
+		"topNlist",
+		"evaluationScheme",
+		"confusionMatrix",
+		"evaluationResults",
+		"evaluationResultList"
+		)
 
-S3method(print, evaluation_results)
-S3method(mean, evaluation_results)
-S3method(plot, evaluation_results)
-S3method(recommender_model, evaluation_results)
+exportMethods(
+		"coerce",	## setAs
+		"evaluate",
+		"bestN",
+		"nratings",
+		"dissimilarity",
+		"show",
+		"getRuns",
+		"getModel",
+		"getMatrix",
+		"getConfusionMatrix",
+		"LIST",
+		"avg",
+		"plot",
+		"evaluationScheme",
+		"Recommender",
+		"getData",
+		"predict",
+		"nitems",
+		"nusers",
+		"colMeans",
+		"rowMeans",
+		"colCounts",
+		"rowCounts",
+		"sample",
+		"showRatings",
+		"image",
+		"["
+		)
 
-S3method(print, evaluation_list)
-S3method(mean, evaluation_list)
-S3method(plot, evaluation_list)
-S3method("[", evaluation_list)
-
+	
