@@ -1,3 +1,5 @@
+library("recommenderlab")
+
 tab <- scan("anonymous-msweb.data", what = "character", sep="\n", quote="\"")
 
 tab <- sapply(tab, strsplit, ",")
@@ -32,18 +34,19 @@ for(i in 1:length(tab)) {
     }
 }
 
-library(arules)
 
-db <- as(trans, "itemMatrix")
+db <- new("binaryRatingMatrix", data = as(trans, "itemMatrix"))
 
 ## add labels
-ids <- itemInfo(db)$labels
+ids <- itemInfo(db@data)$labels
+#ids <- colnames(db)
 id_to_name <- unlist(id_to_name)
 ## fix 2 occurences of "MS Project"
-id_to_name["1166"] <- "MS Project 2"
+id_to_name["1169"] <- "MS Project 2"
 labels <- id_to_name[match(ids, names(id_to_name))]
-itemInfo(db) <- data.frame(labels=labels, ids=ids)
 
+colnames(db) <- labels
+#itemInfo(db@data)$labels <- labels
 
 #db <- db[size(db)>=5]
 
