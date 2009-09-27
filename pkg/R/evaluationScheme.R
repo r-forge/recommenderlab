@@ -79,8 +79,8 @@ setMethod("show", signature(object = "evaluationScheme"),
 		}
 
 		writeLines(
-				sprintf("Method '%s' with %d runs (training set proportion: %1.3f)", 
-					object@method, object@k, object@train))
+				sprintf("Method: %s with %d runs (training set proportion: %1.3f)", 
+					sQuote(object@method), object@k, object@train))
 				
 			cat("Data set: ")
 		show(object@data)

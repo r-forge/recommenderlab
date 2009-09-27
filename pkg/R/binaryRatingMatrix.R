@@ -21,7 +21,7 @@ setAs("binaryRatingMatrix", "itemMatrix",
 
 
 setMethod("LIST", signature(from = "binaryRatingMatrix"),
-	function(from, decode = TRUE, ratings = TRUE) {
+	function(from, decode = TRUE, ...) {
 		LIST(from@data, decode = decode)
 	}
 )

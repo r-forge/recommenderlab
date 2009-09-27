@@ -43,7 +43,7 @@ setAs("data.frame", "realRatingMatrix", function(from) {
 
 
 setMethod("LIST", signature(from = "realRatingMatrix"),
-	function(from, decode = TRUE, ratings = TRUE) {
+	function(from, decode = TRUE, ratings = TRUE, ...) {
 		trip <- as(from@data, "dgTMatrix")
 		lst <- split(trip@j+1L, trip@i)
 		rts <- split(trip@x, trip@i)

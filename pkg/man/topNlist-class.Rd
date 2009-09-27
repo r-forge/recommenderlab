@@ -2,8 +2,18 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{topNlist-class}
+\alias{bestN,topNlist-method}
+\alias{coerce,topNlist,dgTMatrix-method}
+\alias{coerce,topNlist,dgCMatrix-method}
+\alias{coerce,topNlist,ngCMatrix-method}
+\alias{coerce,topNlist,matrix-method}
+\alias{coerce,topNlist,list-method}
+\alias{colCounts,topNlist-method}
+%\alias{LIST,topNlist-method}
+\alias{rowCounts,topNlist-method}
 \alias{show,topNlist-method}
-\alias{topNlistFromList}
+%% generics
+\alias{bestN}
 
 \title{Class "topNlist": Top-N List}
 \description{Recommendations a Top-N list. }
@@ -12,43 +22,38 @@ Objects can be created by
 \code{predict} with a recommender model and a new data.
 }
 \section{Slots}{
-	 \describe{
-		 \item{\code{i}:}{Object of class \code{"integer"}}
-		 \item{\code{p}:}{Object of class \code{"integer"}}
-		 \item{\code{Dim}:}{Object of class \code{"integer"}}
-		 \item{\code{Dimnames}:}{Object of class \code{"list"}}
-		 \item{\code{x}:}{Object of class \code{"numeric"}}
-		 \item{\code{factors}:}{Object of class \code{"list"}}
-  }
-}
-\section{Extends}{
-	Class \code{"\linkS4class{ratingMatrix}"}, directly.
+	\describe{
+		\item{\code{items}:}{Object of class \code{"list"}.
+		Each represents a top-N recommendation (an integer vector) 
+		with item IDs 
+		(column numbers in the rating matrix). The items are ordered in
+		each vector.}
+		\item{\code{itemLabels}:}{Object of class \code{"character"}}
+		\item{\code{n}:}{Object of class \code{"integer"} specifying the
+		number of items in each recommendation. Note that the actual number
+		on recommended items can be less depending on the data and the used
+		algorithm.}
+	}
 }
 \section{Methods}{
-No methods defined with class "topNlist" in the signature.
+	\describe{
+		\item{bestN}{\code{signature(x = "topNlist")}: returns only the best
+		n recommendations (second argument is n which defaults to 10). }
+		\item{coerce}{\code{signature(from = "topNlist", to = "dgTMatrix")}}
+		\item{coerce}{\code{signature(from = "topNlist", to = "dgCMatrix")}}
+		\item{coerce}{\code{signature(from = "topNlist", to = "ngCMatrix")}}
+		\item{coerce}{\code{signature(from = "topNlist", to = "matrix")}}
+		\item{coerce}{\code{signature(from = "topNlist", to = "list")}}
+		\item{colCounts}{\code{signature(x = "topNlist")}: in how many top-N 
+		does each item occur? }
+%		\item{LIST}{\code{signature(from = "topNlist")}: ... }
+		\item{rowCounts}{\code{signature(x = "topNlist")}: number of recommendations per user. }
+		\item{show}{\code{signature(object = "topNlist")}}
+	}
 }
-%\references{ ~put references to the literature/web site here ~ }
-%\author{ ~~who you are~~ }
-\note{
-	All methods defined for "ratingMatrix" can be used.
-	
-	\code{topNlistFromList(from, itemLabels, userLabels = NULL) can be used
-to create a top-N list from a list with item IDs (column numbers).}}
 \seealso{
-%	~~objects to See Also as \code{\link{~~fun~~}}, ~~~
-	\code{\linkS4class{ratingMatrix}}
+\code{\link{evaluate}}
 }
-\examples{
-data("MovieLense")
-MovieLense10 <- MovieLense[rowCounts(MovieLense) >10,]
-rec <- Recommender(MovieLense10[1:500], method = "POPULAR")
-pre <- predict(rec, MovieLense10[501:502])
-pre
-
-getList(pre, decode=FALSE)
-getList(pre, decode=TRUE)
-rowSums(pre)
-
-as(pre, "ngCMatrix")
-}
+%\examples{
+%}
 \keyword{classes}

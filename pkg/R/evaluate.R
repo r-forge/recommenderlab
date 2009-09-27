@@ -1,25 +1,23 @@
 setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 	function(x, method, n=1:10, parameter=NULL, 
 		progress = TRUE, keep_model=FALSE) {
+		## fixme: do individual runs missing
 
 		scheme <- x
-		## fixme: do individual runs missing
 		runs <- 1:scheme@k
 
-		## fixme: parameter vector missing
+		if(progress) cat(method, "run")
+		
 		cm <- list()
-		#  if(is.vector(n)) { 
-			for(r in runs) {
-				if(progress) cat("Run ", r, ": ", cat="")
+		for(r in runs) {
+			if(progress) cat(r)
 
-				cm[[r]] <- .do_run_by_n(scheme, method, 
-					run=r, n=n, parameter=parameter, 
-					progress=progress, keep_model=keep_model)
-
-				if(progress) cat("\n")
-
-			}
-			#  }
+			cm[[r]] <- .do_run_by_n(scheme, method, 
+				run=r, n=n, parameter=parameter, 
+				progress=progress, keep_model=keep_model)
+		}
+			
+		if(progress) cat("\n")
 
 		new("evaluationResults", results = cm, 
 			method=recommenderRegistry$get_entry(method)$method)
@@ -33,10 +31,10 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		#list(RANDOM = list(name = "RANDOM", parameter = NULL), 
 		#	POPULAR = list(...
 		
-		conf_m <- lapply(method, FUN = function(a) evaluate(es, a$n,
+		results <- lapply(method, FUN = function(a) evaluate(x, a$n,
 				n = n , parameter = a$p))	
 	
-		as(conf_m, "evaluationResultList")
+		as(results, "evaluationResultList")
 	})
 
 
@@ -55,12 +53,14 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		dimnames= list(n=n, 
 			c("TP", "FP", "FN", "TN", "PP", "recall","precision","FPR","TPR")))
 
+	
+	topN <- predict(r, test_known, n=max(n))
+	
 	for(i in 1:length(n)) {
 		NN <- n[i]
 
-		if(progress) cat(NN, " ")
-
-		pred <- predict(r, test_known, n=NN)
+		## get best N
+		pred <- bestN(topN, NN)
 
 		## create confusion matrix
 		tp <- colSums(as(pred, "ngCMatrix")*as(test_unknown, "ngCMatrix"))

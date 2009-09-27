@@ -1,8 +1,9 @@
 setMethod("plot", signature(x = "evaluationResults"),
-	function(x, y=NULL, plot_type=c("ROC", "prec/rec"),
+	function(x, y,
 		avg = TRUE, add=FALSE, type= "l", annodate = FALSE, ...) {
-
-		plot_type <- match.arg(plot_type)
+		
+		if(missing(y)) y <- NULL
+		plot_type <- match.arg(y, c("ROC", "prec/rec"))
 		## if not ROC then prec/recall
 		if(plot_type == "ROC") take <- c("FPR", "TPR")
 		else take <- c("recall", "precision")
@@ -40,14 +41,15 @@ setMethod("plot", signature(x = "evaluationResults"),
 
 
 setMethod("plot", signature(x = "evaluationResultList"),
-	function(x, y=NULL, plot_type=c("ROC", "prec/rec"),
+	function(x, y,
     xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1, 
-    annodate= 0, legend="bottomright", ...) {
+    avg = TRUE, annodate= 0, legend="bottomright", ...) {
 
-    ## find best xlim, ylim
-    plot_type <- match.arg(plot_type)
+	if(missing(y)) y <- NULL
+    plot_type <- match.arg(y, c("ROC", "prec/rec"))
     take <- if(plot_type == "ROC") c("FPR", "TPR") else c("recall", "precision")
 
+    ## find best xlim, ylim
     max_lim <- apply(sapply(x, FUN = 
             function(y) apply(avg(y)[,take], MARGIN=2, max)), MARGIN=1, max)
 
@@ -65,8 +67,8 @@ setMethod("plot", signature(x = "evaluationResultList"),
     plot(NA, xlab=take[1], ylab=take[2], ylim=ylim, xlim=xlim)
     legend(x=legend, legend=names(x), col=col, 
         pch = pch, lty=lty, bty="n")
-    for(i in 1:length(x)) plot(x[[i]], plot_type=plot_type, 
+    for(i in 1:length(x)) plot(x[[i]], y=plot_type, 
         add=TRUE, col=col[i], type="o", annodate = i %in% annodate, 
-        pch = pch[i], lty=lty[i])
+        pch = pch[i], lty=lty[i], avg = avg, ...)
 })
 

@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{ratingMatrix-class}
+\alias{coerce,ratingMatrix,list-method}
 \alias{[,ratingMatrix,ANY,ANY,ANY-method}
 \alias{colCounts,ratingMatrix-method}
 \alias{colMeans,ratingMatrix-method}
@@ -30,6 +31,8 @@
 \section{Methods}{
 	\describe{
 		\item{[}{\code{signature(x = "ratingMatrix", i = "ANY", j = "ANY", drop = "ANY")}: subset the rating matrix (\code{drop} is ignorred). }
+		\item{coerce}{\code{signature(from = "ratingMatrix", to = "list")}}
+
 		\item{colCounts}{\code{signature(x = "ratingMatrix")}:  number of ratings per column.}
 		\item{colMeans}{\code{signature(x = "ratingMatrix")}: column-wise rating means. }
 		\item{dim}{\code{signature(x = "ratingMatrix")}: dimensions of the rating matrix. }

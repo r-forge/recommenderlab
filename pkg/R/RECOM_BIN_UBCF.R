@@ -21,7 +21,8 @@ BIN_UBCF <- function(data, parameter = NULL){
     )
 
     predict <- function(model, newdata, n=10) {
-        
+		n <- as.integer(n)
+
         ## cross dissimilaries
 		d_cross_all <- dissimilarity(newdata, model$data, method = model$method)
 
@@ -55,7 +56,7 @@ BIN_UBCF <- function(data, parameter = NULL){
 
         }
         
-		new("topNlist", items = reclist, itemLabels = colnames(newdata))
+		new("topNlist", items = reclist, itemLabels = colnames(newdata), n = n)
     }
 
 	   ## construct recommender object

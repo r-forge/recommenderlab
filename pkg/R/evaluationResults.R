@@ -1,7 +1,7 @@
 setMethod("show", signature(object = "evaluationResults"),
 	function(object) {
 		writeLines(sprintf("Evaluation results for %d runs using method %s.",
-				getRuns(object), object@method))
+				getRuns(object), sQuote(object@method)))
 		if(any(!sapply(getModel(object), is.null)))
 		writeLines("Result contains predictive models!")
 

@@ -22,26 +22,49 @@ setReplaceMethod("dimnames", signature(x = "ratingMatrix",
 	})
 
 ## row/col counts, sums, etc.
+## MAtrix does not handle dimnames well
 setMethod("colCounts", signature(x = "ratingMatrix"), 
-	function(x, ...) colSums(as(x, "ngCMatrix")))
+	function(x, ...) {
+		s <- colSums(as(x, "ngCMatrix"))
+		names(s) <- colnames(x)
+		s
+	})
 
 setMethod("rowCounts", signature(x = "ratingMatrix"), 
-	function(x, ...) rowSums(as(x, "ngCMatrix")))
+	function(x, ...) {
+		s <- rowSums(as(x, "ngCMatrix"))
+		names(s) <- rownames(x)
+		s
+	})
 
 setMethod("colSums", signature(x = "ratingMatrix"), 
-	function(x, na.rm = FALSE, dims = 1, ...) colSums(as(x, "dgCMatrix"), 
-		na.rm, dims, ...))
+	function(x, na.rm = FALSE, dims = 1, ...) {
+		s <- colSums(as(x, "dgCMatrix"), na.rm, dims, ...)
+		names(s) <- colnames(x)
+		s
+	})
 
 setMethod("rowSums", signature(x = "ratingMatrix"), 
-	function(x, na.rm = FALSE, dims = 1, ...) rowSums(as(x, "dgCMatrix"),
-		na.rm, dims, ...))
+	function(x, na.rm = FALSE, dims = 1, ...) {
+		s <- rowSums(as(x, "dgCMatrix"), na.rm, dims, ...)
+		names(s) <- rownames(x)
+		s
+	})
 
 ## we need to ignore 0s
 setMethod("colMeans", signature(x = "ratingMatrix"),
-	function(x, na.rm = FALSE, dims = 1, ...) colSums(x) / colCounts(x))
+	function(x, na.rm = FALSE, dims = 1, ...) {
+		s <- colSums(x, dims, na.rm, ...) / colCounts(x, dims, na.rm, ...)
+		names(s) <- colnames(x)
+		s
+	})
 
 setMethod("rowMeans", signature(x = "ratingMatrix"),
-	function(x, na.rm = FALSE, dims = 1, ...) rowSums(x) / rowCounts(x))
+	function(x, na.rm = FALSE, dims = 1, ...) { 
+		s <- rowSums(x, dims, na.rm, ...) / rowCounts(x, dims, na.rm, ...)
+		names(s) <- rownames(x)
+		s
+	})
 
 ## total ratings
 setMethod("nratings", signature(x = "ratingMatrix"), 
@@ -57,6 +80,7 @@ setMethod("[", signature(x = "ratingMatrix"),
 			x
 		})
 
+
 ## sample
 setMethod("sample", signature(x = "ratingMatrix"),
 	function(x, size, replace = FALSE, prob = NULL){
@@ -69,8 +93,8 @@ setMethod("sample", signature(x = "ratingMatrix"),
 ## show
 setMethod("show", signature(object = "ratingMatrix"),
 	function(object) {
-		cat(nrow(object), 'x', ncol(object), "ratingMatrix of class",
-			class(object), "with",
+		cat(nrow(object), 'x', ncol(object), "rating matrix of class",
+			sQuote(class(object)), "\nwith",
 			nratings(object), "ratings.\n")
 		invisible(NULL)
 	})
@@ -78,7 +102,7 @@ setMethod("show", signature(object = "ratingMatrix"),
 ## image
 setMethod("image", signature(x = "ratingMatrix"),
 	function(x, xlab = "Items (Columns)", ylab = "Users (Rows)", ...)
-	image(as(data, "dgTMatrix"), ylab = ylab, xlab = xlab, ...)
+	image(as(x, "dgTMatrix"), ylab = ylab, xlab = xlab, ...)
 )
 
 

@@ -1,18 +1,16 @@
 #importFrom("stats", "predict")  ## otherwise predict in stats does not work
-importFrom("arules", "predict", "nitems", "sample", "LIST", "dissimilarity")  ## we get it via arules
 importFrom("graphics", "plot") ## we need the generics
 import("Matrix")
 #importFrom("Matrix", "summary", "image") ## we need the generics
 #importClassesFrom("Matrix", "dgCMatrix", "CsparseMatrix")
+import("arules")
+#importFrom("arules", "predict", "nitems", "sample", "LIST", "dissimilarity", "sort")  ## we get it via arules
 
-## exports
-export(
-		"recommenderRegistry"			### registry
-	  )
+## registry uses S3
+export("recommenderRegistry")
+S3method("print", "recommender_method")
 
-S3method("print", "recommender_method") ### registry
-
-
+## recommenderlab exports
 exportClasses(
 		"ratingMatrix",
 		"realRatingMatrix",
@@ -26,33 +24,30 @@ exportClasses(
 		)
 
 exportMethods(
+		"[",
 		"coerce",	## setAs
-		"evaluate",
-		"bestN",
-		"nratings",
-		"dissimilarity",
 		"show",
-		"getRuns",
-		"getModel",
-		"getMatrix",
-		"getConfusionMatrix",
-		"LIST",
-		"avg",
 		"plot",
-		"evaluationScheme",
-		"Recommender",
-		"getData",
+		"image",
+		"sample",
 		"predict",
-		"nitems",
-		"nusers",
 		"colMeans",
 		"rowMeans",
 		"colCounts",
 		"rowCounts",
-		"sample",
-		"showRatings",
-		"image",
-		"["
+		"LIST",
+		"binarize",
+		"avg",
+		"evaluate",
+		"bestN",
+		"nratings",
+		"nitems",
+		"nusers",
+		"getRuns",
+		"getModel",
+		"getData",
+		"getConfusionMatrix",
+		"dissimilarity",
+		"evaluationScheme",
+		"Recommender"
 		)
-
-	

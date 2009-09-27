@@ -22,7 +22,7 @@ setAs("topNlist", "matrix",
 	function(from) as(as(from, "dgTMatrix"),"matrix"))
 
 setMethod("LIST", signature(from = "topNlist"),
-	function(from, decode = TRUE)
+	function(from, decode = TRUE, ...)
 	if(decode) lapply(from@items, function(y) from@itemLabels[y])
 	else from@items)
 
@@ -30,17 +30,22 @@ setAs("topNlist", "list", function(from) LIST(from, decode = TRUE))
 
 setMethod("show", signature(object = "topNlist"),
 	function(object) {
-		cat(class(object), 'for',
-			length(object@items),'users.','\n')
+		cat("Recommendations as", sQuote(class(object)), 
+			"with n =", object@n, "for",
+			length(object@items),"users.","\n")
 		invisible(NULL)
 	})
 
 setMethod("bestN", signature(x = "topNlist"),
-	function(x, n = 10) 
-	new("topNlist", items = lapply(x, head, n), itemLabels = x@itemlabels))
+	function(x, n = 10) new("topNlist", items = lapply(x@items, head, n), 
+		itemLabels = x@itemLabels, n = as.integer(n)))
 	
 setMethod("colCounts", signature(x = "topNlist"),
-	function(x, ...) colSums(as(x, "ngCMatrix")))
+	function(x, ...) {
+		s <- colSums(as(x, "ngCMatrix"))
+		names(s) <- x@itemLabels
+		s
+	})
 
 setMethod("rowCounts", signature(x = "topNlist"),
 	function(x, ...) sapply(x@items, length))

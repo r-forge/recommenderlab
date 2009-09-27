@@ -42,14 +42,13 @@ data("MSWeb")
 MSWeb10 <- sample(MSWeb[rowCounts(MSWeb) >10,], 100)
 
 rec <- Recommender(MSWeb10, method = "POPULAR")
-rec <- Recommender(MSWeb10, method = "AR")
 rec
 
 str(getModel(rec))
 
 ## look at registry
 recommenderRegistry$get_entry_names()
-recommenderRegistry$get_entry("BINPOPULAR")
+recommenderRegistry$get_entry("POPULAR", dataType = "binaryRatingMatrix")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

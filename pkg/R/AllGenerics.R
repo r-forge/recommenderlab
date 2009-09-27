@@ -11,9 +11,6 @@ setGeneric("nusers",
 setGeneric("nratings",
 		    function(x, ...) standardGeneric("nratings"))
 
-setGeneric("showRatings",
-	    function(x, ...) standardGeneric("showRatings"))
-
 setGeneric("getData",
 	    function(x, ...) standardGeneric("getData"))
 
@@ -25,12 +22,6 @@ setGeneric("getRuns",
 
 setGeneric("getConfusionMatrix",
 	    function(x, ...) standardGeneric("getConfusionMatrix"))
-
-setGeneric("getList",
-	    function(from, ...) standardGeneric("getList"))
-
-setGeneric("getMatrix",
-	    function(from, ...) standardGeneric("getMatrix"))
 
 setGeneric("evaluate",
 	    function(x, method, ...) standardGeneric("evaluate"))
