@@ -38,7 +38,8 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 	 }
 }
 \seealso{
-	\code{\linkS4class[Matrix]{dgCMatrix}}
+	\code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} in \pkg{Matrix}
+	%\code{\linkS4class[Matrix]{dgCMatrix}}
 }
 %\examples{
 %}

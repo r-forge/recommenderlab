@@ -9,16 +9,17 @@ BIN_POPULAR <- function(data, parameter = NULL) {
 	)
 
     predict <- function(model, newdata, n=10) {
-		
+		n <- as.integer(n)
+
 		## remove known items and take highest
 		reclist <- lapply(LIST(newdata, decode= FALSE),
 			function(x) head(model$popOrder[!(model$popOrder %in% x)], n))
 
-        new("topNlist", items = reclist, itemLabels = colnames(newdata))
+        new("topNlist", items = reclist, itemLabels = colnames(newdata), n = n)
     }
 
 	## construct recommender object
-	new("Recommender", method = "BINPOPULAR", dataType = "binaryRatingMatrix",
+	new("Recommender", method = "POPULAR", dataType = "binaryRatingMatrix",
 		ntrain = nrow(data), model = model, predict = predict)
 }
 

@@ -31,7 +31,7 @@ Returns an object of class \code{"topNlist"}.
 data("MSWeb")
 MSWeb10 <-MSWeb[rowCounts(MSWeb) >10,]
 
-rec <- Recommender(MSWeb10[1:100,], method = "BINPOPULAR")
+rec <- Recommender(MSWeb10[1:100,], method = "POPULAR")
 
 ## create recommendations
 pre <- predict(rec, MSWeb10[101:102], n = 10)

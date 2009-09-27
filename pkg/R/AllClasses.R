@@ -28,8 +28,9 @@ setClass("Recommender",
 ## Top-N list
 setClass("topNlist",
 	representation(
-		items = "list",
-		itemLabels = "character"
+		items	= "list",
+		itemLabels= "character",
+		n		= "integer"
 	)
 )
 

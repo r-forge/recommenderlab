@@ -48,8 +48,8 @@ data("MSWeb")
 MSWeb10 <- sample(MSWeb[rowCounts(MSWeb) >10,], 100)
 
 ## create an evaluation scheme
-es <- evaluationScheme(MSWeb10, method="split",
-        train = 0.9, k=4, given=3)
+es <- evaluationScheme(MSWeb10, method="cross-validation",
+        k=4, given=3)
 
 ## run evaluation
 ev <- evaluate(es, "POPULAR")
@@ -64,13 +64,12 @@ algorithms <- list(
 		RANDOM = list(name = "RANDOM", param = NULL),
 		POPULAR = list(name = "POPULAR", param = NULL),
 		UBCF = list(name = "UBCF", param = NULL),
-		IBCF = list(name = "IBCF", param=NULL)
+		IBCF = list(name = "IBCF", param=NULL),
+		AR = list(name = "AR", param=NULL)
 		)
 
-ns <- c(1,5,10)
-
-evlist <- evaluate(es, algorithms, n = ns)
-plot(evlist)
+evlist <- evaluate(es, algorithms)
+plot(evlist, legend="topright")
 
 ## select the first results
 evlist[[1]]

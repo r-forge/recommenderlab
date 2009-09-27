@@ -28,9 +28,7 @@
 \newcommand{\dQuote}[1]{``{#1}''}
 \newcommand\R{{\mathbb{R}}}
 \newcommand{\mat}[1]{{\mathbf{#1}}}
-
-\DeclareMathOperator*{\argmin}{argmin}
-\DeclareMathOperator*{\argmax}{argmax}
+\renewcommand{\vec}[1]{{\mathbf{#1}}}
 
 \sloppy
 
@@ -38,8 +36,8 @@
 
 \begin{document}
 
-\title{\pkg{recommenderlab}: Infrastructure for Testing and 
-Developing Recommender Algorithms for Binary Data}
+\title{Developing and Tesing Top-$N$ Recommendation Algorithms
+for 0-1 Data using \pkg{recommenderlab}}
 \author{Michael Hahsler}
 \maketitle
 \sloppy
@@ -59,136 +57,293 @@ set.seed(1234)
 @
 
 \section{Introduction}
+Predicting ratings and creating personalized recommendations for products like
+books, songs or movies online came a long way from the first system using
+\emph{social filtering} created by \cite{recommender:Malone:1987} more than 20
+years ago.  Today recommender systems are an accepted technology used by market
+leaders in several industries (e.g., by amazon.com, iTunes and Netflix).  
+Recommender
+systems apply statistical and knowledge discovery techniques to the problem of
+making product recommendations \citep{recommender:Sarwar:2000}.  Such
+recommendations can help to improve the conversion rate by help customer find a
+product she/he wants to buy faster, promote cross-selling by suggesting
+additional products and can improve customer loyalty through creating a
+value-added relationship~\citep{recommender:Schafer:2001}.  The importance and
+the economic impact of research in this field is reflected by the Netflix prize
+(\url{http://www.netflixprize.com/}), a challange to improve algorithms to
+predict user ratings for movies.  A grand price of 1 million dollar was just
+awarded to the winning team.
 
-Recommender systems apply statistical and knowledge discovery techniques to the problem of making product recommendations {\small\citep{Sarwar:2000}}.
+The most widely used method to create recommendations is \emph{collaborative
+filtering}. The idea is that given rating data by many users for many items
+(e.g., 1 to 5 stars for movies elicited directly from the users), 
+one can predict a user's rating for an item
+not known to her or him~\citep[see, e.g.,][]{recommender:Goldberg:1992} 
+or create
+for a user a so called top-$N$ lists of recommended 
+items~\citep[see, e.g.,][]{Deshpande:2004}.
+For these type of recommender systems, several projects were initiated to
+implement recommender algorithms (e.g., Apache Mahout/Taste, Cofi, CoFE,
+RACOFI, SUGGEST, Vogoo PHP).
 
-{\bf Advantages of recommender systems}~{\small\citep{Schafer:2001}}:
-\begin{itemize}
-\item Improve conversion rate: Help customer find a product she/he wants to buy.
-\item Cross-selling: Suggest additional products.
-\item Improve loyalty: By creating a value-added relationship.
-\end{itemize}
+Nearly no research~\citep[with some notable exceptions by][]{recommender:Weiss:2001,recommender:Mild:2003,recommender:Lee:2005,recommender:Pan:2008}
+was done for situations where no large amount of detailed
+rating data is available. However, this is a common situation and occurs when
+users do not want to directly reveal their preferences by rating an item 
+(e.g., because it is to time consuming). In
+this case preferences can only be infered by analyzing usage behavior
+For
+example, we can easily record in a supermarket setting what items a customer
+purchases, but we do not know if some items were not purchased because the
+customer does not like them (these should not be recommended) or just does not
+know about them (these maye should be recommended). The same is true for
+recommending pages of a web site given click-stream data. Here we only have
+information about which pages were viewed but not why some pages were not
+viewed. This situation leads to
+binary data or more exactly to
+0-1 data where 1 means that we infered that
+the user has a preference for an item and 0 means that either the user does not like the item or does not know about it. 
+\cite{recommender:Pan:2008} calls
+this type of data in the context of collaborative filtering
+analogouse to similar situations for classifiers
+\emph{one-class data} since only the 1-class is pure and contains only
+possitive examples. The 0-class is a mixture of positive and negative examples.
 
-{\bf Types of recommender systems}~{\small\citep{Ansari:2000}}:
-\begin{itemize}
-\item Content filtering: Consumer preferences for product attributes.
-\item \emph{Collaborative filtering:} Mimics word-of-mouth based on analysis of
-rating/usage/sales data.
-\end{itemize}
+The \proglang{R} extension package~\pkg{recommenderlab} provides a general
+infrastructure for collaborative filtering.  In this paper we will focus on the
+package's capabilities for creating and testing recommender algorithms which
+create top-$N$ recommendation list for 0-1 data.
 
-{\bf Input:} Typically rating data (here 1-5 stars for movies).
+%A problems that recommender systems typically have to deal with are:
+%sparse data and cold start problem.
 
+%memory-based, model-based
 
-{\bf Output:}
-\begin{itemize}
-\item
-Predicted rating of unrated movies {\small\citep{Breese:1998}}
-\item
-A top-$N$ list of unrated (unknown) movies ordered by predicted
-rating/score {\small\citep{Deshpande:2004}}
-\end{itemize}
-
-\emph{Heterogeneity of collected data}
-
-{\bf Typical situation for many businesses:}
-{\small
-\begin{itemize}
-\item No rating data available
-\item Extremely heterogeneous data sources
-\item \emph{Very limited research on recommender systems based on binary data
-available.}
-\end{itemize}
-
-\section{Recommender algorithms}
-
-Notation:
-
-Set of users $\set{U} = \{u_1, u_2, \ldots, u_\m}$
-
-Incomplete 0-1 $m \times n$ matrix $\mat{U}$ where the rows are user $u_i$ for $0>i>m$
-and the columns are items $i_j$ for $0>j>n$. The matrix is incomplete since
-it next to 0 and 1 it also contains missing values.
+%Evaluation
 
 
-\subsection{User-based Collaborative Filtering (CF)}
-Produce recommendations based on preferences of similar users {\small\citep{Goldberg:1992,Resnick:1994,Mild:2001}}.
+This paper is structured as follows. Section...
 
-\centerline{\includegraphics[scale=1]{user-based}}
 
-\small
-\begin{enumerate}
-\item
-Find $k$ nearest neighbors based on
-similarity between users.
-\item Generate recommendation based on the items liked by the $k$ nearest
-neighbors. E.g., recommend most popular items or use a weighing scheme.
-\end{enumerate}
+\section{Collaborative Filtering}
 
-Measure 
-similarity between two users $u_x$ and $u_y$:
-\begin{itemize}
-\item \emph{Pearson correlation coefficient:}
-$$\mathrm{sim_{Pearson}}(\mathbf{x},\mathbf{y}) = 
-	    \frac{\sum_{i \in I} x_iy_i - I\bar{\mathbf{x}}\bar{\mathbf{y}}}
-		    {(I-1)s_xs_y}$$
+Collaborative filtering (CF) uses given rating data by many users for many
+items as the basis of predicting missing ratings or create top-$N$
+recommendations for a given user, called the active user.  
+Formally, we have a set of 
+users $\set{U} = \{u_1, u_2, \ldots, u_m\}$ and a set of 
+items $\set{I} = \{i_1, i_2, \ldots, i_n\}$.
+Ratings are stored in a $m \times n$ rating matrix $\mat{R} = (r_{jk})$ where
+the rows represent the user $u_j$ for $1 \ge j\ge m$ and columns represent
+items $i_k$ for $1 \ge k\ge n$. $r_{jk}$ represents the rating of user
+$u_j$ for item $i_k$.
+Typically only a small fraction of ratings are
+known and for many cells in $\mat{R}$ the values are missing. Most published
+algoritms operate on ratings on a scale of 1 to 5 (stars)
+and estimated ratings are allowed to be in the interval $[1,5]$.
+However in this
+paper we concentrate on the 0-1 case with $r_{jk} \in {0,1}$ where we define:
+\begin{equation}
+r_{jk}=
+\begin{cases}
+1& \text{user $u_j$ has a preference for item $i_k$} \\
+0& \text{otherwise.}
+\end{cases}
+\end{equation}
 
-\item \emph{Cosine similarity:}
-$$\mathrm{sim_{Cosine}}(\mathbf{x},\mathbf{y}) = 
-	    \frac{\mathbf{x}\cdot\mathbf{y}}
-		    {\|\mathbf{x}\|_2\|\mathbf{y}\|_2}$$
-\item \emph{Jaccard index} (only binary data):
+The aim of collaborative filtering is to create recommendations for a user
+called the active user $u_a \in \set{U}$.  
+We define the set of items unkown to user $u_a$ as 
+$\set{I}_a = \set{I} \setminus \{i_l \in \set{I}| r_{al} = 1\}$.
+The two typical tasks are to predict
+ratings for the items in $\set{I}_a$ or to create a list of 
+the best $N$ recommendations
+(i.e., a top-$N$ recommendation list) for 
+$u_a$~\citep{recommender:Sarwar:2001}. 
+Creating a top-$N$ lists can
+be seen as a second step after predicting ratings for all 
+unknown items in $\set{I}_a$
+and then taking the $N$ items with the highest predicted ratings. However,
+given that there are typically many items with unknown ratings 
+some apporaches (e.g., rule based approaches) can
+predict directly the top-$N$ list without considering all unknown items first.
 
-$$\mathrm{sim_{Jaccard}}(X,Y) = \frac{|X\cap Y|}{|X\cup Y|}$$ 
-\end{itemize}
+Formally, predicting all missing ratings is calculating a complete row of the
+rating matrix $\hat{r}_{a\cdot}$ where the missing values 
+for items in $\set{I}_a$ (zeros in the 0-1 case)
+are replaced by ratings estimated from other data in $\mat{R}$.  
+The estimated ratings can either be again in $\{0,1\}$ or to 
+in $[0,1]$, where estimates closer to 1 indicate a stronger recommendation.
+The latter type of estimation is needed to be able to create a top-$N$
+list.
+A list
+of top-$N$ recommendations for a user $u_a$ is an partially ordered set 
+$T_N = (\set{X}, \ge)$, where 
+$\set{X} \subset \set{I}_a$ and
+$|\set{X}| \le N$ ($|\cdot|$ denotes the cardinality of the set). 
+Note that there may exist cases
+where top-$N$ lists contain less than $N$ items. This can happen if 
+$|\set{I}_a| < N$ or if the CF algorithm is unable to 
+identify $N$ items to recommend.
+The binary relation $\ge$ is defined as 
+$x\ge y$ if and only if 
+$\hat{r}_{ax} \ge
+\hat{r}_{ay}$ for all $x,y \in \set{X}$. Furthermore we 
+require that $\forall_{x\in \set{X}} \forall_{y\in \set{I}_a} \quad \hat{r}_{ax} \ge \hat{r}_{ay}$ to ensure that the top-$N$ list contains
+only the items with the highest estimated rating.
 
+
+Collaborative filtering algorithms are typically divided into two groups,
+\emph{memory-based} and \emph{model-based} 
+algorithms~\citep{recommender:Breese:1998}. Memory-based algorithms
+use the whole (or at least a large sample of the) user database to create 
+recommendations. The most prominent algorithm is 
+user-based collaborative filtering. 
+The disadvantages of this approach is scalability since the whole
+user database has to be processed online for creating recommendations.
+Model-based algorithms 
+use the user database to learn a more compact model (e.g, clusters
+with users of similar preferences) that is later used to create
+recommendations.
+
+In the following we will present well known memory and model-based
+collaborative filtering algorithms and apply them to 0-1 data.
+
+\subsection{User-based Collaborative Filtering}
+
+User-based CF~\citep{Goldberg:1992,Resnick:1994,recommender:Shardanand:1995} is
+a memory-based algorithm which tries to mimics word-of-mouth based on analysis
+of rating data. The idea is that 
+users with similar preferences will rate products similarly. Thus a
+missing ratings for a user can be predicted by first 
+finding a \emph{neighborhood} of similar users and then aggregate the 
+ratings of these users to form a prediction.
+
+The neighborhood is defined in terms of similarity between users,
+either by taking a given number of most similar users ($k$ nearest neighbors) 
+or all users within
+a given similarity threshold.
+Popular similarity measures for CF are
+the \emph{Pearson correlation coefficient} and
+the \emph{Cosine similarity}. These similarity measures are defined
+between two users $u_x$ and $u_y$ as
+$$\mathrm{sim_{Pearson}}(\vec{x},\vec{y}) = 
+	    \frac{\sum_{i \in I} (\vec{x}_i \, \bar{\vec{x}})(\vec{y}_i \, \bar{\vec{y}})}
+		{(|I| -1) \, \mathrm{sd}(\vec{x}) \, \mathrm{sd}(\vec{y})}
+$$
+
+and
+$$\mathrm{sim_{Cosine}}(\vec{x},\vec{y}) = 
+	    \frac{\vec{x}\cdot\vec{y}}
+		    {\|\vec{x}\|_2\|\vec{y}\|_2},$$
 where
-$\mathbf{x} = b_{u_x,\cdot}$ and 
-$\mathbf{y} = b_{u_y,\cdot}$ represent the user's profile vectors and 
-$X$ and $Y$ are the sets of the items with a 1 in the respective profile.
+$\vec{x} = r_{x\cdot}$ and 
+$\vec{y} = r_{y\cdot}$ represent the users' profile vectors.
+$\mathrm{sd}(\cdot)$ is the standard deviation.
+For calculating similarity using rating data only the dimensions (items) 
+are used which were rated by both users. However, for 0-1 data that would lead
+to the problem that the vectors $\vec{x}$ and $\vec{y}$ only contain ones
+and thus no useful measure can be calculated. 
+
+If we assume that most zeroes are actually items that the user does not like,
+we can use all items in the similarity calculation. However, this will produce
+significant errors for newer users who used a few items. 
+A similarity measure which
+only focuses on matching ones 
+and thus prevents the problem with zeroes
+is the \emph{Jaccard index}:
+$$\mathrm{sim_{Jaccard}}(\set{X},\set{Y}) = \frac{|\set{X}\cap \set{Y}|}
+{|\set{X}\cup \set{Y}|},$$ 
+where
+$\set{X}$ and $\set{Y}$ are the sets of the items with a 1 in user profiles
+$u_a$ and $u_b$, respectively.
 
 
-{\bf Problems:} Memory-based. Expensive online similarity computation.
+
+\begin{figure}
+\centerline{\includegraphics[scale=1]{user-based}}
+\caption{User-based collaborative filtering.}
+\label{fig:UBCF}
+\end{figure}
+
+\marginpar{aggregation}
+
+An example of the process of creating recommendations for 0-1 data by
+user-based CF is shown in Figure~\ref{fig:UBCF}. To the left is the rating
+matrix $\mat{R}$ with 6 users and 8 items. The active user $u_a$ we want to
+create recommendations for is added to the top of the matrix.  To find the
+$k$-neighborhood (i.e., the $k$ nearest neighbors) we calculate the similarity
+between the active user and all other users in the database and then select the
+$k$ users with the highest similarity.  To the right in Figure~\ref{fig:UBCF}
+we see a $2$-dimensional representation of the similaries (users with higher
+similarity are closer) with the active user in the center. The $k=3$ nearest
+neighbors are selected and marked in the database to the left. To generate an
+aggregated score, the ones in the selected users are summed. Then items known
+to the active user are removed and the $N$ items with the highest score
+(greater than zero) form the top-$N$ recommendations. In the example in 
+Figure~\ref{fig:UBCF} only two items are recommended.
+
+%% default voting, case amplification (Breese, 1998)
+% use a weighing scheme.
+% aggregation seems to be more important
+
+The two main problems of user-based CF are that the whole
+user database has to be kept in memory and that 
+expensive similarity computation between the active user and
+all other users in the database has to be performed.
 
 
 \subsection{Item-based CF}
-Produce recommendations based on item similarities~{\small\citep{Kitts:2000,Sarwar:2001}}
+Item-based CF~\citep{Kitts:2000,Sarwar:2001,recommender:Linden:2003,recommender:Deshpande:2004}
+is a model-based approach which produces recommendations
+by based on the relationship between items infered from the rating
+matrix. The idea behind this approach is that users will prefer items that
+are similar to the items they like.
 
-\centerline{\includegraphics[scale=1]{item-based2}}
+The model-building step consists of calculating as similarity matrix
+containing all item-to-item similarities using a given similarity measure.
+Popular are again Pearson correlation and Cosine similarity. For 0-1
+data again the Jaccard index can be used giving focus to matching ones.
+For item-based CF \cite{Deshpande:2004} proposed
+a \emph{Conditional probability-based 
+similarity} defined as:
+	$$\mathrm{sim_{Conditional}}(x,y) = 
+	    \frac{\mathrm{Freq}(xy) }
+		    {\mathrm{Freq}(x)} = \hat{P}(y|x),$$
+where $x$ and $y$ are two items,
+$\mathrm{Freq(\cdot)}$ is the number of users with the given items in their
+profile.
+
+\marginpar{fix this}
+
+With normalization and reduction of the problem with rare $x$:
+	$$\mathrm{sim_{Karypis}}(x,y) = 
+	    \frac{\sum_{\forall i b_{i,x}} b_{i,y} }
+	    {\mathrm{Freq}(x) \mathrm{Freq}(y)^\alpha}$$
+	where rows in $\mathbf{B} = (b_{i,j})$ are normalized to sum up to $1$, 
+	and the rows of the resulting similarity matrix are normalized to sum up to $1$ again. $\mathrm{Freq}(y)^\alpha$ reduces the problem with rare $x$.
+	
+To reduce the model size, for each item only a list of the $k$ most similar
+items and the similarity value can be stored~\citep{Sarwar:2001} improving
+space and time complexity by reducing recommendation quality.
+
+To make a recommendation based on the model,  
+
+
+
 \begin{enumerate}
-\small
-\item Calculate similarities between items and keep for each item 
-only the values for 
-the $k$ most similar items.
-
 \item For each item add the similarities with the active user's items.
 \item Remove the items of the active user and recommend the $N$ items 
 with the highest score.
 \end{enumerate}
 
-{\bf Similarity measures:}
-\begin{itemize}
-\item Pearson correlation coefficient, cosine similarity, jaccard index
-\item \emph{Conditional probability-based 
-similarity}~{\small\citep{Deshpande:2004}}:
-	$$\mathrm{sim_{Conditional}}(x,y) = 
-	    \frac{\mathrm{Freq}(xy) }
-		    {\mathrm{Freq}(x)} = \hat{P}(y|x)$$
-where $x$ and $y$ are two items,
-$\mathrm{Freq(\cdot)}$ is the number of users with the given item in their
-profile.
 
-%With normalization and reduction of the problem with rare $x$:\\[4mm]
-%\centerline{
-	%%\Large
-	%$\mathrm{sim_{Karypis}}(x,y) = 
-	%    \frac{\sum_{\forall i b_{i,x}} b_{i,y} }
-	%    {\mathrm{Freq}(x) \mathrm{Freq}(y)^\alpha}$
-	%}
-	%where rows in $\mathbf{B} = (b_{i,j})$ are normalized to sum up to $1$, 
-	%and the rows of the resulting similarity matrix are normalized to sum up to $1$ again. $\mathrm{Freq}(y)^\alpha$ reduces the problem with rare $x$.
-	%
-	% add more
-\end{itemize}
+\begin{figure}
+\centerline{\includegraphics[scale=1]{item-based2}}
+\caption{Item-based collaborative filtering}
+\label{fig:IBCF}
+\end{figure}
+
 
 %\section{Properties}
 {\bf Properties:}
@@ -211,13 +366,19 @@ Produce recommendations based on a dependency model for items
 given by association 
 rules~{\small\citep{Fu:2000,Mobasher:2001,Geyer-Schulz:2002,Lin:2002,Demiriz:2004}} 
 
-The binary profile matrix $\mathbf B$ is seen as a database containing 
-the set of items $\mathcal{I} = \{i_1, i_2, \dots, i_I\}$. 
-Each user is treated as a transaction.
+The binary profile matrix $\mat{R}$ is seen as a database containing 
+the set of items $\set{I}$ and each user is treated as a transaction.
+To build a model, a set of association rules \set{R} is mined from
+$\mat{R}$. Association rules are rules of the form
+$\set{X} \rightarrow \set{Y}$  where $\set{X}, \set{Y} \subseteq \set{I}$
+and $\set{X} \cap \set{Y} = \emptyset$.
+For the model we only use association rules with a single item in
+the right-hand-side of the rule ($|\set{Y}| = 1$).
+To select... 
 
-{\bf Rule:} $X \rightarrow Y$  where $X, Y \subseteq \mathcal{I}$, $X \cap Y = \emptyset$ and $|Y| = 1$.
 
-{\bf Measures of significance and interestingness:}
+Measures of significance and interestingness are used to rank rules.
+
 \begin{equation*}
 \mathrm{support}(X \rightarrow Y) = \mathrm{support}(X \cup Y) = 
 \mathrm{Freq}(X \cup Y) / U > s
@@ -293,13 +454,22 @@ Avg. items per profile:~$8.16$
 library("recommenderlab")
 data(MSWeb)
 
-MSWeb_5 <- MSWeb[size(MSWeb) >5]
-MSWeb_5
+MSWeb5 <- MSWeb[rowCounts(MSWeb) >5,]
+MSWeb5
+
+LIST(MSWeb5[1:2])
 @
 
-The data is stored in sparse format as an object of \class{itemMatrix}
-defined in package \pkg{arules} which holds a sparse item incidence matrix
-and item information (e.g., item names).
+<<fig=TRUE>>=
+hist(colCounts(MSWeb5), breaks=100)
+@
+
+<<fig=TRUE>>=
+hist(rowCounts(MSWeb5), breaks=20)
+@
+
+The data is stored in sparse format (object of \class{itemMatrix}
+defined in package \pkg{arules} which holds a sparse item incidence matrix).
 
 A recommender is created using \func{recommender}.
 Here we create a simple recommender which generates recommendations 
@@ -307,10 +477,10 @@ solely on the popularity of items (the number of users who have the item in
 their profile).
 
 <<>>=
-r <- recommender(MSWeb_5, method = "POPULAR")
+r <- Recommender(MSWeb5, method = "POPULAR")
 r
 
-str(recommender_model(r))
+str(getModel(r))
 @
 
 The model can be obtained from a recommender using \func{recommender\_model}.
@@ -324,11 +494,13 @@ are recommendations in sparse format represented as an \class{itemMatrix}.
 print the recommended items.
 
 <<>>=
-recom <- predict(r, MSWeb_5[1:2], n=5)
+recom <- predict(r, MSWeb5[1:2], n=5)
 recom
-inspect(recom)
-@
 
+LIST(recom)
+
+bestN(recom, n = 3)
+@
 
 \subsection{Evaluation}
 
@@ -338,57 +510,55 @@ a $4$-fold cross-valiadation scheme with 3 items given.
 \marginpar{explain more.}
 
 <<>>=
-es <- evaluation_scheme(MSWeb_5, method="cross", k=4, given=3)
-es
+scheme <- evaluationScheme(MSWeb5, method="cross", k=4, given=3)
+scheme
 @
 
 <<>>=
-conf_m <- evaluate(es, method="POPULAR", n=c(1,5,10,20))
-conf_m
+results <- evaluate(scheme, method="POPULAR", n=c(1,5,10,20))
+results
 
-mean(conf_m)
+avg(results)
 @
 
 <<fig=TRUE>>=
-plot(conf_m)
+plot(results)
 @
 
 <<fig=TRUE>>=
-plot(conf_m, plot_type="prec/rec")
+plot(results, "prec/rec")
 @
 
 \subsection{Comparing different methods}
 
 
 <<echo=FALSE>>=
-load("conf_m.rda")
+load("xresults.rda")
 @
 
 <<eval=FALSE>>=
 ## this needs to be saved to disk! see run_recommender.R
 algorithms <- list(
-        RANDOM = list(name="RANDOM", para=NULL),
-        POPULAR = list(name="POPULAR", para=NULL),
-        UBCF = list(name="UBCF", para=list(method="cosine", nn=50)),
-        IBCF = list(name="IBCF", para=list(k=30)),
-        AR = list(name="AR", para=list(supp=0.05, conf=0.5, maxlen=2))
+        RANDOM = list(name="RANDOM", param=NULL),
+        POPULAR = list(name="POPULAR", param=NULL),
+        UBCF = list(name="UBCF", param=list(method="cosine", nn=50)),
+        IBCF = list(name="IBCF", param=list(k=30)),
+        AR = list(name="AR", param=list(supp=0.05, conf=0.5, maxlen=2))
         )
 
 ## run algorithms
-conf_m <- lapply(algorithms, FUN = function(a) evaluate(es, a[["name"]], 
-	n=c(1,5,10,20), parameter=a[["param"]]))
+results <- evaluate(scheme, algorithms, n=c(1,5,10,20))
 
-conf_m <- evaluation_list(conf_m)
 
-## save(conf_m, file="conf_m.rda")
+## save(results, file="xresults.rda")
 @
 
 <<fig=TRUE>>=
-plot(conf_m)
+plot(results)
 @
 
 <<fig=TRUE>>=
-plot(conf_m, plot_type="prec/rec")
+plot(results, "prec/rec")
 @
 
 \marginpar{getting data in missing!}
@@ -492,7 +662,7 @@ recommendations based on binary data with the R code used here.
 %
 
 \bibliographystyle{abbrvnat}
-\bibliography{recom_talk,data,stuff}
+\bibliography{recommender,recom_talk,data,stuff}
 
 \end{document}
 

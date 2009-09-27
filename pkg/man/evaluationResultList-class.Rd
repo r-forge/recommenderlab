@@ -2,6 +2,7 @@
 \Rdversion{1.1}
 \docType{class}
 \alias{evaluationResultList-class}
+\alias{coerce,list,evaluationResultList-method}
 \alias{avg,evaluationResultList-method}
 \alias{[,evaluationResultList,ANY,missing,missing-method}
 %\alias{plot,evaluationResultList-method}
@@ -29,7 +30,8 @@ Class \code{"\linkS4class{list}"}, from data part.
 	list of average confusion matrices.}
     \item{[}{\code{signature(x = "evaluationResultList", i = "ANY", j = "missing", drop = "missing")}}
 %    \item{plot}{\code{signature(x = "evaluationResultList")}: ... }
-    \item{show}{\code{signature(object = "evaluationResultList")}}
+    \item{coerce}{\code{signature(from = "list", to = "evaluationResultList")}}
+	\item{show}{\code{signature(object = "evaluationResultList")}}
 	 }
 }
 \seealso{

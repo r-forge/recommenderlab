@@ -77,7 +77,9 @@ BIN_IBCF <- function(data, parameter= NULL) {
     )
 
     predict <- function(model, newdata, n = 10) {
-        sim <- model$sim 
+        n <- as.integer(n)
+
+		sim <- model$sim 
         U <- t(as(newdata, "dgCMatrix"))
 
         ## add similarites for known items
@@ -95,7 +97,7 @@ BIN_IBCF <- function(data, parameter= NULL) {
             }
         )
 
-		new("topNlist", items = reclist, itemLabels = colnames(newdata))
+		new("topNlist", items = reclist, itemLabels = colnames(newdata), n = n)
 
     }
 

@@ -43,7 +43,8 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 	 }
 }
 \seealso{
-	\code{\linkS4class[arules]{itemMatrix}}.
+	\code{\link[arules:itemMatrix-class]{itemMatrix}}.
+	%\code{\linkS4class[arules]{itemMatrix}}.
 }
 %\examples{
 %}
