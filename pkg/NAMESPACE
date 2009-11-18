@@ -16,7 +16,7 @@ exportClasses(
 		"realRatingMatrix",
 		"binaryRatingMatrix",
 		"Recommender",
-		"topNlist",
+		"topNList",
 		"evaluationScheme",
 		"confusionMatrix",
 		"evaluationResults",

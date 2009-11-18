@@ -97,7 +97,7 @@ BIN_IBCF <- function(data, parameter= NULL) {
             }
         )
 
-		new("topNlist", items = reclist, itemLabels = colnames(newdata), n = n)
+		new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
 
     }
 

@@ -15,7 +15,7 @@ BIN_POPULAR <- function(data, parameter = NULL) {
 		reclist <- lapply(LIST(newdata, decode= FALSE),
 			function(x) head(model$popOrder[!(model$popOrder %in% x)], n))
 
-        new("topNlist", items = reclist, itemLabels = colnames(newdata), n = n)
+        new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
     }
 
 	## construct recommender object

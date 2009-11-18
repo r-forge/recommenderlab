@@ -26,11 +26,11 @@ setClass("Recommender",
 )
 
 ## Top-N list
-setClass("topNlist",
+setClass("topNList",
 	representation(
-		items	= "list",
+		items   = "list",
 		itemLabels= "character",
-		n		= "integer"
+		n       = "integer"
 	)
 )
 
@@ -40,12 +40,12 @@ setClass("evaluationScheme",
 	representation(
 		method	= "character",
 		given	= "integer",
-		k		= "integer",
+		k	= "integer",
 		train	= "numeric",	
-		runsTrain	= "list",
+		runsTrain= "list",
 		data	= "ratingMatrix",
-		knownData	= "ratingMatrix",
-		unknownData	= "ratingMatrix"
+		knownData= "ratingMatrix",
+		unknownData= "ratingMatrix"
 	)
 )
 
@@ -54,7 +54,7 @@ setClassUnion("listOrNull", c("list", "NULL"))
 
 setClass("confusionMatrix",
 	representation(
-		cm		= "matrix",
+		cm	= "matrix",
 		model	= "listOrNull"
 	)
 )
