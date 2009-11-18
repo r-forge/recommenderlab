@@ -51,7 +51,7 @@ for 0-1 Data using \pkg{recommenderlab}}
 
 
 <<echo=FALSE>>=
-options(scipen=3, digits=4)
+options(scipen=3, digits=4, prompt="R> ")
 ### for sampling
 set.seed(1234)
 @
@@ -65,14 +65,17 @@ leaders in several industries (e.g., by amazon.com, iTunes and Netflix).
 Recommender
 systems apply statistical and knowledge discovery techniques to the problem of
 making product recommendations \citep{recommender:Sarwar:2000}.  Such
-recommendations can help to improve the conversion rate by help customer find a
-product she/he wants to buy faster, promote cross-selling by suggesting
+recommendations can help to improve the conversion rate by helping
+the customer to find
+products she/he wants to buy faster, promote cross-selling by suggesting
 additional products and can improve customer loyalty through creating a
 value-added relationship~\citep{recommender:Schafer:2001}.  The importance and
 the economic impact of research in this field is reflected by the Netflix prize
-(\url{http://www.netflixprize.com/}), a challange to improve algorithms to
-predict user ratings for movies.  A grand price of 1 million dollar was just
-awarded to the winning team.
+(\url{http://www.netflixprize.com/}), a challange to improve 
+the predictions of Netflix's movie recommender system by more than 
+10\% in terms
+of the root mean square error. The grand price of 1 million dollar was just
+awarded to the Belcore Pragmatic Chaos team.
 
 The most widely used method to create recommendations is \emph{collaborative
 filtering}. The idea is that given rating data by many users for many items
@@ -94,9 +97,17 @@ users do not want to directly reveal their preferences by rating an item
 this case preferences can only be infered by analyzing usage behavior
 For
 example, we can easily record in a supermarket setting what items a customer
-purchases, but we do not know if some items were not purchased because the
-customer does not like them (these should not be recommended) or just does not
-know about them (these maye should be recommended). The same is true for
+purchases. However, we do not know why other products were not purchased.
+\begin{itemize}
+\item The customer does not need the product right now.
+\item The customer does not know about teh product. Such a product
+is a good candidate for recommendation.
+\item The clustomer does not like the product. Such a product should 
+obviousely not
+be recommended.
+\end{itemize}
+
+The same reasoning is true for
 recommending pages of a web site given click-stream data. Here we only have
 information about which pages were viewed but not why some pages were not
 viewed. This situation leads to
@@ -125,10 +136,10 @@ create top-$N$ recommendation list for 0-1 data.
 This paper is structured as follows. Section...
 
 
-\section{Collaborative Filtering}
+\section{Collaborative Filtering for 0-1 Data}
 
 Collaborative filtering (CF) uses given rating data by many users for many
-items as the basis of predicting missing ratings or create top-$N$
+items as the basis of predicting missing ratings and/or for createing top-$N$
 recommendations for a given user, called the active user.  
 Formally, we have a set of 
 users $\set{U} = \{u_1, u_2, \ldots, u_m\}$ and a set of 
@@ -139,8 +150,9 @@ items $i_k$ for $1 \ge k\ge n$. $r_{jk}$ represents the rating of user
 $u_j$ for item $i_k$.
 Typically only a small fraction of ratings are
 known and for many cells in $\mat{R}$ the values are missing. Most published
-algoritms operate on ratings on a scale of 1 to 5 (stars)
-and estimated ratings are allowed to be in the interval $[1,5]$.
+algoritms operate on ratings on a specific scale (e.g., 1 to 5 (stars))
+and estimated ratings are allowed to be within an interval of matching range
+(e.g., $[1,5]$).
 However in this
 paper we concentrate on the 0-1 case with $r_{jk} \in {0,1}$ where we define:
 \begin{equation}
@@ -172,7 +184,7 @@ Formally, predicting all missing ratings is calculating a complete row of the
 rating matrix $\hat{r}_{a\cdot}$ where the missing values 
 for items in $\set{I}_a$ (zeros in the 0-1 case)
 are replaced by ratings estimated from other data in $\mat{R}$.  
-The estimated ratings can either be again in $\{0,1\}$ or to 
+The estimated ratings can either be in $\{0,1\}$ or 
 in $[0,1]$, where estimates closer to 1 indicate a stronger recommendation.
 The latter type of estimation is needed to be able to create a top-$N$
 list.
@@ -214,7 +226,7 @@ collaborative filtering algorithms and apply them to 0-1 data.
 User-based CF~\citep{Goldberg:1992,Resnick:1994,recommender:Shardanand:1995} is
 a memory-based algorithm which tries to mimics word-of-mouth based on analysis
 of rating data. The idea is that 
-users with similar preferences will rate products similarly. Thus a
+users with similar preferences will rate products similarly. Thus
 missing ratings for a user can be predicted by first 
 finding a \emph{neighborhood} of similar users and then aggregate the 
 ratings of these users to form a prediction.
@@ -239,7 +251,8 @@ $$\mathrm{sim_{Cosine}}(\vec{x},\vec{y}) =
 where
 $\vec{x} = r_{x\cdot}$ and 
 $\vec{y} = r_{y\cdot}$ represent the users' profile vectors.
-$\mathrm{sd}(\cdot)$ is the standard deviation.
+$\mathrm{sd}(\cdot)$ is the standard deviation and
+$\|\cdot\|_2$ is the $l^2$-norm.
 For calculating similarity using rating data only the dimensions (items) 
 are used which were rated by both users. However, for 0-1 data that would lead
 to the problem that the vectors $\vec{x}$ and $\vec{y}$ only contain ones
@@ -247,7 +260,7 @@ and thus no useful measure can be calculated.
 
 If we assume that most zeroes are actually items that the user does not like,
 we can use all items in the similarity calculation. However, this will produce
-significant errors for newer users who used a few items. 
+significant errors for newer users with very few ones. 
 A similarity measure which
 only focuses on matching ones 
 and thus prevents the problem with zeroes
@@ -271,7 +284,7 @@ $u_a$ and $u_b$, respectively.
 An example of the process of creating recommendations for 0-1 data by
 user-based CF is shown in Figure~\ref{fig:UBCF}. To the left is the rating
 matrix $\mat{R}$ with 6 users and 8 items. The active user $u_a$ we want to
-create recommendations for is added to the top of the matrix.  To find the
+create recommendations for is shown at the bottom of the matrix.  To find the
 $k$-neighborhood (i.e., the $k$ nearest neighbors) we calculate the similarity
 between the active user and all other users in the database and then select the
 $k$ users with the highest similarity.  To the right in Figure~\ref{fig:UBCF}
@@ -283,9 +296,11 @@ to the active user are removed and the $N$ items with the highest score
 (greater than zero) form the top-$N$ recommendations. In the example in 
 Figure~\ref{fig:UBCF} only two items are recommended.
 
-%% default voting, case amplification (Breese, 1998)
-% use a weighing scheme.
-% aggregation seems to be more important
+\marginpar{
+default voting, case amplification (Breese, 1998)
+use a weighing scheme.
+aggregation seems to be more important.
+}
 
 The two main problems of user-based CF are that the whole
 user database has to be kept in memory and that 
@@ -293,14 +308,14 @@ expensive similarity computation between the active user and
 all other users in the database has to be performed.
 
 
-\subsection{Item-based CF}
+\subsection{Item-based Collaborative Filtering}
 Item-based CF~\citep{Kitts:2000,Sarwar:2001,recommender:Linden:2003,recommender:Deshpande:2004}
 is a model-based approach which produces recommendations
-by based on the relationship between items infered from the rating
+based on the relationship between items infered from the rating
 matrix. The idea behind this approach is that users will prefer items that
 are similar to the items they like.
 
-The model-building step consists of calculating as similarity matrix
+The model-building step consists of calculating a similarity matrix
 containing all item-to-item similarities using a given similarity measure.
 Popular are again Pearson correlation and Cosine similarity. For 0-1
 data again the Jaccard index can be used giving focus to matching ones.
@@ -310,33 +325,36 @@ similarity} defined as:
 	$$\mathrm{sim_{Conditional}}(x,y) = 
 	    \frac{\mathrm{Freq}(xy) }
 		    {\mathrm{Freq}(x)} = \hat{P}(y|x),$$
-where $x$ and $y$ are two items,
+where $x, y \in \set{I}$ are two items and
 $\mathrm{Freq(\cdot)}$ is the number of users with the given items in their
-profile.
-
-\marginpar{fix this}
-
-With normalization and reduction of the problem with rare $x$:
+profile. This similarity is in fact a estimate of the conditional
+probability to see item $y$ in a profile given that the profile contains
+items $x$. This similarity is equivalent to the confidence measure used
+for association rules (see section~\ref{sec:AR} below). A drawback
+of this similarity measure is its sensitivity to the frequency of $x$ with
+rare $x$ producing high similarities.
+To reduce the sensitifity, \cite{Deshpande:2004} propose a
+mormalized version of the similarity measure:
 	$$\mathrm{sim_{Karypis}}(x,y) = 
 	    \frac{\sum_{\forall i b_{i,x}} b_{i,y} }
 	    {\mathrm{Freq}(x) \mathrm{Freq}(y)^\alpha}$$
-	where rows in $\mathbf{B} = (b_{i,j})$ are normalized to sum up to $1$, 
-	and the rows of the resulting similarity matrix are normalized to sum up to $1$ again. $\mathrm{Freq}(y)^\alpha$ reduces the problem with rare $x$.
-	
-To reduce the model size, for each item only a list of the $k$ most similar
-items and the similarity value can be stored~\citep{Sarwar:2001} improving
-space and time complexity by reducing recommendation quality.
+where $\mathbf{B} = (b_{i,j})$ 
+is a normalized rating matrix where all rows sum up to $1$.
+$\mathrm{Freq}(y)^\alpha$ reduces the problem with rare $x$.
 
-To make a recommendation based on the model,  
+%% Fixme: why is this done
+All pairwise similarities are stored in a $N \times N$ 
+similarity matrix $\mat{S}$,
+which is again normalized such that rows sum up to $1$.
+To reduce the model size
+to $N \times k$ with $k \ll N$, 
+for each item only a list of the $k$ most similar
+items and their similarity values are stored~\citep{Sarwar:2001} improving
+space and time complexity by sacrificing recommendation quality.
 
-
-
-\begin{enumerate}
-\item For each item add the similarities with the active user's items.
-\item Remove the items of the active user and recommend the $N$ items 
-with the highest score.
-\end{enumerate}
-
+Figure~\ref{fig:IBCF} shows an example for $N=8$ items. For the 
+normalized similarity matrix $\mat{S}$ only $k=3$ entries are
+stored per row (The crossed out entires are discarded).
 
 \begin{figure}
 \centerline{\includegraphics[scale=1]{item-based2}}
@@ -344,70 +362,94 @@ with the highest score.
 \label{fig:IBCF}
 \end{figure}
 
+To make a recommendation based on the model only two steps are necessary: 
+\begin{enumerate}
+\item For each item add the similarities with the active user's items.
+\item Remove the items of the active user and recommend the $N$ items 
+with the highest score.
+\end{enumerate}
 
-%\section{Properties}
-{\bf Properties:}
-	\begin{itemize}
-\item Models (reduced similarity matrix) 
-	is relatively small ($N \times k$) and
-	can be fully precomputed. 
-	\item Item-based CF is known to 
-	only produce slightly inferior results compared to user-based 
-	CF~{\small\citep{Deshpande:2004}}.
-	\item Higher order models 
-	which take the joint distribution of
-	sets of items into account 
-	are possible {\small\citep{Deshpande:2004}}.
-\item Successful application in large scale systems (e.g., Amazon.com)
-\end{itemize}
+In Figure~\ref{fig:IBCF} we assume that the active user prefers items
+$i_1, i_5$ and $i_8$. The rows corresponding to these items are highlighted
+and the rows are added up. Now the summs for the items 
+prefered by the user are removed (crossed out in Figure~\ref{fig:IBCF}),
+leaving three items with a score larger than zero which results in 
+the top-$N$ recommendation list $i_3, i_6, i_4$.
+
+
+Item-based CF are very efficient since the
+models (reduced similarity matrix) is relatively small ($N \times k$) and
+can be fully precomputed. Item-based CF is known to 
+only produce slightly inferior results compared to user-based 
+CF and higher order models 
+which take the joint distribution of
+sets of items into account 
+are possible~\citep{Deshpande:2004}.
+Furthermore, item-based CF is successfully applied 
+in large scale recommender systems (e.g., by Amazon.com).
 
 \subsection{Association Rules}
-Produce recommendations based on a dependency model for items 
-given by association 
-rules~{\small\citep{Fu:2000,Mobasher:2001,Geyer-Schulz:2002,Lin:2002,Demiriz:2004}} 
-
-The binary profile matrix $\mat{R}$ is seen as a database containing 
-the set of items $\set{I}$ and each user is treated as a transaction.
-To build a model, a set of association rules \set{R} is mined from
+\label{sec:AR}
+Recommender systems based on association rules
+produce recommendations based on a dependency model for items 
+given by a set of association 
+rules~\citep{Fu:2000,Mobasher:2001,Geyer-Schulz:2002,Lin:2002,Demiriz:2004}. 
+The binary profile matrix $\mat{R}$ is seen as a database 
+where each user is treated as a transaction that contains
+the subset of items in $\set{I}$ with a rating of 1.
+Hence transaction $k$ is defined as 
+$\set{T}_k = \{i_j \in \set{I} | r_{jk} = 1\}$ and
+the whole transaction data base is $\set{D} = \{\set{T}_1, \set{T}_2, \ldots, \set{T}_U$ where $U$ is the number of users.
+To build the dependency model, 
+a set of association rules $\set{R}$ is mined from
 $\mat{R}$. Association rules are rules of the form
 $\set{X} \rightarrow \set{Y}$  where $\set{X}, \set{Y} \subseteq \set{I}$
 and $\set{X} \cap \set{Y} = \emptyset$.
 For the model we only use association rules with a single item in
 the right-hand-side of the rule ($|\set{Y}| = 1$).
-To select... 
-
-
-Measures of significance and interestingness are used to rank rules.
-
+To select a set of useful association rules, 
+thresholds on measures of significance and interestingness are used. Two widely applied measures are:
 \begin{equation*}
-\mathrm{support}(X \rightarrow Y) = \mathrm{support}(X \cup Y) = 
-\mathrm{Freq}(X \cup Y) / U > s
+\mathrm{support}(\set{X} \rightarrow \set{Y}) = 
+\mathrm{support}(\set{X} \cup \set{Y}) = 
+\mathrm{Freq}(\set{X} \cup \set{Y}) / |\set{D}|
 \end{equation*}
 \begin{equation*}
-\mathrm{confidence}(X \rightarrow Y) = \mathrm{support}(X \cup Y) / \mathrm{support}(X) = \hat{P}(Y|X) > c 
+\mathrm{confidence}(\set{X} \rightarrow \set{Y}) = \mathrm{support}(\set{X} \cup \set{Y}) / \mathrm{support}(\set{X}) = \hat{P}(\set{Y}|\set{X}) 
 \end{equation*}
 
-{\bf Length constraint:}
-\begin{equation*}
-|X \cup Y|\leq l
-\end{equation*}
+$\mathrm{Freq}(\set{X})$ gives the number of transactions
+in the data base $\set{D}$ that contains all items in $\set{X}$.
 
+We now require $\mathrm{support}(\set{X} \rightarrow \set{Y}) > s$ and 
+$\mathrm{confidence}(\set{X} \rightarrow \set{Y}) > c$ 
+and also include a length constraint $|\set{X} \cup \set{Y}|\leq l$.
+The set of rules $\set{R}$ that satisfy these constraints form the dependency
+model. Although finding all association rules given thresholds
+on support and confidence is a hard problem (the model grows in the 
+worse case exponential with the number of items), algorithms that efficiently
+find all rules in most cases are 
+available~\citep[e.g.,][]{arules:Agrawal:1994,arules:Zaki:2000,arules:Han:2004}. Also model size can be controlled by $l$, $s$ and $c$.
+
+
+To make a recommendation for an active user $u_a$ given the
+set of items $\set{T}_a$ the user likes  and the
+set
+of association rules $\set{R}$,
+the following steps are necessary:
 \begin{enumerate}
-\item Dependency model: All rules of form $X \rightarrow Y$ 
-with minimum support
-$s$, minimum confidence $c$ and satisfying the length constraint $l$.
-\item Find all maching rules $X \rightarrow Y$ for which $X \subseteq u_a$.
+\item Find all maching rules $\set{X} \rightarrow \set{Y}$ for 
+which $\set{X} \subseteq \set{T}_a$ 
+in $\set{R}$.
 \item Recommend $N$ unique right-hand-sides ($Y$) of the maching rules 
-with the highest confidence.
+with the highest confidence (or other measure of interestingness).
 \end{enumerate}
 
-{\bf Properties:}
-\begin{itemize}
-\item Model grows in the worst case exponentially with the 
-number of items. Model size can be controlled by $l$, $s$ and $c$.
-\item Model is very similar to
-item-based CF with conditional probability-based similarity (with higher order effects). 
-basher et al [Mobasher et al. 2000] presented an algorithm for recommending
+The dependency model is very similar to
+item-based CF with conditional probability-based 
+similarity~\citep{Deshpande:2004}, and with longer rules 
+it allows for higher order effects between more than two items. 
+%Mbasher et al [Mobasher et al. 2000] presented an algorithm for recommending
 %additional webpages to be visited by a user based on association rules. In this
 %approach, the historical information about users and their web-access patterns
 %were mined using a frequent itemset discovery algorithm and were used to
@@ -427,14 +469,67 @@ basher et al [Mobasher et al. 2000] presented an algorithm for recommending
 %dependency network-based algorithm [Hecker- man et al. 2000].
 
 
-\end{itemize}
-
-
-
-
-
-
 \section{Recommenderlab Infrastructure}
+\label{sec:insfrastructure}
+\pkg{recommenderlab} is implemented using the S4 class system. 
+Figure~\ref{fig:class_diagram} shows the main classes and its relationships. 
+
+\begin{figure}
+\centerline{\includegraphics[width=0.8\textwidth]{recommenderlab_classes}}
+\caption{UML class diagramm for package \pkg{recommenderlab}.}
+\label{fig:class_diagram}
+\end{figure}
+
+The package uses the abstract \class{ratingMatrix} 
+to provide a common interface for rating data. \class{ratingMatrix}
+implements many methods typically available for matrix-like
+objects. For example, \func{dim}, \func{dimnames}, 
+\func{colCounts}, \func{rowCounts},
+\func{colMeans}, \func{rowMeans},
+\func{colSums} and \func{rowSums}.
+Additionally \func{sample} can be used to sample from users (rows) and
+\func{image} produces an image plot.
+
+For \class{ratingMatrix} we provide two concrete 
+implementations \class{realRatingMatrix} and 
+\class{binaryRatingMatrix} to represent the rating matrix $\mat{R}$.
+\class{binaryRatingMatrix} implements a 0-1 rating matrix using
+the implementation of an \class{itemMatrix} defined in package \pkg{arules}. 
+\class{itemMatrix} stores only the ones and internally uses a sparse
+representation from package \pkg{Matrix}. Although the focus of the package and
+this paper is on 0-1 data, for completeness the package contains class
+\class{realRatingMatrix} which implements a rating matrix with real valued 
+ratings stored in sparse format defined in package \pkg{Matrix}. With this 
+class the infrastructure of \pkg{recommenderlab} can be easily extended
+for non-binary data.
+
+Class \class{Recommender} implements an interface for creating recommendation
+models. The creator method \code{Recommender(data, method, parameter = NULL)} 
+takes data as a \class{ratingMatrix},
+a method name and some optional parameters for the method and
+returns a \class{Recommender} object. Once we have a recommender object,
+we can predict top-$N$ recommendations for active users using
+\code{predict(object, newdata, n=10, ...)}. \code{object} is the recommender
+object, \code{newdata} is the data for the active users and \code{n} is
+the number recommended items $N$ in each top-$N$ list. \func{predict} will
+return a list of objects of class \class{topNList}, one for each 
+of the active users in \code{newdata}. 
+
+The actual imlementations for the recommendation algorithms are 
+managed using the registry mechanism provided by package \pkg{registry}.
+
+
+registry
+
+
+
+evaluation
+
+
+
+
+
+
 \section{Examples}
 \subsection{A first session}
 
@@ -662,7 +757,7 @@ recommendations based on binary data with the R code used here.
 %
 
 \bibliographystyle{abbrvnat}
-\bibliography{recommender,recom_talk,data,stuff}
+\bibliography{recommender,recom_talk,data,stuff,association_rules}
 
 \end{document}
 

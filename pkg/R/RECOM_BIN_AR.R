@@ -51,7 +51,7 @@ BIN_AR <- function(data, parameter = NULL) {
             if(!is.null(recom)) reclist[[i]] <- recom
         }
 
-		new("topNlist", items = reclist, itemLabels = colnames(newdata), n = n)
+		new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
 	}
 
 	## construct recommender object
