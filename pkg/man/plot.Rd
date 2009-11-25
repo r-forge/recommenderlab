@@ -9,16 +9,16 @@ Plot Evaluation Results
 Creats precision-recall or ROC plots for recommender evaluation results.
 }
 \usage{
-\S4method{plot}{evaluationResults}(x, y=c("ROC", "prec/rec"),
+\S4method{plot}{evaluationResults}(x, y,
         avg = TRUE, add=FALSE, type= "l", annodate = FALSE, ...)
-\S4method{plot}{evaluationResultList}(x, y=c("ROC", "prec/rec"),
+\S4method{plot}{evaluationResultList}(x, y,
         xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1,
-		    annodate= 0, legend="bottomright", ...)
+		    avg = TRUE, annodate= 0, legend="bottomright", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{ the object to be plotted.}
-  \item{y}{a character string indicating the type of plot.}
+  \item{y}{a character string indicating the type of plot (e.g., "ROC" or "prec/rec").}
   \item{avg}{ plot average of runs?}
   \item{add}{ add to a plot?}
   \item{type}{ line type (see \code{plot}).}

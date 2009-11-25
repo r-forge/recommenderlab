@@ -18,11 +18,13 @@ the creator function \code{Recommender(data, method, parameter = NULL)}
 	 \describe{
     \item{\code{method}:}{Object of class \code{"character"}; 
 	used recommendation method.}
+    \item{\code{dataType}:}{Object of class \code{"character"}; 
+	concrete class of the input data.}
     \item{\code{ntrain}:}{Object of class \code{"integer"}; 
 	size of training set. }
     \item{\code{model}:}{Object of class \code{"list"}; the model. }
-%    \item{\code{predict}:}{Object of class \code{"function"}; code to compute
-%	a recommendation using the model. }
+    \item{\code{predict}:}{Object of class \code{"function"}; code to compute
+	a recommendation using the model. }
   }
 }
 \section{Methods}{
