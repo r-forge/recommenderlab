@@ -158,7 +158,7 @@ paper we concentrate on the 0-1 case with $r_{jk} \in {0,1}$ where we define:
 \begin{equation}
 r_{jk}=
 \begin{cases}
-1& \text{user $u_j$ has a preference for item $i_k$} \\
+1& \text{user $u_j$ is known to have a preference for item $i_k$} \\
 0& \text{otherwise.}
 \end{cases}
 \end{equation}
@@ -468,6 +468,181 @@ it allows for higher order effects between more than two items.
 %4 (based on our preliminary work presented in [Karypis 2001]) and the
 %dependency network-based algorithm [Hecker- man et al. 2000].
 
+\section{Evaluation of Top-$N$ Recommender Algorithms for 0-1 Data}
+
+Evaluation of recommender systems is an important topic but
+most evaluation efforts center on recommender systems for
+real rating data. A comprehensive review was presented 
+by \cite{recommender:Herlocker:2004}.
+However, here we will discuss the evaluation of top-$N$ recommender
+algorithms for 0-1 data.
+
+Typically, 
+given a rating matrix $\mat{R}$,
+recommender algorithms are evaluated by first
+partitioning the users (rows) in $\mat{R}$ into two 
+sets $\set{U}_\mathit{train}\, \cup\, \set{U}_\mathit{test} = \set{U}$.
+The rows of $\mat{R}$ corresponding to the training users $u_{train}$ 
+are used to learn the recommender model.
+Then each user $u_a \in \set{U}_\mathit{test}$ is seen as an active user, however,
+before creating recommendations some items are withheld from the
+profile $r_{u_a\cdot}$ and it measured how well these removed items are
+predicted by the recommender algorithm in its top-$N$ list.
+This type of evaluation does not take into account that $0$ in the
+data also codes for items that are unknown to the user and could 
+potentially be a good recommendation. However, it is assumed that if
+a recommender algorithm performed better in predicting the withheld items,
+it will also perfom better in finding good recommendations for unknown items.
+
+To determine how to split $\set{U}$ into 
+$\set{U}_\mathit{train}$ and $\set{U}_\mathit{test}$ we can use 
+several approaches~\citep{recommender:Kohavi:1995}. 
+\begin{itemize}
+\item {\bf Splitting:} 
+We can randomly assign a predefined proportion of the users user 
+to the training set and all others to the test set.
+\item {\bf Bootstrap sampling:}
+We can sample from $\set{U}_\mathit{test}$ with replacement
+to create the training set and then use the users not in the training set as
+the test set. This procedure has the advantage for smaller data sets
+that we create larger training sets and still have users left for testing.
+\item {\bf $k$-fold cross-validation:} Here we split $\set{U}_\mathit{test}$
+into $k$ folds of approximately the same size. Then we evaluate $k$ times, always using one fold for testing and all other folds for leaning. The
+$k$ results can be averaged. This approach makes sure that each user
+is at least once in the test set and the averaging produces more 
+robust results.
+\end{itemize}
+
+The items withheld in the test data are randomly chosen.
+\cite{recommender:Breese:1998} introduced the four experimental protocolls
+called {\em Given 2}, {\em Given 5}, {\em Given 10} and {\em All but 1}. For
+the Given $x$ protocols for each user $x$ randomly chosen items are given to
+the recommender algorithm and the remaining items are withheld for evaluation.
+For All but 1 the algorithm gets all but one withheld item.
+
+The prediction results for all users $\set{U}_{test}$ 
+can be aggregated into a so called {\em confusion matrix} depicted in
+table~\ref{tab_confusion} (see \cite{recommender:Kohavi:1998}) 
+which corresponds
+exactly to the outcomes of a classical statistical experiment.
+The confusion matrix shows how many of the items recommended in
+the top-$N$ lists (column predicted positive; $d+b$) 
+were represented withheld items and thus correct recommendations
+(cell $d$) and how many where potentially incorrect (cell $b$). 
+The matrix also shows
+how many of the not recommended items
+(column predicted negative; $a+c$) 
+should have actually been recommended since they represent witheld items (cell $c$). 
+
+\begin{table}[tbp]
+\caption{2x2 confusion matrix
+\label{tab_confusion}
+}
+\center
+\begin{tabular}{|c||c|c|} 
+\hline
+{\bf actual / predicted} & {\bf negative}  & {\bf positive} \\
+\hline
+\hline
+{\bf negative} & $a$ & $b$ \\
+\hline
+{\bf positive} & $c$ & $d$ \\
+\hline
+\end{tabular}
+\end{table}
+
+From the confusion matrix several performance measures can be derived.
+For the data mining task of a recommender system 
+the performance of an algorithm depends on its ability
+to learn significant patterns in the data set.
+Performance measures used to evaluate these algorithms 
+have their root in machine learning.
+Commonly used measures are accuracy and
+coverage.
+{\em Accuracy} is the fraction of correct 
+recommendations to total possible recommendations.
+
+\begin{equation} 
+\mathit{Accuracy} = \frac{\mathit{correct\ recommendations}}{\mathit{total\ possible\ recommendations}}
+=  \frac{a+d}{a+b+c+d}
+\label{accur}
+\end{equation} 
+
+A common error measure is the {\em mean absolute error} ({\em MAE}, also called {\em mean absolute deviation} or {\em MAD}) shown in
+formula~\ref{mae}.
+\begin{equation} 
+\mathit{MAE} = \frac{1}{N}\sum_{i=1}^N{|\epsilon_i|} = \frac{b+c}{a+b+c+d},
+\label{mae}
+\end{equation} 
+where $N = a+b+c+d$ is the total number of items 
+which can be recommended and $|\epsilon_i|$ is the
+absolute error of each item.
+Since we deal with 0-1 data, $|\epsilon_i|$ can only be zero (in cells $a$ and $d$ in the confusion matrix) or one (in cells $b$ and $c$).
+For evaluation recommender algorithms for rating data, the root mean square 
+error is often used. However, for 0-1 data it just reduces to the square 
+root of MAE.  
+
+Recommender systems help to find items of interest from the set of all 
+available items. This can be seen as a retrieval task known from 
+information retrieval. Therefore, standard information retrieval
+performance measures are frequently used to evaluate recommender performance.
+{\em Precision} and {\em recall} are the best known measures used in 
+information retrieval \citep{recommender:Salton:1983,recommender:Rijsbergen:1979}. 
+
+\begin{equation} 
+\mathit{Precision} = \frac{\mathit{correctly\ recommended\ items}}{\mathit{total\ recommended\ items}}
+= \frac{d}{b+d}
+\label{prec}
+\end{equation} 
+
+\begin{equation} 
+\mathit{Recall} = \frac{\mathit{correctly\ recommended\ items}}{\mathit{total\ useful\ recommendations}}
+= \frac{d}{c+d}
+\label{rec}
+\end{equation} 
+
+%% fallout, generality
+
+Often the number of {\em total\ useful\ recommendations} needed for recall is
+unknown since the whole collection would have to be inspected. However, instead
+of the actual {\em total\ useful\ recommendations} often the total number of
+known useful recommendations is used as an estimate.  Precision and recall are
+conflicting properties, high precision means low recall and vice versa. To find
+an optimal trade-off between precision and recall a single-valued measure like
+the {\em E-measure} \cite{recommender:Rijsbergen:1979} can be used.  
+The parameter $\alpha$ controls the
+trade-off between precision and recall.
+\begin{equation} 
+\mbox{\textit{E-measure}} = \frac{1}{\alpha(1/\mathit{Precision}) + (1-\alpha)(1/\mathit{Recall})}
+\label{e-measure}
+\end{equation} 
+
+A popular single-valued measure is the {\em F-measure.} It is defined as the
+harmonic mean of precision and recall.  
+\begin{equation} 
+\mbox{\textit{F-measure}} = \frac{2\, \mathit{Precision}\, \mathit{Recall}}{\mathit{Precision} + \mathit{Recall}} = 
+\frac{2}{1/\mathit{Precision} + 1/\mathit{Recall}}
+\label{f-measure}
+\end{equation} 
+It is
+a special case of the E-measure with $\alpha=.5$ which places the same weight
+on both, precision and recall.  In the recommender evaluation literature the
+F-measure is often referred to as the measure {\em F1.}
+
+A measure used in the literature to compare two algorithms or parameter
+settings is the {\em Receiver Operating Characteristic} (ROC).  It is a measure
+used in signal detection and goes back to the Swets model
+\citep{recommender:Rijsbergen:1979}. The ROC-curve is a plot of the system's 
+{\em
+probability of detection} (also called $\mathit{sensitivity}$ or true positive rate or
+recall as defined in formula \ref{rec}) by the {\em probability of false alarm}
+($1-\mathit{specificity}$, where $\mathit{specificity} = \frac{a}{a+b}$ which is the true
+negative rate) with regard to model parameters.  A possible way to compare the
+efficiency of two systems is by comparing the size of the area under the
+ROC-curve, where a bigger area indicates better performance. 
+%% \cite{recommender:Schein2005} for CROC
+
+
 
 \section{Recommenderlab Infrastructure}
 \label{sec:insfrastructure}
@@ -517,33 +692,51 @@ of the active users in \code{newdata}.
 
 The actual imlementations for the recommendation algorithms are 
 managed using the registry mechanism provided by package \pkg{registry}.
+%The registry called \code{recommenderRegistry} uses the four fields
+%\code{method} (name of the recommendation algorithm), \code{dataType} (name of
+%the concrete implementation of \class{ratingMatrix} the algorithm works on),
+%\code{fun} (function to create a recommender model as an instance of class
+%\class{Recommender}), and \code{description} (verbal description of the
+%algorithm) to describe a recommender algorithm. 
+Generally the registry mechanism is hidden from the user and the
+creator function \func{Recommender} uses it in the background to map 
+a recommender method name to its implementation. However, the 
+registry can be directly queried and new recommender algorithms can be added by the user. We will talk more about this in the examples section of this paper.
 
-
-registry
-
-
-
-evaluation
-
-
-
-
-
+To evaluate recommender algorithms package~\pkg{recommenderlab}
+provides the infrastructure to create and maintain evaluation schemes 
+stored as an object of class \class{evaluationScheme} from rating data. 
+The creator function \func{evaluationScheme} 
+creates the evaluation scheme from a data set using a split method
+(e.g., simple split, bootstrap sampling, $k$-fold cross validation)
+with item withholding. The function \func{evaluate} is then used to
+evaluate several recommender algorithms using an evaluation scheme resulting
+in a evaluation result list (class~\class{evaluationResultList}) with
+one entry (class~\class{evaluationResult}) per algorithm. 
+Each object of \class{evaluationResult} 
+contains one or several object of \class{confusionMatrix} depending on the 
+number of evaluations specified in the \class{evaluationScheme} (e.g., $k$
+for $k$-fold cross validation).
+With this infrastructure several recommender algorithms can be compared
+on a data set with a single line of code.
 
 \section{Examples}
 \subsection{A first session}
 
-For this example we use the data set \emph{MSWeb} which is included in
+This fist example shows how to create and
+use a recommender.
+For the example we use the data set \emph{MSWeb} which is included in
 \pkg{recommenderlab}. 
-The data set contains anonymous web data from \url{www.microsoft.com} 
-for 38,000 anonymous, randomly-selected users. For each
-user, the data lists all the areas of the web site (Vroots) that user visited
-in a one week time frame {\small\citep{Breese:1998}}.
+The data set contains anonymous web click-stream data 
+from \url{www.microsoft.com} 
+for 38,000 anonymous, randomly selected users. For each
+user, the data lists all the areas of the web site (Vroots) 
+that user visited
+in a one week time frame \citep{Breese:1998}.
 
-{\bf Used data:}\\
-$4151$ users with $>5$ items and $285$ items. \\
-Avg. items per profile:~$8.16$
-\marginpar{introduce data}
+We first load the package and the data set and then select for the
+example only users who visited more than 5 areas which are the items 
+for the data set.
 
 <<>>=
 library("recommenderlab")
@@ -551,34 +744,70 @@ data(MSWeb)
 
 MSWeb5 <- MSWeb[rowCounts(MSWeb) >5,]
 MSWeb5
-
-LIST(MSWeb5[1:2])
 @
 
-<<fig=TRUE>>=
-hist(colCounts(MSWeb5), breaks=100)
-@
+The used data set contains \Sexpr{nrow(MSWeb5)} users with $>5$ items and
+\Sexpr{ncol(MSWeb5)} items.  To understand the distribution of the number of
+items for the users, we can produce a histogram.
 
-<<fig=TRUE>>=
+<<rowCounts, fig=TRUE, include=FALSE>>=
 hist(rowCounts(MSWeb5), breaks=20)
 @
 
-The data is stored in sparse format (object of \class{itemMatrix}
-defined in package \pkg{arules} which holds a sparse item incidence matrix).
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-rowCounts}}
+\caption{Distribution of the number of items per user (rowCounts).}
+\label{fig:rowCounts}
+\end{figure}
 
-A recommender is created using \func{recommender}.
-Here we create a simple recommender which generates recommendations 
-solely on the popularity of items (the number of users who have the item in
-their profile).
+Since the rows in the rating matrix represent the users, the histogram in
+Figure~\ref{fig:rowCounts} shows the distribution of the users with $6, 7,
+\ldots$ items (note that we required users to have at least 5 items).
+On average a user has \Sexpr{mean(rowSums(MSWeb5))}
+items in her/his profile.
+
+The profile of users can be inspected with \func{LIST}. 
+For example, we can see what items the first two users used. 
 
 <<>>=
-r <- Recommender(MSWeb5, method = "POPULAR")
-r
-
-str(getModel(r))
+LIST(MSWeb5[1:2])
 @
 
-The model can be obtained from a recommender using \func{recommender\_model}.
+It is also interesting to study the popularity of items by looking at the
+distribution of how oftern items are in user profiles. This is done by plotting
+a histogram for the column sums of the rating matrix.
+
+<<colCounts, fig=TRUE, include=FALSE>>=
+hist(colCounts(MSWeb5), breaks=100)
+@
+
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-colCounts}}
+\caption{Distribution of item popularity (colCounts).}
+\label{fig:colCounts}
+\end{figure}
+
+The histogram is shown in Figure~\ref{fig:colCounts}.
+We see a typical distribution where 
+the number of items falls quickly with popularity and 
+only very few items are extremely popular (tail of the distribution).
+
+A recommender is created using the creator function \func{recommender}.
+Here we create a simple recommender which generates recommendations 
+solely on the popularity of items (the number of users who have the item in
+their profile). We create a recommender using the first 1000 users in the
+data set.
+
+<<>>=
+r <- Recommender(MSWeb5[1:1000], method = "POPULAR")
+r
+@
+
+The model can be obtained from a recommender using \func{getModel}.
+<<>>=
+getModel(r)
+@
+
 In this case the model is just an vector containing the order of items
 according to popularity in the data set and a short description.
 
@@ -586,46 +815,100 @@ Recommendations are generated by \func{predict} in the same way \func{predict}
 is used in \proglang{R} for other types of models. The result 
 are recommendations in sparse format represented as an \class{itemMatrix}.
 \func{inspect} (defined in \pkg{arules}) can be used to
-print the recommended items.
+print the recommended items. Here we create top-5 recommendation lists for two
+users who were not used to learn the model.
 
 <<>>=
-recom <- predict(r, MSWeb5[1:2], n=5)
+recom <- predict(r, MSWeb5[1001:1002], n=5)
 recom
+@
 
+The result are two ordered top-$N$ recommendation lists,
+one for each user. The items can be inspected 
+using \func{LIST}.
+<<>>=
 LIST(recom)
+@
 
+And since the top-$N$ lists are ordered, we can extract sublists of
+the best items in the top-$N$. For example, we can get the best 3 
+recommendations for each list using \func{bestN}.
+<<>>=
 bestN(recom, n = 3)
 @
+
+Next we will look at the evaluation of recommender algorithms.
 
 \subsection{Evaluation}
 
 \pkg{recommenderlab} provides different evaluation methods. The evaluation
 method is determined by choosing an evaluation scheme. Here we create
-a $4$-fold cross-valiadation scheme with 3 items given.
-\marginpar{explain more.}
+a $4$-fold cross valiadation scheme with the a Given 3 protocol, i.e.
+for the test users all but three randomly selected items are withheld 
+for evaluaiton.
 
 <<>>=
 scheme <- evaluationScheme(MSWeb5, method="cross", k=4, given=3)
 scheme
 @
 
+Next we use the ecaluation scheme to evalute the recomender method popular.
+We evaluate top-1, top-5, top-10 and top-20 recommendations.
+
 <<>>=
 results <- evaluate(scheme, method="POPULAR", n=c(1,5,10,20))
 results
+@
 
+Using \func{getConfusionMatrix} we can get the confusion matrices from the
+evaluation results. For the 4 runs (we used 4-fold cross evaluation) we
+will get a list of 4 matrices, each containing the confusion matrices for
+all top-$N$ recommendations. Here, we show the confusion matrices for the 
+first run.
+
+<<>>=
+getConfusionMatrix(results)[[1]]
+@
+
+$n$ is the number of recommendations per list. TP, FP, FN and TN are the
+true positives, false positives, false negatives and true negatives in 
+the confusion matrix. The remaining colums contain precomputed performance 
+measures. The average for all runs can be obtained using \func{avg}.
+
+<<>>=
 avg(results)
 @
 
-<<fig=TRUE>>=
+Evaluation results can directly be plotted using \func{plot}. The default
+plot is the ROC curve which plots the true positive rate against the 
+false positive rate (see Figure~\ref{fig:roc1}).
+
+<<roc1, fig=TRUE, include=FALSE>>=
 plot(results)
 @
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-roc1}}
+\caption{ROC courve for recommender method POPULAR.}
+\label{fig:roc1}
+\end{figure}
 
-<<fig=TRUE>>=
+By using \code{"prec/rec"} as the second argument, a precision-recall plot
+is produced (see Figure~\ref{fig:precrec1}).
+
+<<precrec1, fig=TRUE, include=FALSE>>=
 plot(results, "prec/rec")
 @
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-precrec1}}
+\caption{Precision-recall plot for method POPULAR.}
+\label{fig:precrec1}
+\end{figure}
 
-\subsection{Comparing different methods}
 
+Several recommender algorithms can be compared easily, too.
+The only change is to use \func{evaluate} with
+a list of algorithms together with their parameters instead of 
+a single method name to evaluate.
 
 <<echo=FALSE>>=
 load("xresults.rda")
@@ -643,75 +926,127 @@ algorithms <- list(
 
 ## run algorithms
 results <- evaluate(scheme, algorithms, n=c(1,5,10,20))
-
-
 ## save(results, file="xresults.rda")
 @
+<<>>=
+results
+@
 
-<<fig=TRUE>>=
+Again \func{plot} can be used to create ROC and precision-recall plots
+(see Figured~\ref{fig:roc2} and \ref{fig:precrec2})
+
+<<roc2, fig=TRUE, include=FALSE>>=
 plot(results)
 @
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-precrec2}}
+\caption{Comparision of ROC curves for several recommender methods.}
+\label{fig:roc2}
+\end{figure}
 
-<<fig=TRUE>>=
+<<precrec2, fig=TRUE, include=FALSE>>=
 plot(results, "prec/rec")
 @
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-precrec2}}
+\caption{Comparision of precision-recall courves 
+for several recommender methods.}
+\label{fig:precrec2}
+\end{figure}
 
-\marginpar{getting data in missing!}
+%\marginpar{getting data in missing!}
 
-\subsection{Compare rankings}
+%\subsection{Compare rankings}
+%
+%Top-$N$ recommendation lists can be considered rankings and can be represented
+%as $N$-ary order relations ($\leq$) on the set of all items in the lists (items
+%which do not occur in all lists are added to the end of the corresponding
+%order).
+%
+%{\bf Average distance between methods:}
+%E.g., the cardinality of the symmetric difference of two relations (the
+%		number of tuples contained in exactly one of two relations) 
+%{\small\citep{Hornik:2008}}
+%
+%Total number of tuples in relations: 8649 (for 93 items)
+%
+%	\begin{verbatim}
+%	UB   IB   AR Pop N
+%	UB       0 2555 2634  3317
+%	IB    2555    0 1611  2052
+%	AR    2634 1611    0  2636
+%	Pop N 3317 2052 2636     0
+%	\end{verbatim}
+%
+%\small
+%\begin{verbatim}
+%u_a = {Toy Story (1995), Air Force One (1997), 
+%	Cop Land (1997), Michael (1996), Blade Runner (1982)}
+%
+%	UB IB AR Top N Consensus*
+%	Contact (1997)                 1  4 25     4         4
+%	Liar Liar (1997)               2 18 32    10         8
+%	Conspiracy Theory (1997)       3 NA NA    NA        NA
+%	Star Wars (1977)               4  1  1     1         1
+%	Return of the Jedi (1983)      5  2  4     2         2
+%	English Patient, The (1996)    6 26 41     6        12
+%	Saint, The (1997)              7 NA NA    NA        NA
+%	Fargo (1996)                   8  3 13     3         3
+%	Mr. Holland's Opus (1995)      9 34 30    39        17
+%	Scream (1996)                 10 20 35     7        10
+%	\end{verbatim}
+%
+%	* Consensus method: Condorcet (minimizes the weighted sum 
+%			of symmetric difference distance)
+%
+%
 
-Top-$N$ recommendation lists can be considered rankings
-	and can be 
-represented as $N$-ary order relations ($\leq$) 
-	on the set of all items in the lists (items which do not occur in all lists 
-			are added to the end of the corresponding order).
 
-{\bf Average distance between methods:}
-E.g., the cardinality of the symmetric difference of two relations (the
-		number of tuples contained in exactly one of two relations) 
-{\small\citep{Hornik:2008}}
-
-Total number of tuples in relations: 8649 (for 93 items)
-
-	\begin{verbatim}
-	UB   IB   AR Pop N
-	UB       0 2555 2634  3317
-	IB    2555    0 1611  2052
-	AR    2634 1611    0  2636
-	Pop N 3317 2052 2636     0
-	\end{verbatim}
-
-\small
-\begin{verbatim}
-u_a = {Toy Story (1995), Air Force One (1997), 
-	Cop Land (1997), Michael (1996), Blade Runner (1982)}
-
-	UB IB AR Top N Consensus*
-	Contact (1997)                 1  4 25     4         4
-	Liar Liar (1997)               2 18 32    10         8
-	Conspiracy Theory (1997)       3 NA NA    NA        NA
-	Star Wars (1977)               4  1  1     1         1
-	Return of the Jedi (1983)      5  2  4     2         2
-	English Patient, The (1996)    6 26 41     6        12
-	Saint, The (1997)              7 NA NA    NA        NA
-	Fargo (1996)                   8  3 13     3         3
-	Mr. Holland's Opus (1995)      9 34 30    39        17
-	Scream (1996)                 10 20 35     7        10
-	\end{verbatim}
-
-	* Consensus method: Condorcet (minimizes the weighted sum 
-			of symmetric difference distance)
-
-
-
-
-\subsection{ROCR interface}
+%\subsection{ROCR interface}
 
 \subsection{Implementing a new recommender algorithm}
 
+See Table~\ref{table:newalg}.
+
+\begin{table}
+\caption{Defining abd registering a new recommender algorithm.}
+\label{table:newalg}
+\begin{verbatim}
+## always recommends the top-N popular items (without known items)
+BIN_POPULAR <- function(data, parameter = NULL) {
+
+  model <- list(
+    description = "Order of items by popularity",
+    popOrder = order(colCounts(data), decreasing=TRUE)
+  )
+
+  predict <- function(model, newdata, n=10) {
+    n <- as.integer(n)
+
+    ## remove known items and take highest
+    reclist <- lapply(LIST(newdata, decode= FALSE),
+      function(x) head(model$popOrder[!(model$popOrder %in% x)], n))
+
+    new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
+  }
+
+  ## construct recommender object
+  new("Recommender", method = "POPULAR", dataType = "binaryRatingMatrix",
+    ntrain = nrow(data), model = model, predict = predict)
+}
+
+## register recommender
+recommenderRegistry$set_entry(
+  method="POPULAR", dataType = "binaryRatingMatrix", fun=BIN_POPULAR, 
+  description="Recommender based on item popularity (binary data)."
+)
+\end{verbatim}
+\end{table}
+
+
 \section{Conclusion}
 
-{\bf Challenges with CF and binary data:}
+Challenges with CF and binary data:
 \begin{itemize}
 \item Sparsity of data has an adverse effect on similarity calculation/neighborhood formation.
 \item The meaning of $0$ in the data can be either of ``unknown'' or
@@ -721,7 +1056,7 @@ Measures like the Jaccard index focus on $1$s.
 \end{itemize}
 
 
-{\bf Bias of evaluation method:}
+Bias of evaluation method:
 \begin{itemize}
 \item Complete set of ``liked'' items is unknown. Measured precision
 is only a lower bound to real precision.
@@ -736,7 +1071,7 @@ binary data
 available. More research is needed.
 \end{itemize}
 
-{\bf Future research}
+Future research
 \begin{itemize}
 \item Provide an open source research toolbox for
 recommendations based on binary data with the R code used here. 
@@ -745,11 +1080,6 @@ recommendations based on binary data with the R code used here.
 %    (e.g., vintages differ often significantly and change every year).
 \item Investigate recommender engines based on consensus rankings.
 \end{itemize}
-
-
-
-
-
 
 %
 %\bibliographystyle{abbrvnat}

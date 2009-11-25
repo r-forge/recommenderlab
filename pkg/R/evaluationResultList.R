@@ -9,10 +9,9 @@ setAs("list", "evaluationResultList",
 
 setMethod("show", signature(object = "evaluationResultList"),
 	function(object) {
-		writeLines(sprintf("List of evaluation results for %d recommenders.",
+		writeLines(sprintf("List of evaluation results for %d recommenders:",
 				length(object)))
-		writeLines("Each entry has:")
-		show(object[[1]])
+		lapply(object, show)
 		invisible(NULL)
 	})
 

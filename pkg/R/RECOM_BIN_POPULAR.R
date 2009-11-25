@@ -3,9 +3,9 @@ BIN_POPULAR <- function(data, parameter = NULL) {
 
 	model <- list(
 		description = "Order of items by popularity",
-		## this would be non-binary
-		#popOrder = order(colMeans(data), decreasing=TRUE)
 		popOrder = order(colCounts(data), decreasing=TRUE)
+		## the following would be non-binary
+		#popOrder = order(colMeans(data), decreasing=TRUE)
 	)
 
     predict <- function(model, newdata, n=10) {

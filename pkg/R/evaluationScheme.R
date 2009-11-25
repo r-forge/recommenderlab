@@ -32,7 +32,8 @@ setMethod("evaluationScheme", signature(data = "ratingMatrix"),
 			runsTrain <- lapply(1:k, FUN = function(i) which(fold_ids!=i))
 		}
 
-		else if(method_ind == 3) runsTrain <- replicate(k, sample(1:n, 
+                ## bootstrap
+                else if(method_ind == 3) runsTrain <- replicate(k, sample(1:n, 
 				n*train, replace = TRUE), simplify = FALSE)
 
 

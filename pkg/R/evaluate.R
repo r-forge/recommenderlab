@@ -1,20 +1,20 @@
 setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 	function(x, method, n=1:10, parameter=NULL, 
-		progress = TRUE, keep_model=FALSE) {
+		progress = TRUE, keepModel=FALSE) {
 		## fixme: do individual runs missing
 
 		scheme <- x
 		runs <- 1:scheme@k
 
-		if(progress) cat(method, "run")
+		if(progress) cat(method, "run ")
 		
 		cm <- list()
 		for(r in runs) {
-			if(progress) cat(r)
+			if(progress) cat(r, " ")
 
 			cm[[r]] <- .do_run_by_n(scheme, method, 
 				run=r, n=n, parameter=parameter, 
-				progress=progress, keep_model=keep_model)
+				progress=progress, keepModel=keepModel)
 		}
 			
 		if(progress) cat("\n")
@@ -25,7 +25,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 
 setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 	function(x, method, n=1:10, parameter=NULL, 
-		progress = TRUE, keep_model=FALSE) {
+		progress = TRUE, keepModel=FALSE) {
 	
 		## method is a list of lists
 		#list(RANDOM = list(name = "RANDOM", parameter = NULL), 
@@ -40,7 +40,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 
 
 .do_run_by_n <- function(scheme, method, run, n, parameter = NULL,
-	progress=FALSE, keep_model=TRUE) {
+	progress=FALSE, keepModel=TRUE) {
 
 	## prepare data
 	train <- getData(scheme, type="train", run=run)
@@ -82,6 +82,6 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 	}
 
 	new("confusionMatrix", cm = cm, model = 
-		if(keep_model) getModel(r) else NULL)
+		if(keepModel) getModel(r) else NULL)
 }
 

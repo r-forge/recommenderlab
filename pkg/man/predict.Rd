@@ -21,7 +21,7 @@ Creates recommendations using a recommender model and data about new users.
 %\details{
 %}
 \value{
-Returns an object of class \code{"topNlist"}.
+Returns an object of class \code{"topNList"}.
 }
 \seealso{
 \code{\linkS4class{Recommender}},
