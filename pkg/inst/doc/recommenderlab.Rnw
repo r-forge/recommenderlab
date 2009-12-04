@@ -908,7 +908,10 @@ plot(results, "prec/rec")
 Several recommender algorithms can be compared easily, too.
 The only change is to use \func{evaluate} with
 a list of algorithms together with their parameters instead of 
-a single method name to evaluate.
+a single method name to evaluate. In the following we use the
+evaluation scheme created above to comapre the five 
+recommender algorithm random items, popular items, 
+user-based CF, item-based CF, and association rule based recommendations.
 
 <<echo=FALSE>>=
 load("xresults.rda")
@@ -917,20 +920,32 @@ load("xresults.rda")
 <<eval=FALSE>>=
 ## this needs to be saved to disk! see run_recommender.R
 algorithms <- list(
-        RANDOM = list(name="RANDOM", param=NULL),
-        POPULAR = list(name="POPULAR", param=NULL),
-        UBCF = list(name="UBCF", param=list(method="cosine", nn=50)),
-        IBCF = list(name="IBCF", param=list(k=30)),
-        AR = list(name="AR", param=list(supp=0.05, conf=0.5, maxlen=2))
+        "random items" = list(name="RANDOM", param=NULL),
+        "popular items" = list(name="POPULAR", param=NULL),
+        "user-based CF" = list(name="UBCF", param=list(method="cosine", nn=50)),
+        "item-based CF" = list(name="IBCF", param=list(k=30)),
+        "association rules" = list(name="AR", param=list(supp=0.05, conf=0.5, maxlen=2))
         )
 
 ## run algorithms
 results <- evaluate(scheme, algorithms, n=c(1,5,10,20))
 ## save(results, file="xresults.rda")
 @
+
+The result is an object of class~\class{evaluationResultList} for the
+five recommender algorithms.
 <<>>=
 results
 @
+
+Individual results can be accessed using list subsetting using an index or 
+the name specified when calling \func{evaluate}.
+
+<<>>=
+names(results)
+results[["association rules"]]
+@
+
 
 Again \func{plot} can be used to create ROC and precision-recall plots
 (see Figured~\ref{fig:roc2} and \ref{fig:precrec2})
@@ -939,7 +954,7 @@ Again \func{plot} can be used to create ROC and precision-recall plots
 plot(results)
 @
 \begin{figure}
-\centerline{\includegraphics[scale=1]{recommenderlab-precrec2}}
+\centerline{\includegraphics[scale=1]{recommenderlab-roc2}}
 \caption{Comparision of ROC curves for several recommender methods.}
 \label{fig:roc2}
 \end{figure}
@@ -1006,10 +1021,34 @@ for several recommender methods.}
 
 \subsection{Implementing a new recommender algorithm}
 
-See Table~\ref{table:newalg}.
+Adding a new recommender algorithm to recommender lab is straight forward since
+recommenderlab uses a registry mechanism to manage the algorithms.
+The implementation of the actual recommender algorithm
+we need to implement a creator function which taked a training data set,
+trains a model and provies a predict function which uses the
+model to create recommendations for new data.
+The model and the predict function are both encapsulated in an
+object of class~\class{Recommender}. 
+
+For example the creator function
+in Table~\ref{table:newalg} is called \func{BIN\_POPULAR}. It uses 
+the (training) data to create a model which is a simple list. In this 
+case the model is just a list of all items sorted in decreasing order of
+popularity.
+The second part is the predict function which takes the model, new data and
+the number of items of the desired top-$N$ list as its arguments.
+Predict used the model to compute recommendations for 
+each user in the new data and
+encodes them as an object of class~\class{topNList}.
+Finally, the trained model and the predict function are returned as 
+an object of class~\class{Recommender}.
+Now all that needs to be done is to regiser the creator function. In this case
+it is called POPULAR and applies to binary rating data.
+
+
 
 \begin{table}
-\caption{Defining abd registering a new recommender algorithm.}
+\caption{Defining and registering a new recommender algorithm.}
 \label{table:newalg}
 \begin{verbatim}
 ## always recommends the top-N popular items (without known items)
@@ -1046,40 +1085,32 @@ recommenderRegistry$set_entry(
 
 \section{Conclusion}
 
-Challenges with CF and binary data:
-\begin{itemize}
-\item Sparsity of data has an adverse effect on similarity calculation/neighborhood formation.
-\item The meaning of $0$ in the data can be either of ``unknown'' or
-``dislike''.
-Measures like the Jaccard index focus on $1$s.
-\item Quality of recommendations is extremely data set dependent.
-\end{itemize}
-
-
-Bias of evaluation method:
-\begin{itemize}
-\item Complete set of ``liked'' items is unknown. Measured precision
-is only a lower bound to real precision.
-\end{itemize}
-
-\begin{itemize}
-\item Many companies face heterogeneous data sources which can best be
-aggregated into binary data. 
-\item There is only limited research on CF recommender systems using 
-binary data 
+There is only limited research on collaborative filtering based
+recommender systems using binary or 0-1 data
 (except {\small\citep{Breese:1998,Mild:2001,Mild:2003, Demiriz:2004}})
-available. More research is needed.
-\end{itemize}
+available.
+Applying collaborative filtering methods to binary and 
+especially to 0-1 data is difficult because  
+the sparsity of data has an adverse effect on similarity 
+calculation/neighborhood formation.
+Also the meaning of $0$ in the data can be either of ``unknown'' or
+``dislike'' and thus it is not clear how to best handle it.
+Measures like the Jaccard index can be used to mitigate this 
+problem since they focus mainly on $1$s.
+Overall, the quality of recommendations is extremely data set dependent.
 
-Future research
-\begin{itemize}
-\item Provide an open source research toolbox for
-recommendations based on binary data with the R code used here. 
-\item Model ``dislike'' in binary data {\small\citep{Mobasher:2001}}.
+Also evaluation is biased since the complete set of ``liked'' items 
+is unknown. Measured precision is only a lower bound to real precision.
+
+%\begin{itemize}
+%\item Many companies face heterogeneous data sources which can best be
+%aggregated into binary data. 
+%\end{itemize}
+
+%\item Model ``dislike'' in binary data {\small\citep{Mobasher:2001}}.
 %\item Account for fast changing products 
 %    (e.g., vintages differ often significantly and change every year).
-\item Investigate recommender engines based on consensus rankings.
-\end{itemize}
+%\item Investigate recommender engines based on consensus rankings.
 
 %
 %\bibliographystyle{abbrvnat}
