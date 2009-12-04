@@ -51,7 +51,7 @@ for 0-1 Data using \pkg{recommenderlab}}
 
 
 <<echo=FALSE>>=
-options(scipen=3, digits=4, prompt="R> ")
+options(scipen=3, digits=4, prompt="R> ", eps=FALSE)
 ### for sampling
 set.seed(1234)
 @
