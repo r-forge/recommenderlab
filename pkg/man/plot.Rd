@@ -10,10 +10,10 @@ Creats precision-recall or ROC plots for recommender evaluation results.
 }
 \usage{
 \S4method{plot}{evaluationResults}(x, y,
-        avg = TRUE, add=FALSE, type= "l", annodate = FALSE, ...)
+        avg = TRUE, add=FALSE, type= "b", annotate = FALSE, ...)
 \S4method{plot}{evaluationResultList}(x, y,
         xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1,
-		    avg = TRUE, annodate= 0, legend="bottomright", ...)
+        avg = TRUE, type = "b", annotate= 0, legend="bottomright", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,7 +22,7 @@ Creats precision-recall or ROC plots for recommender evaluation results.
   \item{avg}{ plot average of runs?}
   \item{add}{ add to a plot?}
   \item{type}{ line type (see \code{plot}).}
-  \item{annodate}{ annodate N (recommendation list size) to plot. }
+  \item{annotate}{ annotate N (recommendation list size) to plot. }
   \item{xlim,ylim}{plot limits (see \code{plot}).}
   \item{col}{ colors (see \code{plot}).}
   \item{pch}{ point symbol to use (see \code{plot}).}

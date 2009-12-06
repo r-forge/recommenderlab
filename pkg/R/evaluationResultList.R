@@ -20,7 +20,7 @@ setMethod("show", signature(object = "evaluationResultList"),
 setMethod("plot", signature(x = "evaluationResultList"),
 	function(x, y=NULL, plot_type=c("ROC", "prec/rec"),
     xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1, 
-    annodate= 0, legend="bottomright", ...) {
+    annotate= 0, legend="bottomright", ...) {
 
     ## find best xlim, ylim
     plot_type <- match.arg(plot_type)
@@ -44,7 +44,7 @@ setMethod("plot", signature(x = "evaluationResultList"),
     legend(x=legend, legend=names(x), col=col, 
         pch = pch, lty=lty, bty="n")
     for(i in 1:length(x)) plot(x[[i]], plot_type=plot_type, 
-        add=TRUE, col=col[i], type="o", annodate = i %in% annodate, 
+        add=TRUE, col=col[i], type="o", annotate = i %in% annotate, 
         pch = pch[i], lty=lty[i])
 })
 
@@ -56,8 +56,11 @@ setMethod("avg", signature(x = "evaluationResultList"),
 
 setMethod("[", signature(x = "evaluationResultList", i = "ANY", j = "missing",
 			drop = "missing"),
-	function(x, i, j, ..., drop) as(as(x, "list")[i], "evaluationResultList"))
-	## fixme: handle names
+	function(x, i, j, ..., drop) {
+            l <- as(as(x, "list")[i], "evaluationResultList")
+            names(l) <- names(x)[i]
+            l
+        })
 
 ## work out of the box: names, [[
 

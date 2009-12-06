@@ -57,7 +57,7 @@ ev
 
 ## look at the results
 avg(ev)
-plot(ev, type="o", annodate = TRUE)
+plot(ev, type="o", annotate = TRUE)
 
 ## now run evaluate with a list
 algorithms <- list(
