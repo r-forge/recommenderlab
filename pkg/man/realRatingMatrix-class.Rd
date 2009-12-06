@@ -9,6 +9,8 @@
 \alias{coerce,realRatingMatrix,dgCMatrix-method}
 \alias{coerce,data.frame,realRatingMatrix-method}
 %\alias{LIST,realRatingMatrix-method}
+\alias{binarize,realRatingMatrix-method}
+\alias{binarize}
 
 \title{Class "realRatingMatrix": Real-valued Rating Matrix}
 \description{A matrix containing ratings (typically 1-5 stars, etc.). 
@@ -34,7 +36,9 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "ngCMatrix")}}
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "dgCMatrix")}}
     \item{coerce}{\code{signature(from = "data.frame", to = "realRatingMatrix")}}
-%    \item{LIST}{\code{signature(from = "realRatingMatrix")}: ... }
+    \item{binarize}{\code{signature(x = "realRatingMatrix")}: create a 
+        \code{"binaryRatingMatrix"} by setting all ratings larger or equal to 
+        the argument \code{threshold} (default: 3) as 1 and all others to 0.}
 	 }
 }
 \seealso{

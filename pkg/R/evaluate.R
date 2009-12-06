@@ -9,13 +9,17 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 		if(progress) cat(method, "run ")
 		
 		cm <- list()
-		for(r in runs) {
-			if(progress) cat(r, " ")
+                for(r in runs) {
+                    if(progress) cat(r)
 
-			cm[[r]] <- .do_run_by_n(scheme, method, 
-				run=r, n=n, parameter=parameter, 
-				progress=progress, keepModel=keepModel)
-		}
+                    time <- system.time(
+                            cm[[r]] <- .do_run_by_n(scheme, method, 
+                                    run=r, n=n, parameter=parameter, 
+                                    progress=progress, keepModel=keepModel)
+                            )
+
+                    if(progress) cat(" [", time[1]+time[2], " s] ", sep="")
+                }
 			
 		if(progress) cat("\n")
 
@@ -30,7 +34,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		## method is a list of lists
 		#list(RANDOM = list(name = "RANDOM", parameter = NULL), 
 		#	POPULAR = list(...
-		
+	
 		results <- lapply(method, FUN = function(a) evaluate(x, a$n,
 				n = n , parameter = a$p))	
 	

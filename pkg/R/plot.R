@@ -1,6 +1,6 @@
 setMethod("plot", signature(x = "evaluationResults"),
 	function(x, y,
-		avg = TRUE, add=FALSE, type= "l", annodate = FALSE, ...) {
+		avg = TRUE, add=FALSE, type= "b", annotate = FALSE, ...) {
 		
 		if(missing(y)) y <- NULL
 		plot_type <- match.arg(y, c("ROC", "prec/rec"))
@@ -15,8 +15,9 @@ setMethod("plot", signature(x = "evaluationResults"),
 			if(add) lines(x, type=type,...) 
 			else plot(x, type=type, ...)
 
-			## add annodations
-			if(annodate) text(x[,1], x[,2], pos=3, rownames(x))
+			## add annodations (xpd: don't clip)
+			if(annotate) text(x[,1], x[,2], pos=3, 
+                            rownames(x), xpd=TRUE)
 		}else{
 			cm <- getConfusionMatrix(x)
 			
@@ -26,7 +27,8 @@ setMethod("plot", signature(x = "evaluationResults"),
 			else plot(x, type=type, ...)
 			
 			## add annodations
-			if(annodate) text(x[,1], x[,2], pos=3, rownames(x))
+			if(annotate) text(x[,1], x[,2], pos=3, 
+                            rownames(x), xpd=TRUE)
 
 			## plot rest
 			x <- cm[-1, drop = FALSE]
@@ -41,11 +43,13 @@ setMethod("plot", signature(x = "evaluationResults"),
 
 
 setMethod("plot", signature(x = "evaluationResultList"),
-	function(x, y,
-    xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1, 
-    avg = TRUE, annodate= 0, legend="bottomright", ...) {
+        function(x, y,
+                xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1, 
+                avg = TRUE, type="b",
+                annotate= 0, legend="bottomright", ...) {
 
-	if(missing(y)) y <- NULL
+    if(type=="l") pch <- NULL
+    if(missing(y)) y <- NULL
     plot_type <- match.arg(y, c("ROC", "prec/rec"))
     take <- if(plot_type == "ROC") c("FPR", "TPR") else c("recall", "precision")
 
@@ -68,7 +72,7 @@ setMethod("plot", signature(x = "evaluationResultList"),
     legend(x=legend, legend=names(x), col=col, 
         pch = pch, lty=lty, bty="n")
     for(i in 1:length(x)) plot(x[[i]], y=plot_type, 
-        add=TRUE, col=col[i], type="o", annodate = i %in% annodate, 
+        add=TRUE, col=col[i], type=type, annotate = i %in% annotate, 
         pch = pch[i], lty=lty[i], avg = avg, ...)
 })
 

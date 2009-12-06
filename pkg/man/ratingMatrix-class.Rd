@@ -13,6 +13,7 @@
 \alias{image,ratingMatrix-method}
 \alias{nitems,ratingMatrix-method}
 \alias{nratings,ratingMatrix-method}
+\alias{nratings}
 \alias{nusers,ratingMatrix-method}
 %\alias{Recommender,ratingMatrix-method}
 \alias{rowCounts,ratingMatrix-method}

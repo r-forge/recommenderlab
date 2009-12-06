@@ -44,15 +44,15 @@ BIN_AR <- function(data, parameter = NULL) {
         m <- is.subset(lhs(rule_base), newdata@data)
         for(i in 1:nrow(newdata)) {
             reclist[[i]] <- numeric(0)
-			recom <- head(unique(unlist(
-						LIST(rhs(sort(rule_base[m[,i]], by=measure)), 
-							decode=FALSE))),n)
+            recom <- head(unique(unlist(
+                        LIST(rhs(sort(rule_base[m[,i]], by=measure)), 
+                            decode=FALSE))),n)
 
             if(!is.null(recom)) reclist[[i]] <- recom
         }
 
-		new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
-	}
+        new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
+    }
 
 	## construct recommender object
 	new("Recommender", method = "AR", dataType = "binaryRatingMatrix",

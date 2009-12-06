@@ -34,7 +34,7 @@ setMethod("avg", signature(x = "evaluationResults"),
 
 setMethod("plot", signature(x = "evaluationResults"),
 	function(x, y=NULL, plot_type=c("ROC", "prec/rec"),
-		avg = TRUE, add=FALSE, type= "l", annodate = FALSE, ...) {
+		avg = TRUE, add=FALSE, type= "l", annotate = FALSE, ...) {
 
 		plot_type <- match.arg(plot_type)
 		## if not ROC then prec/recall
@@ -49,7 +49,7 @@ setMethod("plot", signature(x = "evaluationResults"),
 			else plot(x, type=type, ...)
 
 			## add annodations
-			if(annodate) text(x[,1], x[,2], pos=3, rownames(x))
+			if(annotate) text(x[,1], x[,2], pos=3, rownames(x))
 		}else{
 			cm <- getConfusionMatrix(x)
 			
@@ -59,7 +59,7 @@ setMethod("plot", signature(x = "evaluationResults"),
 			else plot(x, type=type, ...)
 			
 			## add annodations
-			if(annodate) text(x[,1], x[,2], pos=3, rownames(x))
+			if(annotate) text(x[,1], x[,2], pos=3, rownames(x))
 
 			## plot rest
 			x <- cm[-1, drop = FALSE]
