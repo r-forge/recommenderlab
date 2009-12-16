@@ -3,6 +3,7 @@
 \docType{class}
 \alias{binaryRatingMatrix-class}
 \alias{coerce,matrix,binaryRatingMatrix-method}
+\alias{coerce,itemMatrix,binaryRatingMatrix-method}
 \alias{coerce,binaryRatingMatrix,matrix-method}
 \alias{coerce,binaryRatingMatrix,dgTMatrix-method}
 \alias{coerce,binaryRatingMatrix,ngCMatrix-method}
@@ -32,6 +33,7 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 \section{Methods}{
   \describe{
     \item{coerce}{\code{signature(from = "matrix", to = "binaryRatingMatrix")}}
+    \item{coerce}{\code{signature(from = "itemMatrix", to = "binaryRatingMatrix")}; coerces itemMatrix or transactions from \pkg{arules} to binaryRatingMatrix.}
     \item{coerce}{\code{signature(from = "binaryRatingMatrix", to = "matrix")}}
     \item{coerce}{\code{signature(from = "binaryRatingMatrix", to = "dgTMatrix")}}
     \item{coerce}{\code{signature(from = "binaryRatingMatrix", to = "ngCMatrix")}}

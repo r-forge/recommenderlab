@@ -44,16 +44,26 @@ for 0-1 Data using \pkg{recommenderlab}}
 \sloppy
 
 
-\abstract{
-   \pkg{recommenderlab} provides the infrastructure to test and develop
-       recommender algorithms. Currently the focus is on recommender
-       systems for 0-1 data, however in the future it can be extended to 
-       also the more thourougly researched case of real-valued rating data.
-    }
+\abstract{The problem of creating recommendations given a large data base from
+directly elicited ratings  (e.g., ratings of 1 through 5 stars) is a popular
+research area which was lately boosted by the Netflix Prize
+competition.  While computing recommendations using these type of data has
+direct application for example for large on-line retailers, there are many
+potential applications for recommender systems where such data is not
+available. However, in many cases 
+there might be 0-1 rating data available or can be derived
+from other data sources (e.g., purchase records, Web click data) which can be
+utilized. Although this type of data differs significantly from directly
+elicited ratings, only very limited research is available for
+0-1 data.  This paper describes \pkg{recommenderlab} which provides the
+infrastructure to test and develop recommender algorithms.  Currently the focus
+is on recommender systems for 0-1 data, however in the future it can be
+extended to also the more thoroughly researched case of directly elicited,
+real-valued rating data.  }
 
 
 <<echo=FALSE>>=
-options(scipen=3, digits=4, prompt="R> ", eps=FALSE, width=60)
+options(scipen=3, digits=4, prompt="R> ", eps=FALSE, width=75)
 ### for sampling
 set.seed(1234)
 @
@@ -66,14 +76,15 @@ years ago.  Today recommender systems are an accepted technology used by market
 leaders in several industries (e.g., by amazon.com, iTunes and Netflix).  
 Recommender
 systems apply statistical and knowledge discovery techniques to the problem of
-making product recommendations \citep{recommender:Sarwar:2000}.  Such
+making product recommendations based on previously recorded 
+data~\citep{recommender:Sarwar:2000}.  Such
 recommendations can help to improve the conversion rate by helping
 the customer to find
 products she/he wants to buy faster, promote cross-selling by suggesting
 additional products and can improve customer loyalty through creating a
 value-added relationship~\citep{recommender:Schafer:2001}.  The importance and
-the economic impact of research in this field is reflected by the Netflix prize
-(\url{http://www.netflixprize.com/}), a challenge to improve 
+the economic impact of research in this field is reflected by the Netflix 
+Prize~\footnote{\url{http://www.netflixprize.com/}}, a challenge to improve 
 the predictions of Netflix's movie recommender system by more than 
 10\% in terms
 of the root mean square error. The grand price of 1 million dollar was just
@@ -88,18 +99,25 @@ or create
 for a user a so called top-$N$ lists of recommended 
 items~\citep[see, e.g.,][]{Deshpande:2004}.
 For these type of recommender systems, several projects were initiated to
-implement recommender algorithms (e.g., Apache Mahout/Taste, Cofi, CoFE,
-RACOFI, SUGGEST, Vogoo PHP).
+implement recommender algorithms (e.g., 
+Apache Mahout/Taste~\footnote{\url{http://lucene.apache.org/mahout/}}, 
+Cofi~\footnote{http://www.nongnu.org/cofi/}, 
+%CoFE~\footnote{},
+RACOFI~\footnote{http://racofi.elg.ca/}, 
+SUGGEST~\footnote{http://glaros.dtc.umn.edu/gkhome/suggest/overview/}, 
+Vogoo PHP~\footnote{http://www.vogoo-api.com/}).
 
 Nearly no research~\citep[with some notable exceptions by][]{recommender:Weiss:2001,recommender:Mild:2003,recommender:Lee:2005,recommender:Pan:2008}
 was done for situations where no large amount of detailed
+directly elicited
 rating data is available. However, this is a common situation and occurs when
 users do not want to directly reveal their preferences by rating an item 
 (e.g., because it is to time consuming). In
-this case preferences can only be inferred by analyzing usage behavior
+this case preferences can only be inferred by analyzing usage behavior.
 For
 example, we can easily record in a supermarket setting what items a customer
 purchases. However, we do not know why other products were not purchased.
+The reason might be one of the following.
 \begin{itemize}
 \item The customer does not need the product right now.
 \item The customer does not know about the product. Such a product
@@ -135,20 +153,28 @@ create top-$N$ recommendation list for 0-1 data.
 %Evaluation
 
 
-This paper is structured as follows. Section...
-
+This paper is structured as follows. Section~\ref{sec:CF} introduces
+collaborative filtering and applies popular methods to the top-$N$
+recommendation problem on 0-1 data.
+In section~\ref{sec:evaluation} we discuss the evaluation of recommender 
+algorithms.
+We introduce the infrastructure provided by \pkg{recommenderlab}
+in section~\ref{sec:infrastruction}. In section~\ref{sec:examples} we 
+illustrate the capabilities on the package to create and evaluate
+recommender algorithms. We conclude with section~\ref{sec:conclusion}.
 
 \section{Collaborative Filtering for 0-1 Data}
+\label{sec:CF}
 
 Collaborative filtering (CF) uses given rating data by many users for many
-items as the basis of predicting missing ratings and/or for creating top-$N$
-recommendations for a given user, called the active user.  
+items as the basis for predicting missing ratings and/or for creating 
+a top-$N$ recommendation list for a given user, called the active user.  
 Formally, we have a set of 
 users $\set{U} = \{u_1, u_2, \ldots, u_m\}$ and a set of 
 items $\set{I} = \{i_1, i_2, \ldots, i_n\}$.
 Ratings are stored in a $m \times n$ rating matrix $\mat{R} = (r_{jk})$ where
-the rows represent the user $u_j$ for $1 \ge j\ge m$ and columns represent
-items $i_k$ for $1 \ge k\ge n$. $r_{jk}$ represents the rating of user
+each row represent a user $u_j$ with $1 \ge j\ge m$ and columns represent
+items $i_k$ with $1 \ge k\ge n$. $r_{jk}$ represents the rating of user
 $u_j$ for item $i_k$.
 Typically only a small fraction of ratings are
 known and for many cells in $\mat{R}$ the values are missing. Most published
@@ -170,17 +196,20 @@ called the active user $u_a \in \set{U}$.
 We define the set of items unknown to user $u_a$ as 
 $\set{I}_a = \set{I} \setminus \{i_l \in \set{I}| r_{al} = 1\}$.
 The two typical tasks are to predict
-ratings for the items in $\set{I}_a$ or to create a list of 
+ratings for all items in $\set{I}_a$ or to create a list of 
 the best $N$ recommendations
 (i.e., a top-$N$ recommendation list) for 
 $u_a$~\citep{recommender:Sarwar:2001}. 
 Creating a top-$N$ lists can
 be seen as a second step after predicting ratings for all 
 unknown items in $\set{I}_a$
-and then taking the $N$ items with the highest predicted ratings. However,
-given that there are typically many items with unknown ratings 
-some approaches (e.g., rule based approaches) can
-predict directly the top-$N$ list without considering all unknown items first.
+and then taking the $N$ items with the highest predicted ratings.
+Typically we deal with a very large number of items 
+with unknown ratings
+which makes first predicting rating values for all of them computationally 
+expensive.
+Some approaches (e.g., rule based approaches) can
+predict the top-$N$ list directly without considering all unknown items first.
 
 Formally, predicting all missing ratings is calculating a complete row of the
 rating matrix $\hat{r}_{a\cdot}$ where the missing values 
@@ -188,8 +217,8 @@ for items in $\set{I}_a$ (zeros in the 0-1 case)
 are replaced by ratings estimated from other data in $\mat{R}$.  
 The estimated ratings can either be in $\{0,1\}$ or 
 in $[0,1]$, where estimates closer to 1 indicate a stronger recommendation.
-The latter type of estimation is needed to be able to create a top-$N$
-list.
+The latter type of estimation allows for ordering and thus 
+is needed to be able to create a top-$N$ list.
 A list
 of top-$N$ recommendations for a user $u_a$ is an partially ordered set 
 $T_N = (\set{X}, \ge)$, where 
@@ -227,7 +256,7 @@ collaborative filtering algorithms and apply them to 0-1 data.
 
 User-based CF~\citep{Goldberg:1992,Resnick:1994,recommender:Shardanand:1995} is
 a memory-based algorithm which tries to mimics word-of-mouth based on analysis
-of rating data. The idea is that 
+of rating data. The assumption is that 
 users with similar preferences will rate products similarly. Thus
 missing ratings for a user can be predicted by first 
 finding a \emph{neighborhood} of similar users and then aggregate the 
@@ -273,15 +302,30 @@ where
 $\set{X}$ and $\set{Y}$ are the sets of the items with a 1 in user profiles
 $u_a$ and $u_b$, respectively.
 
-
+Now the neighborhood $\set{N} \subset \set{U}$ can be selected 
+by either a threshold on the similarity or by taking the
+$k$ nearest neighbors.
+Once the users in the neighborhood are found, their ratings are  
+aggregated to form the predicted rating for the active user.
+For real valued ratings, \cite{recommender:Breese:1998} suggest
+to aggregate the ratings for item $i_j$ as
+$$\hat{r}_{aj}=\bar{r}_a + \kappa \sum_{i\in\set{N}}{w_{ai} 
+(r_{ij}-\bar{r}_i)}$$
+where $\bar{r}_x$ is the mean of the ratings of user $u_x$, 
+$w_{ai}$ is the weigth for user $u_i$ and
+$\kappa$ is
+a normalizing factor to make the weights sum to 1.
+The weights can reflect the similarity between the user and the active user.
+For 0-1 data we suggest to calculate the following score.
+$$s_{aj} = \sum_{i\in\set{N}}{w_{ai}\, r_{ij}}$$
+This score is not normalized but can be easily used to find the
+top-$N$ items with the highest score.
 
 \begin{figure}
 \centerline{\includegraphics[scale=1]{user-based}}
 \caption{User-based collaborative filtering.}
 \label{fig:UBCF}
 \end{figure}
-
-\marginpar{aggregation}
 
 An example of the process of creating recommendations for 0-1 data by
 user-based CF is shown in Figure~\ref{fig:UBCF}. To the left is the rating
@@ -293,16 +337,11 @@ $k$ users with the highest similarity.  To the right in Figure~\ref{fig:UBCF}
 we see a $2$-dimensional representation of the similarities (users with higher
 similarity are closer) with the active user in the center. The $k=3$ nearest
 neighbors are selected and marked in the database to the left. To generate an
-aggregated score, the ones in the selected users are summed. Then items known
+aggregated score, we use for the example a weight of 1 for all users.
+Thus the ones in the selected users are just summed up. Then items known
 to the active user are removed and the $N$ items with the highest score
 (greater than zero) form the top-$N$ recommendations. In the example in 
 Figure~\ref{fig:UBCF} only two items are recommended.
-
-\marginpar{
-default voting, case amplification (Breese, 1998)
-use a weighing scheme.
-aggregation seems to be more important.
-}
 
 The two main problems of user-based CF are that the whole
 user database has to be kept in memory and that 
@@ -314,14 +353,14 @@ all other users in the database has to be performed.
 Item-based CF~\citep{Kitts:2000,Sarwar:2001,recommender:Linden:2003,recommender:Deshpande:2004}
 is a model-based approach which produces recommendations
 based on the relationship between items inferred from the rating
-matrix. The idea behind this approach is that users will prefer items that
+matrix. The assumption behind this approach is that users will prefer items that
 are similar to the items they like.
 
 The model-building step consists of calculating a similarity matrix
 containing all item-to-item similarities using a given similarity measure.
 Popular are again Pearson correlation and Cosine similarity. For 0-1
 data again the Jaccard index can be used giving focus to matching ones.
-For item-based CF \cite{Deshpande:2004} proposed
+For item-based CF, \cite{Deshpande:2004} proposed
 a \emph{Conditional probability-based 
 similarity} defined as:
 	$$\mathrm{sim_{Conditional}}(x,y) = 
@@ -329,7 +368,7 @@ similarity} defined as:
 		    {\mathrm{Freq}(x)} = \hat{P}(y|x),$$
 where $x, y \in \set{I}$ are two items and
 $\mathrm{Freq(\cdot)}$ is the number of users with the given items in their
-profile. This similarity is in fact a estimate of the conditional
+profile. This similarity is in fact an estimate of the conditional
 probability to see item $y$ in a profile given that the profile contains
 items $x$. This similarity is equivalent to the confidence measure used
 for association rules (see section~\ref{sec:AR} below). A drawback
@@ -344,19 +383,20 @@ where $\mathbf{B} = (b_{i,j})$
 is a normalized rating matrix where all rows sum up to $1$.
 $\mathrm{Freq}(y)^\alpha$ reduces the problem with rare $x$.
 
-%% Fixme: why is this done
 All pairwise similarities are stored in a $N \times N$ 
 similarity matrix $\mat{S}$,
 which is again normalized such that rows sum up to $1$.
 To reduce the model size
 to $N \times k$ with $k \ll N$, 
 for each item only a list of the $k$ most similar
-items and their similarity values are stored~\citep{Sarwar:2001} improving
-space and time complexity by sacrificing recommendation quality.
+items and their similarity values are stored~\citep{Sarwar:2001}.
+This can improve the
+space and time complexity significantly by sacrificing 
+some recommendation quality.
 
 Figure~\ref{fig:IBCF} shows an example for $N=8$ items. For the 
 normalized similarity matrix $\mat{S}$ only $k=3$ entries are
-stored per row (The crossed out entries are discarded).
+stored per row (the crossed out entries are discarded).
 
 \begin{figure}
 \centerline{\includegraphics[scale=1]{item-based2}}
@@ -366,7 +406,8 @@ stored per row (The crossed out entries are discarded).
 
 To make a recommendation based on the model only two steps are necessary: 
 \begin{enumerate}
-\item For each item add the similarities with the active user's items.
+\item Calculate a score for each item by adding the similarities 
+with the active user's items.
 \item Remove the items of the active user and recommend the $N$ items 
 with the highest score.
 \end{enumerate}
@@ -401,7 +442,8 @@ where each user is treated as a transaction that contains
 the subset of items in $\set{I}$ with a rating of 1.
 Hence transaction $k$ is defined as 
 $\set{T}_k = \{i_j \in \set{I} | r_{jk} = 1\}$ and
-the whole transaction data base is $\set{D} = \{\set{T}_1, \set{T}_2, \ldots, \set{T}_U$ where $U$ is the number of users.
+the whole transaction data base is 
+$\set{D} = \{\set{T}_1, \set{T}_2, \ldots, \set{T}_U\}$ where $U$ is the number of users.
 To build the dependency model, 
 a set of association rules $\set{R}$ is mined from
 $\mat{R}$. Association rules are rules of the form
@@ -435,22 +477,22 @@ available~\citep[e.g.,][]{arules:Agrawal:1994,arules:Zaki:2000,arules:Han:2004}.
 
 
 To make a recommendation for an active user $u_a$ given the
-set of items $\set{T}_a$ the user likes  and the
-set
-of association rules $\set{R}$,
+set of items $\set{T}_a$ the user likes and the
+set of association rules $\set{R}$ (dependency model),
 the following steps are necessary:
 \begin{enumerate}
 \item Find all matching rules $\set{X} \rightarrow \set{Y}$ for 
 which $\set{X} \subseteq \set{T}_a$ 
 in $\set{R}$.
-\item Recommend $N$ unique right-hand-sides ($Y$) of the marching rules 
-with the highest confidence (or other measure of interestingness).
+\item Recommend $N$ unique right-hand-sides ($\set{Y}$) of the matching rules 
+with the highest confidence (or another measure of interestingness).
 \end{enumerate}
 
 The dependency model is very similar to
 item-based CF with conditional probability-based 
-similarity~\citep{Deshpande:2004}, and with longer rules 
-it allows for higher order effects between more than two items. 
+similarity~\citep{Deshpande:2004}. It can be fully precomputed
+and rules with more than one items in the left-hand-side ($\set{X}$), 
+it incorporates higher order effects between more than two items. 
 %Mbasher et al [Mobasher et al. 2000] presented an algorithm for recommending
 %additional webpages to be visited by a user based on association rules. In this
 %approach, the historical information about users and their web-access patterns
@@ -468,13 +510,15 @@ it allows for higher order effects between more than two items.
 %antecedent of the association rule and the items in the user¿s basket. He
 %compared this approach both with the item-based scheme described in Section
 %4 (based on our preliminary work presented in [Karypis 2001]) and the
-%dependency network-based algorithm [Hecker- man et al. 2000].
+%dependency network-based algorithm [Heckman et al. 2000].
+
 
 \section{Evaluation of Top-$N$ Recommender Algorithms for 0-1 Data}
+\label{sec:eval}
 
 Evaluation of recommender systems is an important topic but
 most evaluation efforts center on recommender systems for
-real rating data. A comprehensive review was presented 
+non-binary rating data. A comprehensive review was presented 
 by \cite{recommender:Herlocker:2004}.
 However, here we will discuss the evaluation of top-$N$ recommender
 algorithms for 0-1 data.
@@ -484,9 +528,10 @@ given a rating matrix $\mat{R}$,
 recommender algorithms are evaluated by first
 partitioning the users (rows) in $\mat{R}$ into two 
 sets $\set{U}_\mathit{train}\, \cup\, \set{U}_\mathit{test} = \set{U}$.
-The rows of $\mat{R}$ corresponding to the training users $u_{train}$ 
+The rows of $\mat{R}$ corresponding to the training users $U_\mathit{train}$ 
 are used to learn the recommender model.
-Then each user $u_a \in \set{U}_\mathit{test}$ is seen as an active user, however,
+Then each user $u_a \in \set{U}_\mathit{test}$ is seen as an active user,
+however,
 before creating recommendations some items are withheld from the
 profile $r_{u_a\cdot}$ and it measured how well these removed items are
 predicted by the recommender algorithm in its top-$N$ list.
@@ -501,18 +546,19 @@ $\set{U}_\mathit{train}$ and $\set{U}_\mathit{test}$ we can use
 several approaches~\citep{recommender:Kohavi:1995}. 
 \begin{itemize}
 \item {\bf Splitting:} 
-We can randomly assign a predefined proportion of the users user 
+We can randomly assign a predefined proportion of the users 
 to the training set and all others to the test set.
 \item {\bf Bootstrap sampling:}
 We can sample from $\set{U}_\mathit{test}$ with replacement
 to create the training set and then use the users not in the training set as
-the test set. This procedure has the advantage for smaller data sets
-that we create larger training sets and still have users left for testing.
-\item {\bf $k$-fold cross-validation:} Here we split $\set{U}_\mathit{test}$
-into $k$ folds of approximately the same size. Then we evaluate $k$ times, always using one fold for testing and all other folds for leaning. The
-$k$ results can be averaged. This approach makes sure that each user
-is at least once in the test set and the averaging produces more 
-robust results.
+the test set. This procedure has the advantage that for smaller data sets
+we can create larger training sets and still have users left for testing.
+\item {\bf $k$-fold cross-validation:} Here we split $\set{U}$ into $k$ sets
+(called folds) of approximately the same size. Then we evaluate $k$ times,
+always using one fold for testing and all other folds for leaning. The $k$
+results can be averaged. This approach makes sure that each user is at least
+once in the test set and the averaging produces more robust results and error
+estimates.
 \end{itemize}
 
 The items withheld in the test data are randomly chosen.
@@ -520,16 +566,16 @@ The items withheld in the test data are randomly chosen.
 called {\em Given 2}, {\em Given 5}, {\em Given 10} and {\em All but 1}. For
 the Given $x$ protocols for each user $x$ randomly chosen items are given to
 the recommender algorithm and the remaining items are withheld for evaluation.
-For All but 1 the algorithm gets all but one withheld item.
+For All but $x$ the algorithm gets all but $x$ withheld items.
 
-The prediction results for all users $\set{U}_{test}$ 
+The prediction results for all test users $\set{U}_{test}$ 
 can be aggregated into a so called {\em confusion matrix} depicted in
 table~\ref{tab_confusion} (see \cite{recommender:Kohavi:1998}) 
 which corresponds
 exactly to the outcomes of a classical statistical experiment.
 The confusion matrix shows how many of the items recommended in
 the top-$N$ lists (column predicted positive; $d+b$) 
-were represented withheld items and thus correct recommendations
+were withheld items and thus correct recommendations
 (cell $d$) and how many where potentially incorrect (cell $b$). 
 The matrix also shows
 how many of the not recommended items
@@ -559,9 +605,8 @@ the performance of an algorithm depends on its ability
 to learn significant patterns in the data set.
 Performance measures used to evaluate these algorithms 
 have their root in machine learning.
-Commonly used measures are accuracy and
-coverage.
-{\em Accuracy} is the fraction of correct 
+A commonly used measure is
+{\em accuracy,} the fraction of correct 
 recommendations to total possible recommendations.
 
 \begin{equation} 
@@ -570,8 +615,7 @@ recommendations to total possible recommendations.
 \label{accur}
 \end{equation} 
 
-A common error measure is the {\em mean absolute error} ({\em MAE}, also called {\em mean absolute deviation} or {\em MAD}) shown in
-formula~\ref{mae}.
+A common error measure is the {\em mean absolute error} ({\em MAE}, also called {\em mean absolute deviation} or {\em MAD}).
 \begin{equation} 
 \mathit{MAE} = \frac{1}{N}\sum_{i=1}^N{|\epsilon_i|} = \frac{b+c}{a+b+c+d},
 \label{mae}
@@ -581,7 +625,7 @@ which can be recommended and $|\epsilon_i|$ is the
 absolute error of each item.
 Since we deal with 0-1 data, $|\epsilon_i|$ can only be zero (in cells $a$ and $d$ in the confusion matrix) or one (in cells $b$ and $c$).
 For evaluation recommender algorithms for rating data, the root mean square 
-error is often used. However, for 0-1 data it just reduces to the square 
+error is often used. For 0-1 data it reduces to the square 
 root of MAE.  
 
 Recommender systems help to find items of interest from the set of all 
@@ -608,10 +652,10 @@ information retrieval \citep{recommender:Salton:1983,recommender:Rijsbergen:1979
 Often the number of {\em total\ useful\ recommendations} needed for recall is
 unknown since the whole collection would have to be inspected. However, instead
 of the actual {\em total\ useful\ recommendations} often the total number of
-known useful recommendations is used as an estimate.  Precision and recall are
+known useful recommendations is used.  Precision and recall are
 conflicting properties, high precision means low recall and vice versa. To find
 an optimal trade-off between precision and recall a single-valued measure like
-the {\em E-measure} \cite{recommender:Rijsbergen:1979} can be used.  
+the {\em E-measure} \citep{recommender:Rijsbergen:1979} can be used.  
 The parameter $\alpha$ controls the
 trade-off between precision and recall.
 \begin{equation} 
@@ -631,7 +675,7 @@ a special case of the E-measure with $\alpha=.5$ which places the same weight
 on both, precision and recall.  In the recommender evaluation literature the
 F-measure is often referred to as the measure {\em F1.}
 
-A method used in the literature to compare two classifiers at different 
+Another method used in the literature to compare two classifiers at different 
 parameter settings is the {\em Receiver Operating Characteristic (ROC)}.  
 The method was developed for signal detection and goes back to the Swets model
 \citep{recommender:Rijsbergen:1979}. The ROC-curve is a plot of the system's
@@ -650,12 +694,14 @@ bigger area indicates better performance.
 
 \section{Recommenderlab Infrastructure}
 \label{sec:insfrastructure}
-\pkg{recommenderlab} is implemented using the S4 class system. 
-Figure~\ref{fig:class_diagram} shows the main classes and its relationships. 
+\pkg{recommenderlab} is implemented using formal classes in 
+the \proglang{S4} class system. 
+Figure~\ref{fig:class_diagram} shows the main classes and their relationships. 
 
 \begin{figure}
 \centerline{\includegraphics[width=0.8\textwidth]{recommenderlab_classes}}
-\caption{UML class diagram for package \pkg{recommenderlab}.}
+\caption{UML class diagram for 
+package~\pkg{recommenderlab}~\citep{misc:Fowler:2004}.}
 \label{fig:class_diagram}
 \end{figure}
 
@@ -673,24 +719,34 @@ For \class{ratingMatrix} we provide two concrete
 implementations \class{realRatingMatrix} and 
 \class{binaryRatingMatrix} to represent the rating matrix $\mat{R}$.
 \class{binaryRatingMatrix} implements a 0-1 rating matrix using
-the implementation of an \class{itemMatrix} defined in package \pkg{arules}. 
+the implementation of \class{itemMatrix} defined in package~\pkg{arules}. 
 \class{itemMatrix} stores only the ones and internally uses a sparse
 representation from package \pkg{Matrix}. Although the focus of the package and
 this paper is on 0-1 data, for completeness the package contains class
 \class{realRatingMatrix} which implements a rating matrix with real valued 
 ratings stored in sparse format defined in package \pkg{Matrix}. With this 
 class the infrastructure of \pkg{recommenderlab} can be easily extended
-for non-binary data.
+to non-binary data.
 
-Class \class{Recommender} implements an interface for creating recommendation
-models. The creator method \code{Recommender(data, method, parameter = NULL)} 
+Class \class{Recommender} implements the data structure to store recommendation
+models. The creator method 
+
+\begin{center}
+\code{Recommender(data, method, parameter = NULL)} 
+\end{center}
+
 takes data as a \class{ratingMatrix},
 a method name and some optional parameters for the method and
 returns a \class{Recommender} object. Once we have a recommender object,
 we can predict top-$N$ recommendations for active users using
-\code{predict(object, newdata, n=10, ...)}. \code{object} is the recommender
+
+\begin{center}
+\code{predict(object, newdata, n=10, ...)}. 
+\end{center}
+
+\code{object} is the recommender
 object, \code{newdata} is the data for the active users and \code{n} is
-the number recommended items $N$ in each top-$N$ list. \func{predict} will
+the number of recommended items $N$ in each top-$N$ list. \func{predict} will
 return a list of objects of class \class{topNList}, one for each 
 of the active users in \code{newdata}. 
 
@@ -702,18 +758,25 @@ managed using the registry mechanism provided by package \pkg{registry}.
 %\code{fun} (function to create a recommender model as an instance of class
 %\class{Recommender}), and \code{description} (verbal description of the
 %algorithm) to describe a recommender algorithm. 
-Generally the registry mechanism is hidden from the user and the
+Generally, the registry mechanism is hidden from the user and the
 creator function \func{Recommender} uses it in the background to map 
 a recommender method name to its implementation. However, the 
-registry can be directly queried and new recommender algorithms can be added by the user. We will talk more about this in the examples section of this paper.
+registry can be directly queried and new recommender algorithms can be added by the user. We will give and example for this feature 
+in the examples section of this paper.
 
 To evaluate recommender algorithms package~\pkg{recommenderlab}
 provides the infrastructure to create and maintain evaluation schemes 
 stored as an object of class \class{evaluationScheme} from rating data. 
-The creator function \func{evaluationScheme} 
-creates the evaluation scheme from a data set using a split method
+The creator function 
+
+\begin{center}
+\code{evaluationScheme(data, method="split", train=0.9, k=10, given=3)} 
+\end{center}
+
+creates the evaluation scheme from a data set using a method
 (e.g., simple split, bootstrap sampling, $k$-fold cross validation)
-with item withholding. The function \func{evaluate} is then used to
+with item withholding (paramter \code{given}). 
+The function \func{evaluate} is then used to
 evaluate several recommender algorithms using an evaluation scheme resulting
 in a evaluation result list (class~\class{evaluationResultList}) with
 one entry (class~\class{evaluationResult}) per algorithm. 
@@ -724,7 +787,10 @@ for $k$-fold cross validation).
 With this infrastructure several recommender algorithms can be compared
 on a data set with a single line of code.
 
+In the following, we will illustrate the usage of \pkg{recommenderlab}
+with several examples.
 \section{Examples}
+\label{sec:examples}
 \subsection{A first session}
 
 This fist example shows how to train and
@@ -736,7 +802,7 @@ from \url{www.microsoft.com}
 for 38,000 anonymous, randomly selected users. For each
 user, the data lists all the areas of the web site (called Vroots; 
 e.g., MS Office, Windows NT Server) 
-that user visited
+that the user visited
 in a one week time frame \citep{Breese:1998}.
 
 We first load the package and the data set and then select for the
@@ -752,9 +818,11 @@ MSWeb5 <- MSWeb[rowCounts(MSWeb) >5,]
 MSWeb5
 @
 
-The used data set contains \Sexpr{nrow(MSWeb5)} users with $>5$ items and
-\Sexpr{ncol(MSWeb5)} items.  To understand the distribution of the number of
-areas/items each user user visited, we can produce a histogram.
+The used data set contains \Sexpr{nrow(MSWeb5)} users with more 
+than $5$ items and
+\Sexpr{ncol(MSWeb5)} items.  
+To understand the distribution of the number of
+areas/items each user visited, we can produce a histogram.
 
 <<rowCounts, fig=TRUE, include=FALSE, height=4>>=
 hist(rowCounts(MSWeb5), breaks=20)
@@ -779,12 +847,33 @@ For example, we can see what areas the first two users visited.
 LIST(MSWeb5[1:2])
 @
 
-It is also interesting to study the popularity of items by looking at the
+It is also interesting to study the popularity of items.
+To get a first idea, we use an image plot
+for 200 randomly choosen users.
+
+<<eval=FALSE>>=
+image(sample(MSWeb5, 200))
+@
+<<image, fig=TRUE, include=FALSE, echo=FALSE>>=
+plot(image(sample(MSWeb5, 200)))
+@
+
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-image}}
+\caption{Image plot of 200 randomly chosen users in the rating matrix $\mat{R}$.
+Dark squares represent 1s in the matrix.}
+\label{fig:image}
+\end{figure}
+
+
+Figure~\ref{fig:image} shows that some items are 
+by far more popular than others. We can further 
+look at the
 distribution of how many user profiles contain an item. 
 This is done by plotting a histogram for the column sums of the rating matrix.
 
 <<colCounts, fig=TRUE, include=FALSE, height=4>>=
-hist(colCounts(MSWeb5), breaks=100)
+hist(colCounts(MSWeb5), breaks=25)
 @
 
 \begin{figure}
@@ -814,10 +903,11 @@ The model can be obtained from a recommender using \func{getModel}.
 getModel(r)
 @
 
-In this case the model is just an vector containing the order of items
-according to popularity in the data set and a short description.
+In this case the model is just a short description and a simple 
+vector called \code{popOrder} containing the order of items
+according to popularity in the data set.
 
-Recommendations are generated by \func{predict} in the same way \func{predict}
+Recommendations are generated by \func{predict} in the same way predict
 is used in \proglang{R} for other types of models. The result 
 are recommendations in the form of an object of class~\class{TopNList}.
 Here we create top-5 recommendation lists for two
@@ -839,9 +929,9 @@ Since the top-$N$ lists are ordered, we can extract sublists of
 the best items in the top-$N$. For example, we can get the best 3 
 recommendations for each list using \func{bestN}.
 <<>>=
-r3 <- bestN(recom, n = 3)
-r3
-LIST(r3)
+recom3 <- bestN(recom, n = 3)
+recom3
+LIST(recom3)
 @
 
 Next we will look at the evaluation of recommender algorithms.
@@ -853,7 +943,7 @@ standard evaluation methods for recommender systems.
 Evaluation starts with creating an evaluation scheme
 that determines what and how data is used for training and evaluation.
 Here we create a $4$-fold cross validation scheme 
-with the a Given 3 protocol, i.e.,
+with the the Given-3 protocol, i.e.,
 for the test users all but three randomly selected items are withheld 
 for evaluation.
 
@@ -898,10 +988,7 @@ avg(results)
 
 Evaluation results can be plotted using \func{plot}. The default
 plot is the ROC curve which plots the true positive rate (TPR) against the 
-false positive rate (FPR). The plot 
-using plot type both and annotated with the size of the top-$N$ list
-is shown in Figure~\ref{fig:roc1}.
-
+false positive rate (FPR). 
 <<roc1, fig=TRUE, include=FALSE>>=
 plot(results, annotate=TRUE)
 @
@@ -911,6 +998,8 @@ plot(results, annotate=TRUE)
 \label{fig:roc1}
 \end{figure}
 
+For the plot where we annotated the curve with the size of the top-$N$ list
+is shown in Figure~\ref{fig:roc1}.
 By using \code{"prec/rec"} as the second argument, a precision-recall plot
 is produced (see Figure~\ref{fig:precrec1}).
 
@@ -925,14 +1014,14 @@ plot(results, "prec/rec", annotate=TRUE)
 
 \subsection{Comparing recommender algorithms}
 
-Comparison of
+The comparison of
 several recommender algorithms is one of the main functions of 
 \pkg{recommenderlab}. For comparison also \func{evaluate} is used.
 The only change is to use \func{evaluate} with
 a list of algorithms together with their parameters instead of 
-a single method name to evaluate. In the following we use the
+a single method name. In the following we use the
 evaluation scheme created above to compare the five 
-recommender algorithm random items, popular items, 
+recommender algorithms: random items, popular items, 
 user-based CF, item-based CF, and association rule based recommendations.
 Note that when running the following code, the CF based algorithms
 are very slow.
@@ -962,7 +1051,7 @@ five recommender algorithms.
 results
 @
 
-Individual results can be accessed using list subsetting using an index or 
+Individual results can be accessed by list subsetting using an index or 
 the name specified when calling \func{evaluate}.
 
 <<>>=
@@ -978,7 +1067,7 @@ annotate can be used to annotate the points on selected curves with the
 list length.
 
 <<roc2, fig=TRUE, include=FALSE>>=
-plot(results, pch=1:5, annotate=c(1,3), legend="right")
+plot(results, annotate=c(1,3), legend="right")
 @
 \begin{figure}
 \centerline{\includegraphics[scale=1]{recommenderlab-roc2}}
@@ -987,7 +1076,7 @@ plot(results, pch=1:5, annotate=c(1,3), legend="right")
 \end{figure}
 
 <<precrec2, fig=TRUE, include=FALSE>>=
-plot(results, "prec/rec", pch=1:5, annotate=3)
+plot(results, "prec/rec", annotate=3)
 @
 \begin{figure}
 \centerline{\includegraphics[scale=1]{recommenderlab-precrec2}}
@@ -996,7 +1085,9 @@ for several recommender methods.}
 \label{fig:precrec2}
 \end{figure}
 
-For this data set and the given evaluation scheme the CF based methods clearly
+For this data set and the given evaluation scheme the 
+user-based and item-based
+CF methods clearly
 outperform all other methods. In Figure~\ref{fig:roc2} we see that they
 dominate the other method since for each length of top-$N$ list they
 provide a better combination of TPR and FPR.
@@ -1081,7 +1172,7 @@ Now all that needs to be done is to register the creator function. In this case
 it is called POPULAR and applies to binary rating data (lines 25--28).
 
 To create a new recommender algorithm the code in Table~\ref{table:newalg}
-can be copied. Then lines 5,6 20, 26 and 27 need 
+can be copied. Then lines 5, 6, 20, 26 and 27 need 
 to be edited to reflect the new method name and description.
 Line 6 needs to be replaced by the new model. More complicated
 models might use several entries in the list. Finally, 
@@ -1126,27 +1217,32 @@ recommenderRegistry$set_entry(
 
 
 \section{Conclusion}
+\label{sec:conclusion}
 
-Using automated recommender systems is an important method for online
+Being able to use automated recommender systems 
+offers a big advantage for online
 retailers and for many other applications. But
 often no extensive data base of rating data is available and
-it makes sense to think about using  0-1 data instead.
+it makes sense to think about using 0-1 data, which is in many
+cases easier to obtain, instead.
 Unfortunately there is only limited research on collaborative filtering 
 based recommender systems using 0-1 data available.
 
-In this paper we described the R extension package~\pkg{recommenderlab}
+In this paper we described the \proglang{R} 
+extension package~\pkg{recommenderlab}
 which is especially geared towards developing and testing
 recommender algorithms for 0-1 data.
 The package allows to create evaluation schemes following accepted 
 methods and then use them to evaluate and compare recommender algorithms.
-Adding new recommender algorithms to the package is facilidated using
+Adding new recommender algorithms to the package is facilitates using
 a registry to manage the algorithms. 
 
 \pkg{recommenderlab} currently includes several algorithms for 0-1 data,
 however, the infrastructure is flexible enough to also 
-extend to the more conventinal non-binary rating data and its algorithms.
+extend to the more conventional non-binary rating data and its algorithms.
 In the future we will add more and more of these algorithms to the package and
-we hope that some algorithms will be contributed by other researchers.
+we hope that some algorithms will also 
+be contributed by other researchers.
 
 %Applying collaborative filtering methods to binary and 
 %especially to 0-1 data is difficult because  

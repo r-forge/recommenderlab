@@ -44,10 +44,11 @@ setMethod("plot", signature(x = "evaluationResults"),
 
 setMethod("plot", signature(x = "evaluationResultList"),
         function(x, y,
-                xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1, 
+                xlim=NULL, ylim=NULL, col = NULL, pch = NULL, lty = 1, 
                 avg = TRUE, type="b",
                 annotate= 0, legend="bottomright", ...) {
 
+    if(is.null(pch)) pch <- 1:length(x)
     if(type=="l") pch <- NULL
     if(missing(y)) y <- NULL
     plot_type <- match.arg(y, c("ROC", "prec/rec"))

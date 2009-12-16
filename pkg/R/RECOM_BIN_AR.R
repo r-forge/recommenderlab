@@ -4,15 +4,15 @@ BIN_AR <- function(data, parameter = NULL) {
 
     ## parameters
     p <- .get_parameters(list(
-            support = 0.1, 
-            confidence = 0.3,
-            maxlen = 2,
-            measure = "confidence",
-            verbose = FALSE, 
-            decreasing = TRUE
-        ), parameter)
+                    support = 0.1, 
+                    confidence = 0.3,
+                    maxlen = 2,
+                    measure = "confidence",
+                    verbose = FALSE, 
+                    decreasing = TRUE
+                    ), parameter)
 
-	data <- data@data
+    data <- data@data
 
     rule_base <- apriori(data, 
         parameter=list(support=p$support, confidence=p$confidence, 
@@ -23,7 +23,7 @@ BIN_AR <- function(data, parameter = NULL) {
         cxs = quality(rule_base)$confidence * quality(rule_base)$support)
 
     if(!p$measure %in% names(quality(rule_base))) quality(rule_base) <-
-    cbind(quality(rule_base), interestMeasure(rule_base, method = p$measure,
+        cbind(quality(rule_base), interestMeasure(rule_base, method = p$measure,
             transactions = data))
 
     ## sort rule_base
@@ -37,18 +37,17 @@ BIN_AR <- function(data, parameter = NULL) {
 
     
     predict <- function(model, newdata, n=10) {
+        n <- as.integer(n)
         measure <- model$measure
-		n <- as.integer(n)
 
         reclist <- list()
         m <- is.subset(lhs(rule_base), newdata@data)
         for(i in 1:nrow(newdata)) {
-            reclist[[i]] <- numeric(0)
             recom <- head(unique(unlist(
                         LIST(rhs(sort(rule_base[m[,i]], by=measure)), 
-                            decode=FALSE))),n)
+                            decode=FALSE))), n)
 
-            if(!is.null(recom)) reclist[[i]] <- recom
+            reclist[[i]] <- if(!is.null(recom)) recom else numeric(0)
         }
 
         new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)

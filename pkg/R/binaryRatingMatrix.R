@@ -2,6 +2,9 @@
 setAs("matrix", "binaryRatingMatrix",
 	function(from) new("binaryRatingMatrix", data = as(from, "itemMatrix")))
 
+setAs("itemMatrix", "binaryRatingMatrix",
+	function(from) new("binaryRatingMatrix", data = from))
+
 setAs("binaryRatingMatrix", "matrix",
 	function(from) as(from@data, "matrix"))
 
