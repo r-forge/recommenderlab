@@ -12,7 +12,7 @@ Creats precision-recall or ROC plots for recommender evaluation results.
 \S4method{plot}{evaluationResults}(x, y,
         avg = TRUE, add=FALSE, type= "b", annotate = FALSE, ...)
 \S4method{plot}{evaluationResultList}(x, y,
-        xlim=NULL, ylim=NULL, col = NULL, pch = 1, lty = 1,
+        xlim=NULL, ylim=NULL, col = NULL, pch = NULL, lty = 1,
         avg = TRUE, type = "b", annotate= 0, legend="bottomright", ...)
 }
 %- maybe also 'usage' for other objects documented here.
