@@ -26,9 +26,7 @@ Recommender(data, ...)
 \details{
 Recommender uses the registry mechanism from package \pkg{registry}
 to manage methods. This let's the user easily specify and add new methods. 
-The registry is called \code{recommenderRegistry}.
-
-FIXME: Registry, methods
+The registry is called \code{recommenderRegistry}. See examples section.
 }
 \value{
 An object of class 'Recommender'.
