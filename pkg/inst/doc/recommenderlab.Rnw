@@ -38,7 +38,9 @@
 \begin{document}
 
 \title{Developing and Testing Top-$N$ Recommendation Algorithms
-for 0-1 Data using \pkg{recommenderlab}}
+for 0-1 Data using \pkg{recommenderlab}
+\footnote{This research was funded in part by the NSF Industry/University Cooperative Research Center for Net-Centric Software \& Systems.}
+}
 \author{Michael Hahsler}
 \maketitle
 \sloppy
@@ -97,20 +99,21 @@ one can predict a user's rating for an item
 not known to her or him~\citep[see, e.g.,][]{recommender:Goldberg:1992} 
 or create
 for a user a so called top-$N$ lists of recommended 
-items~\citep[see, e.g.,][]{Deshpande:2004}.
+items~\citep[see, e.g.,][]{recommender:Deshpande:2004}.
 For these type of recommender systems, several projects were initiated to
 implement recommender algorithms (e.g., 
 Apache Mahout/Taste~\footnote{\url{http://lucene.apache.org/mahout/}}, 
-Cofi~\footnote{http://www.nongnu.org/cofi/}, 
+Cofi~\footnote{\url{http://www.nongnu.org/cofi/}}, 
 %CoFE~\footnote{},
-RACOFI~\footnote{http://racofi.elg.ca/}, 
-SUGGEST~\footnote{http://glaros.dtc.umn.edu/gkhome/suggest/overview/}, 
-Vogoo PHP~\footnote{http://www.vogoo-api.com/}).
+RACOFI~\footnote{\url{http://racofi.elg.ca/}}, 
+SUGGEST~\footnote{\url{http://glaros.dtc.umn.edu/gkhome/suggest/overview/}}, 
+Vogoo PHP~\footnote{\url{http://www.vogoo-api.com/}}).
 
-Nearly no research~\citep[with some notable exceptions by][]{recommender:Weiss:2001,recommender:Mild:2003,recommender:Lee:2005,recommender:Pan:2008}
-was done for situations where no large amount of detailed
-directly elicited
-rating data is available. However, this is a common situation and occurs when
+Very limited research
+is available for situations where no large amount of detailed
+directly elicited rating data is available.
+%~\citep[some notable exceptions are][]{recommender:Weiss:2001,recommender:Mild:2003,recommender:Lee:2005,recommender:Pan:2008}.
+However, this is a common situation and occurs when
 users do not want to directly reveal their preferences by rating an item 
 (e.g., because it is to time consuming). In
 this case preferences can only be inferred by analyzing usage behavior.
@@ -127,6 +130,9 @@ obviously not
 be recommended.
 \end{itemize}
 
+\cite{recommender:Mild:2003} and \cite{recommender:Lee:2005} 
+present and evaluate 
+recommender algorithms for this setting.
 The same reasoning is true for
 recommending pages of a web site given click-stream data. Here we only have
 information about which pages were viewed but not why some pages were not
@@ -134,7 +140,7 @@ viewed. This situation leads to
 binary data or more exactly to
 0-1 data where 1 means that we inferred that
 the user has a preference for an item and 0 means that either the user does not like the item or does not know about it. 
-\cite{recommender:Pan:2008} calls
+\cite{recommender:Pan:2008} call
 this type of data in the context of collaborative filtering
 analogous to similar situations for classifiers
 \emph{one-class data} since only the 1-class is pure and contains only
@@ -159,7 +165,7 @@ recommendation problem on 0-1 data.
 In section~\ref{sec:evaluation} we discuss the evaluation of recommender 
 algorithms.
 We introduce the infrastructure provided by \pkg{recommenderlab}
-in section~\ref{sec:infrastruction}. In section~\ref{sec:examples} we 
+in section~\ref{sec:infrastructure}. In section~\ref{sec:examples} we 
 illustrate the capabilities on the package to create and evaluate
 recommender algorithms. We conclude with section~\ref{sec:conclusion}.
 
@@ -190,6 +196,24 @@ r_{jk}=
 0& \text{otherwise.}
 \end{cases}
 \end{equation}
+
+\cite{recommender:Pan:2008} call
+this type of data in the context of collaborative filtering
+analogous to similar situations for classifiers
+\emph{one-class data} since only the 1-class is pure and contains only
+positive examples. The 0-class is a mixture of positive and negative examples.
+Two strategies to deal with one-class data is to assume all missing ratings 
+(zeros) are negative examples or to assume that all missing ratings are unknown.
+Here will will follow mostly the first strategy based on the assumption that
+users typically favor only a small fraction of the items and thus most
+items with no rating will be indeed negative examples. However, it has to be
+said that \cite{recommender:Pan:2008} propose strategies which represent a
+trade-off between the two extreme strategies based on wighted low rank
+approximations of the rating matrix and on negative example sampling which
+might improve results across all recommender algorithms. 
+This is however outside
+the scope of this paper.
+
 
 The aim of collaborative filtering is to create recommendations for a user
 called the active user $u_a \in \set{U}$.  
@@ -254,7 +278,7 @@ collaborative filtering algorithms and apply them to 0-1 data.
 
 \subsection{User-based Collaborative Filtering}
 
-User-based CF~\citep{Goldberg:1992,Resnick:1994,recommender:Shardanand:1995} is
+User-based CF~\citep{recommender:Goldberg:1992,Resnick:1994,recommender:Shardanand:1995} is
 a memory-based algorithm which tries to mimics word-of-mouth based on analysis
 of rating data. The assumption is that 
 users with similar preferences will rate products similarly. Thus
@@ -312,11 +336,12 @@ to aggregate the ratings for item $i_j$ as
 $$\hat{r}_{aj}=\bar{r}_a + \kappa \sum_{i\in\set{N}}{w_{ai} 
 (r_{ij}-\bar{r}_i)}$$
 where $\bar{r}_x$ is the mean of the ratings of user $u_x$, 
-$w_{ai}$ is the weigth for user $u_i$ and
+$w_{ai}$ is the weight for user $u_i$ and
 $\kappa$ is
 a normalizing factor to make the weights sum to 1.
 The weights can reflect the similarity between the user and the active user.
-For 0-1 data we suggest to calculate the following score.
+For 0-1 data we suggest, following \cite{recommender:Weiss:2001}, 
+to calculate the following score.
 $$s_{aj} = \sum_{i\in\set{N}}{w_{ai}\, r_{ij}}$$
 This score is not normalized but can be easily used to find the
 top-$N$ items with the highest score.
@@ -326,6 +351,8 @@ top-$N$ items with the highest score.
 \caption{User-based collaborative filtering.}
 \label{fig:UBCF}
 \end{figure}
+
+%% Weiss suggests vote spliting and a simple similarity measure.
 
 An example of the process of creating recommendations for 0-1 data by
 user-based CF is shown in Figure~\ref{fig:UBCF}. To the left is the rating
@@ -350,7 +377,7 @@ all other users in the database has to be performed.
 
 
 \subsection{Item-based Collaborative Filtering}
-Item-based CF~\citep{Kitts:2000,Sarwar:2001,recommender:Linden:2003,recommender:Deshpande:2004}
+Item-based CF~\citep{Kitts:2000,recommender:Sarwar:2001,recommender:Linden:2003,recommender:Deshpande:2004}
 is a model-based approach which produces recommendations
 based on the relationship between items inferred from the rating
 matrix. The assumption behind this approach is that users will prefer items that
@@ -360,7 +387,7 @@ The model-building step consists of calculating a similarity matrix
 containing all item-to-item similarities using a given similarity measure.
 Popular are again Pearson correlation and Cosine similarity. For 0-1
 data again the Jaccard index can be used giving focus to matching ones.
-For item-based CF, \cite{Deshpande:2004} proposed
+For item-based CF, \cite{recommender:Deshpande:2004} proposed
 a \emph{Conditional probability-based 
 similarity} defined as:
 	$$\mathrm{sim_{Conditional}}(x,y) = 
@@ -374,7 +401,7 @@ items $x$. This similarity is equivalent to the confidence measure used
 for association rules (see section~\ref{sec:AR} below). A drawback
 of this similarity measure is its sensitivity to the frequency of $x$ with
 rare $x$ producing high similarities.
-To reduce the sensitivity, \cite{Deshpande:2004} propose a
+To reduce the sensitivity, \cite{recommender:Deshpande:2004} propose a
 normalized version of the similarity measure:
 	$$\mathrm{sim_{Karypis}}(x,y) = 
 	    \frac{\sum_{\forall i b_{i,x}} b_{i,y} }
@@ -389,7 +416,7 @@ which is again normalized such that rows sum up to $1$.
 To reduce the model size
 to $N \times k$ with $k \ll N$, 
 for each item only a list of the $k$ most similar
-items and their similarity values are stored~\citep{Sarwar:2001}.
+items and their similarity values are stored~\citep{recommender:Sarwar:2001}.
 This can improve the
 space and time complexity significantly by sacrificing 
 some recommendation quality.
@@ -427,7 +454,7 @@ only produce slightly inferior results compared to user-based
 CF and higher order models 
 which take the joint distribution of
 sets of items into account 
-are possible~\citep{Deshpande:2004}.
+are possible~\citep{recommender:Deshpande:2004}.
 Furthermore, item-based CF is successfully applied 
 in large scale recommender systems (e.g., by Amazon.com).
 
@@ -490,7 +517,7 @@ with the highest confidence (or another measure of interestingness).
 
 The dependency model is very similar to
 item-based CF with conditional probability-based 
-similarity~\citep{Deshpande:2004}. It can be fully precomputed
+similarity~\citep{recommender:Deshpande:2004}. It can be fully precomputed
 and rules with more than one items in the left-hand-side ($\set{X}$), 
 it incorporates higher order effects between more than two items. 
 %Mbasher et al [Mobasher et al. 2000] presented an algorithm for recommending
@@ -514,7 +541,7 @@ it incorporates higher order effects between more than two items.
 
 
 \section{Evaluation of Top-$N$ Recommender Algorithms for 0-1 Data}
-\label{sec:eval}
+\label{sec:evaluation}
 
 Evaluation of recommender systems is an important topic but
 most evaluation efforts center on recommender systems for
@@ -693,7 +720,7 @@ bigger area indicates better performance.
 
 
 \section{Recommenderlab Infrastructure}
-\label{sec:insfrastructure}
+\label{sec:infrastructure}
 \pkg{recommenderlab} is implemented using formal classes in 
 the \proglang{S4} class system. 
 Figure~\ref{fig:class_diagram} shows the main classes and their relationships. 
@@ -775,7 +802,7 @@ The creator function
 
 creates the evaluation scheme from a data set using a method
 (e.g., simple split, bootstrap sampling, $k$-fold cross validation)
-with item withholding (paramter \code{given}). 
+with item withholding (parameter \code{given}). 
 The function \func{evaluate} is then used to
 evaluate several recommender algorithms using an evaluation scheme resulting
 in a evaluation result list (class~\class{evaluationResultList}) with
@@ -803,7 +830,7 @@ for 38,000 anonymous, randomly selected users. For each
 user, the data lists all the areas of the web site (called Vroots; 
 e.g., MS Office, Windows NT Server) 
 that the user visited
-in a one week time frame \citep{Breese:1998}.
+in a one week time frame \citep{recommender:Breese:1998}.
 
 We first load the package and the data set and then select for the
 example only users who visited more than 5 areas.
@@ -849,7 +876,7 @@ LIST(MSWeb5[1:2])
 
 It is also interesting to study the popularity of items.
 To get a first idea, we use an image plot
-for 200 randomly choosen users.
+for 200 randomly chosen users.
 
 <<eval=FALSE>>=
 image(sample(MSWeb5, 200))
@@ -1037,7 +1064,7 @@ algorithms <- list(
         "popular items" = list(name="POPULAR", param=NULL),
         "user-based CF" = list(name="UBCF", param=list(method="Jaccard", nn=50)),
         "item-based CF" = list(name="IBCF", param=list(method="Jaccard", k=50)),
-        "association rules" = list(name="AR", param=list(supp=0.001, conf=0.5, maxlen=2))
+        "association rules" = list(name="AR", param=list(supp=0.001, conf=0.2, maxlen=2))
         )
 
 ## run algorithms
@@ -1071,7 +1098,8 @@ plot(results, annotate=c(1,3), legend="right")
 @
 \begin{figure}
 \centerline{\includegraphics[scale=1]{recommenderlab-roc2}}
-\caption{Comparison of ROC curves for several recommender methods.}
+\caption{Comparison of ROC curves for several recommender methods for the 
+given-3 evaluation scheme.}
 \label{fig:roc2}
 \end{figure}
 
@@ -1081,7 +1109,8 @@ plot(results, "prec/rec", annotate=3)
 \begin{figure}
 \centerline{\includegraphics[scale=1]{recommenderlab-precrec2}}
 \caption{Comparison of precision-recall curves 
-for several recommender methods.}
+for several recommender methods for the 
+    given-3 evaluation scheme.}
 \label{fig:precrec2}
 \end{figure}
 
@@ -1091,6 +1120,42 @@ CF methods clearly
 outperform all other methods. In Figure~\ref{fig:roc2} we see that they
 dominate the other method since for each length of top-$N$ list they
 provide a better combination of TPR and FPR.
+
+For comparison we will check how the algorithms compare given less information
+using instead of a given-3 a given-1 scheme.
+
+<<>>=
+scheme1 <- evaluationScheme(MSWeb5, method="cross", k=4, given=1)
+scheme1
+@
+
+<<eval=FALSE>>=
+results1 <- evaluate(scheme1, algorithms, n=c(1,3,5,10,15,20))
+## save(results1, file="xresults1.rda")
+@
+<<echo=FALSE>>=
+load("xresults1.rda")
+@
+
+<<roc3, fig=TRUE, include=FALSE>>=
+plot(results1, annotate=c(1,3), legend="right")
+@
+\begin{figure}
+\centerline{\includegraphics[scale=1]{recommenderlab-roc3}}
+\caption{Comparison of ROC curves for several recommender methods for the given-1 evaluation scheme.}
+\label{fig:roc3}
+\end{figure}
+
+From Figure~\ref{fig:roc3} we see that given less information, 
+the performance of item-based CF suffers the most and the simple 
+popularity based recommender performs almost a well as user-based CF and 
+association rules.
+
+Similar to the examples presented here, it is easy to compare different
+recommender algorithms for different data sets or to compare
+different algorithm settings (e.g.,
+the influence of neighborhood formation using different distance measures or different neighborhood sizes).
+
 %\marginpar{getting data in missing!}
 
 %\subsection{Compare rankings}

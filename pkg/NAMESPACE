@@ -1,10 +1,9 @@
-#importFrom("stats", "predict")  ## otherwise predict in stats does not work
-importFrom("graphics", "plot") ## we need the generics
-import("Matrix")
-#importFrom("Matrix", "summary", "image") ## we need the generics
-#importClassesFrom("Matrix", "dgCMatrix", "CsparseMatrix")
-import("arules")
-#importFrom("arules", "predict", "nitems", "sample", "LIST", "dissimilarity", "sort")  ## we get it via arules
+importFrom("graphics", "plot") ## we need the generic for plot
+#import("Matrix")
+importFrom("Matrix", "image", "t", "rowSums", "colSums", "crossprod")
+#import("arules")
+importFrom("arules", "predict", "nitems", "sample", "LIST", 
+    "dissimilarity", "sort", "summary")
 
 ## registry uses S3
 export("recommenderRegistry")
