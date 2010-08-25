@@ -1,6 +1,7 @@
 importFrom("graphics", "plot") ## we need the generic for plot
 #import("Matrix")
-importFrom("Matrix", "image", "t", "rowSums", "colSums", "crossprod")
+importFrom("Matrix", "image", "t", "rowSums", "colSums", "colMeans", 
+    "crossprod")
 #import("arules")
 importFrom("arules", "predict", "nitems", "sample", "LIST", 
     "dissimilarity", "sort", "summary")
@@ -30,6 +31,7 @@ exportMethods(
 		"image",
 		"sample",
 		"predict",
+		"dissimilarity",
 		"colMeans",
 		"rowMeans",
 		"colCounts",
