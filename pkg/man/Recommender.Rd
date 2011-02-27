@@ -29,7 +29,7 @@ to manage methods. This let's the user easily specify and add new methods.
 The registry is called \code{recommenderRegistry}. See examples section.
 
 Note: Modifications for IBCF and UBCF for real data were 
-    contributed by Christopher Köb.
+    contributed by Christopher Koeb.
 }
 \value{
 An object of class 'Recommender'.

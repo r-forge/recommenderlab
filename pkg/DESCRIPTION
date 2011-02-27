@@ -1,6 +1,6 @@
 Package: recommenderlab
-Version: 0.1-0
-Date: 2010-01-23
+Version: 0.1-2
+Date: 2011-02-27
 Title: Lab for Testing and Developing Recommender Algorithms for Binary Data
 Author: Michael Hahsler
 Maintainer: Michael Hahsler <michael@hahsler.net> 
@@ -8,8 +8,7 @@ Description: Provides a research infrastructure to test and develop
     recommender algorithms. Currently the focus is on recommender
     systems for binary data.
 Classification/ACM: G.4, H.2.8
-Depends: R (>= 2.8.0), methods, Matrix, registry, arules (>= 1.0-1), cluster, proxy
-Imports: Matrix, arules
+Depends: R (>= 2.10.0), methods, Matrix, registry, arules (>= 1.0-1), cluster, proxy
 Suggests: ROCR
 URL: http://R-Forge.R-project.org/projects/recommenderlab/
 License: GPL-2

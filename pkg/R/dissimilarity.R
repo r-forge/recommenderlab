@@ -19,26 +19,28 @@ setMethod("dissimilarity", signature(x = "binaryRatingMatrix"),
 
 setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 function(x, y = NULL, method = NULL, args = NULL, 
-which = "transactions") {
+which = "users") {
 	
 #	print("realRatingMatrix wrapper");
-	
-## items instead of transactions?
-	items <- FALSE
-	if (pmatch(tolower(which), c("transactions", "items")) == 2) 
-	items <- TRUE
-	
-	x <- as(x, "matrix")
-	x[is.na(x)]<-0
-	if(items) x <- t(x) 
-	
-	if(!is.null(y)) { 
+	    ## dissimilarity is defined in arules for itemMatrix
+	    if(which == "users") which <- "transactions" ## "items" is ok
+
+	    ## items instead of transactions?
+	    items <- FALSE
+	    if (pmatch(tolower(which), c("transactions", "items")) == 2) 
+		items <- TRUE
+
+	    x <- as(x, "matrix")
+	    x[is.na(x)]<-0
+	    if(items) x <- t(x) 
+
+	    if(!is.null(y)) { 
 		y <- as(y, "matrix")
 		y[is.na(y)]<-0
 		if(items) y <- t(y) 
-	}
-	
-	dissimilarity(x = x, y = y, method = method, args = args)
-})
+	    }
+
+	    dissimilarity(x = x, y = y, method = method, args = args)
+	})
 
 
