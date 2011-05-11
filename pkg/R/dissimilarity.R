@@ -31,16 +31,17 @@ which = "users") {
 		items <- TRUE
 
 	    x <- as(x, "matrix")
-	    x[is.na(x)]<-0
+	    #x[is.na(x)]<-0
 	    if(items) x <- t(x) 
 
 	    if(!is.null(y)) { 
 		y <- as(y, "matrix")
-		y[is.na(y)]<-0
+		#y[is.na(y)]<-0
 		if(items) y <- t(y) 
 	    }
 
-	    dissimilarity(x = x, y = y, method = method, args = args)
+	    ## in proxy
+	    dist(x = x, y = y, method = method, args = args)
 	})
 
 

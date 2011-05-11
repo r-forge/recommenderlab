@@ -21,7 +21,8 @@ Calculate dissimilarities between ratings by users and for items.
   are typically \code{"cosine"}, \code{"pearson"}, \code{"jaccard"}, etc.
   See \code{dissimilarity} for
   class \code{itemMatrix} in \pkg{arules} for details about measures
-  for \code{binaryRatingMatrix}. }
+  for \code{binaryRatingMatrix} and \code{dist} in \pkg{proxy} for 
+      \code{realRatingMatrix}. }
   \item{args}{a list of additional arguments for the methods.}
   \item{which}{a character string indicating if the dissimilarity should be 
             calculated between \code{"users"} or \code{"items"}.}
