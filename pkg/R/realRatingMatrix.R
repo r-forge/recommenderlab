@@ -109,6 +109,7 @@ setMethod("binarize", signature(x = "realRatingMatrix"),
 	function(x, threshold = 3, ...){
 		x <- x@data
 		x <- drop0(x*(x>=threshold))
+		if(is.null(colnames(x))) colnames(x) <- 1:ncol(x)
 		x <- new("itemMatrix", data = t(as(x, "ngCMatrix")), 
 			itemInfo = data.frame(labels=colnames(x)))
 		new("binaryRatingMatrix", data = x)

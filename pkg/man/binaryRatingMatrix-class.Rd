@@ -20,7 +20,8 @@ coding is common for market basked data where products are either bought or
 not.}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("binaryRatingMatrix", data = im)}, where \code{im} is an \code{itemMatrix} as defined in package
-\pkg{arules}.
+\pkg{arules}, by coercion from a 0-1 matrix, or by using \code{binarize} for
+an object of class "realRatingMatrix".
 }
 \section{Slots}{
 	 \describe{
@@ -48,6 +49,16 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 	\code{\link[arules:itemMatrix-class]{itemMatrix}}.
 	%\code{\linkS4class[arules]{itemMatrix}}.
 }
-%\examples{
-%}
+\examples{
+## create a 0-1 matrix
+m <- matrix(sample(c(0,1),100, replace=TRUE), nrow=10, ncol=10)
+m
+
+## coerce it into a binaryRatingMatrix
+b <- as(m, "binaryRatingMatrix")
+b
+
+## coerce it back to see if it worked
+as(b, "matrix")
+}
 \keyword{classes}

@@ -6,7 +6,7 @@ knn <- function(n, d) head(order(d, decreasing=FALSE), n+1)[-1]
 BIN_UBCF <- function(data, parameter = NULL){
 
     p <- .get_parameters(list( 
-                    method = "jaccard", 
+                    method = if(is(data, "binaryRatingMatrix")) "jaccard" else "cosine", 
                     nn = 25, 
                     weighted=FALSE,
                     sample = FALSE
@@ -75,7 +75,7 @@ BIN_UBCF <- function(data, parameter = NULL){
     }
 
     ## construct recommender object
-    new("Recommender", method = "UBCF", dataType = "binaryRatingMatrix",
+    new("Recommender", method = "UBCF", dataType = class(data),
             ntrain = nrow(data), model = model, predict = predict)
 }
 

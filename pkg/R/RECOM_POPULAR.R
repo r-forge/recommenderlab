@@ -17,7 +17,7 @@ BIN_POPULAR <- function(data, parameter = NULL) {
     }
 
 	## construct recommender object
-	new("Recommender", method = "POPULAR", dataType = "binaryRatingMatrix",
+	new("Recommender", method = "POPULAR", dataType = class(data),
 		ntrain = nrow(data), model = model, predict = predict)
 }
 
@@ -26,6 +26,9 @@ recommenderRegistry$set_entry(
 	method="POPULAR", dataType = "binaryRatingMatrix", fun=BIN_POPULAR, 
 	description="Recommender based on item popularity (binary data)."
 )
+
+
+
 
 ## always recommends the top-N popular items (without known items)
 REAL_POPULAR <- function(data, parameter = NULL) {
@@ -49,7 +52,7 @@ REAL_POPULAR <- function(data, parameter = NULL) {
     }
 
 	## construct recommender object
-	new("Recommender", method = "POPULAR", dataType = "binaryRatingMatrix",
+	new("Recommender", method = "POPULAR", dataType = clas(data),
 		ntrain = nrow(data), model = model, predict = predict)
 }
 
