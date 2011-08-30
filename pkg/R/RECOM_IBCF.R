@@ -102,7 +102,7 @@ BIN_IBCF <- function(data, parameter= NULL) {
     }
 
 	## construct recommender object
-	new("Recommender", method = "IBCF", dataType = "binaryRatingMatrix", 
+	new("Recommender", method = "IBCF", dataType = class(data),
 		ntrain = nrow(data), model = model, predict = predict)
 }
 

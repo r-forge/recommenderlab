@@ -17,7 +17,7 @@
 Note that 0 codes for a missing rating.}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("realRatingMatrix", data = m)}, where \code{m} is sparse matrix of class \code{dgCMatrix} 
-(see package~\pkg{Matrix}).
+(see package~\pkg{Matrix}), or by coercion from a regular matrix.
 }
 \section{Slots}{
 	 \describe{
@@ -45,6 +45,20 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 	\code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} in \pkg{Matrix}
 	%\code{\linkS4class[Matrix]{dgCMatrix}}
 }
-%\examples{
-%}
+\examples{
+## create a matrix with ratings
+m <- matrix(sample(c(NA,1:5),100, replace=TRUE), nrow=10, ncol=10)
+m
+
+## coerce into a realRatingMAtrix
+r <- as(m, "realRatingMatrix")
+r
+
+## coerce it back to see if it worked
+as(r, "matrix")
+
+## binarize into a binaryRatingMatrix with all 4+ rating a 1
+b <- binarize(r, threshold=4)
+b
+}
 \keyword{classes}
