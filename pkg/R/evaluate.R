@@ -1,3 +1,4 @@
+
 setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 	function(x, method, n=1:10, parameter=NULL, 
 		progress = TRUE, keepModel=FALSE) {
@@ -42,7 +43,6 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 	})
 
 
-
 .do_run_by_n <- function(scheme, method, run, n, parameter = NULL,
 	progress=FALSE, keepModel=TRUE) {
 
@@ -74,7 +74,10 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		cm[i, "TP"] <- mean(tp)
 		cm[i, "FP"] <- mean(tp_fp - tp)
 		cm[i, "FN"] <- mean(tp_fn - tp)
-		cm[i, "TN"] <- mean(ncol(train) - tp_fp - tp_fn + tp)
+		## Reduced TN by the number of known items. Bug
+		## reported by ("Zhang, Martin F" <Martin.F.Zhang@asia.ccb.com>)
+		cm[i, "TN"] <- mean(ncol(train) - tp_fp - tp_fn + tp 
+			- scheme@given)
 		cm[i, "PP"] <- mean(tp_fp)
 
 		## calculate some important measures
