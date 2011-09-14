@@ -45,7 +45,8 @@ setClass("evaluationScheme",
 		runsTrain= "list",
 		data	= "ratingMatrix",
 		knownData= "ratingMatrix",
-		unknownData= "ratingMatrix"
+		unknownData= "ratingMatrix",
+		goodRating = "numeric"
 	)
 )
 

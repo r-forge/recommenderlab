@@ -6,7 +6,7 @@ knn <- function(n, d) head(order(d, decreasing=FALSE), n+1)[-1]
 BIN_UBCF <- function(data, parameter = NULL){
 
     p <- .get_parameters(list( 
-                    method = if(is(data, "binaryRatingMatrix")) "jaccard" else "cosine", 
+                    method = "jaccard", 
                     nn = 25, 
                     weighted=FALSE,
                     sample = FALSE
@@ -15,7 +15,7 @@ BIN_UBCF <- function(data, parameter = NULL){
     if(p$sample) data <- sample(data, p$sample)
 
     model <- c(list(
-                    description = "UBCF: contains full or sample of data set",
+                    description = "UBCF-Binary Data: contains full or sample of data set",
                     data = data
                     ), p 
             )
@@ -79,6 +79,74 @@ BIN_UBCF <- function(data, parameter = NULL){
             ntrain = nrow(data), model = model, predict = predict)
 }
 
+REAL_UBCF <- function(data, parameter = NULL){
+
+    p <- .get_parameters(list( 
+                    method = "cosine", 
+                    nn = 25, 
+                    weighted=FALSE,
+                    sample = FALSE
+                    ), parameter) 
+
+    if(p$sample) data <- sample(data, p$sample)
+
+    model <- c(list(
+                    description = "UBCF-Real data: contains full or sample of data set",
+                    data = data
+                    ), p 
+            )
+
+    predict <- function(model, newdata, n=10) {
+        n <- as.integer(n)
+
+        ## cross dissimilaries
+	d_cross_all <- dissimilarity(newdata, model$data, 
+		method = model$method)
+
+        reclist <- list()
+        for(i in 1:nrow(newdata)) {
+            reclist[[i]] <- numeric(0)
+            user <- newdata[i]
+
+            ## find knn
+            d_cross <- d_cross_all[i,]
+            neighbors <- knn(model$nn, d_cross)
+
+            if(!model$weighted) {
+		data_neighbors <- model$data[neighbors,]
+
+		### normalize (subtract average)
+		ratings <- colSums(normalize(data_neighbors))
+
+	    }else{
+		stop("This needs to be implemented!!!")
+		w <- drop(d_cross[neighbors])
+
+                ## make it a similarity
+                w <- max(w, 1) - w
+
+                m <- as(model$data[neighbors,], "dgCMatrix") 
+                ratings <- crossprod(m, w) / colSums(as(m, "lgCMatrix")*w)
+            }
+
+
+            ## remove known items
+            knows <- colCounts(user) >0
+	    ratings[knows] <- NA
+	    reclist[[i]] <- head(
+		    order(ratings, decreasing = TRUE), n)
+
+        }
+
+        new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
+    }
+
+    ## construct recommender object
+    new("Recommender", method = "UBCF", dataType = class(data),
+            ntrain = nrow(data), model = model, predict = predict)
+}
+
+
 ## register recommender
 recommenderRegistry$set_entry(
         method="UBCF", dataType = "binaryRatingMatrix", fun=BIN_UBCF, 
@@ -86,7 +154,7 @@ recommenderRegistry$set_entry(
 
 
 recommenderRegistry$set_entry(
-	method="UBCF", dataType = "realRatingMatrix", fun=BIN_UBCF,
+	method="UBCF", dataType = "realRatingMatrix", fun=REAL_UBCF,
 	description="Recommender based on user-based collaborative filtering (real data).")
 
 

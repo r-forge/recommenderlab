@@ -22,7 +22,7 @@ setReplaceMethod("dimnames", signature(x = "ratingMatrix",
 	})
 
 ## row/col counts, sums, etc.
-## MAtrix does not handle dimnames well
+## Matrix does not handle dimnames well
 setMethod("colCounts", signature(x = "ratingMatrix"), 
 	function(x, ...) {
 		s <- colSums(as(x, "ngCMatrix"))

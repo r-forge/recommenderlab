@@ -3,9 +3,9 @@ importFrom("graphics", "plot") ## we need the generic for plot
 importFrom("proxy", "dist")
 
 ## get generics and methods
-importFrom("Matrix", "rowSums", "colSums", "colMeans", "summary")
+importFrom("Matrix", "rowSums", "colSums", "rowMeans", "colMeans", "summary")
 ## get just methods
-importMethodsFrom("Matrix", "image", "t", "crossprod")
+importMethodsFrom("Matrix", "image", "t", "crossprod", "tcrossprod")
 
 ## get generics and methods
 importFrom("arules", "predict", "nitems", "sample", "LIST", 
@@ -40,8 +40,8 @@ exportMethods(
 		"summary",
 		"predict",
 		"dissimilarity",
-		"colMeans",
-		"rowMeans",
+#		"colMeans",
+#		"rowMeans",
 		"colCounts",
 		"rowCounts",
 		"LIST",
@@ -52,6 +52,7 @@ exportMethods(
 		"nratings",
 		"nitems",
 		"nusers",
+		"normalize",
 		"getRuns",
 		"getModel",
 		"getData",

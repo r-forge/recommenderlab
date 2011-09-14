@@ -11,7 +11,7 @@ BIN_POPULAR <- function(data, parameter = NULL) {
 
 		## remove known items and take highest
 		reclist <- lapply(LIST(newdata, decode= FALSE),
-			function(x) head(model$popOrder[!(model$popOrder %in% x)], n))
+			function(x) head(model$popOrder[!(model$popOrder %in% names(x))], n))
 
         new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
     }
@@ -33,12 +33,14 @@ recommenderRegistry$set_entry(
 ## always recommends the top-N popular items (without known items)
 REAL_POPULAR <- function(data, parameter = NULL) {
 
+
 	model <- list(
 		description = "Order of items by popularity",
-		## only one high vote would dominate
+		### only one high vote would dominate
 		#popOrder = order(colMeans(data), decreasing=TRUE)
-		## many votes and high votes
-		popOrder = order(colSums(data), decreasing=TRUE)
+		### many votes and high votes 
+		### normalize (subtract mean ratings)
+		popOrder = order(colSums(normalize(data)), decreasing=TRUE) 
 	)
 
     predict <- function(model, newdata, n=10) {
@@ -46,13 +48,14 @@ REAL_POPULAR <- function(data, parameter = NULL) {
 
 		## remove known items and take highest
 		reclist <- lapply(LIST(newdata, decode= FALSE),
-			function(x) head(model$popOrder[!(model$popOrder %in% x)], n))
+			function(x) head(model$popOrder[
+				!(model$popOrder %in% names(x))], n))
 
         new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
     }
 
 	## construct recommender object
-	new("Recommender", method = "POPULAR", dataType = clas(data),
+	new("Recommender", method = "POPULAR", dataType = class(data),
 		ntrain = nrow(data), model = model, predict = predict)
 }
 
