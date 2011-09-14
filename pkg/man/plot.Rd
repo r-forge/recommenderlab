@@ -1,5 +1,6 @@
 \name{plot}
 \Rdversion{1.1}
+\alias{plot}
 \alias{plot,evaluationResults-method}
 \alias{plot,evaluationResultList-method}
 \title{

@@ -2,6 +2,31 @@
 ## dissimilarity for binaryRatingMatrix
 setMethod("dissimilarity", signature(x = "binaryRatingMatrix"),
 	function(x, y = NULL, method = NULL, args = NULL, which = "users") {
+	    
+	    args <- .get_parameters(list(alpha=.5), args)
+	   
+	    method <- tolower(method)
+	    which <- tolower(which)
+
+	    ## conditional similarity (Karypis 2001)
+	    ## returned as distance!
+	    if(method == "conditional" 
+		    && is.null(y) 
+		    && which == "items") {
+		sim <- .conditional_sim(as(x, "dgCMatrix"), args)
+		return(as.dist(1/(1+sim)))
+	    }
+
+	    ## Karypis similarity
+	    ## returned as distance!
+	    if(method == "karypis" 
+		    && is.null(y) 
+		    && which == "items") {
+		sim <- .karypis_sim(as(x, "dgCMatrix"), args)
+		return(as.dist(1/(1+sim)))
+	    }
+
+	
 	    ## dissimilarity is defined in arules for itemMatrix
 	    if(which == "users") which <- "transactions" ## "items" is ok
 	    x <- x@data
@@ -18,30 +43,98 @@ setMethod("dissimilarity", signature(x = "binaryRatingMatrix"),
 ## by Christopher Köb
 
 setMethod("dissimilarity", signature(x = "realRatingMatrix"),
-function(x, y = NULL, method = NULL, args = NULL, 
-which = "users") {
-	
-#	print("realRatingMatrix wrapper");
-	    ## dissimilarity is defined in arules for itemMatrix
-	    if(which == "users") which <- "transactions" ## "items" is ok
+	function(x, y = NULL, method = NULL, args = NULL, 
+		which = "users") {
 
-	    ## items instead of transactions?
-	    items <- FALSE
-	    if (pmatch(tolower(which), c("transactions", "items")) == 2) 
-		items <- TRUE
+	    args <- .get_parameters(list(na_as_zero = FALSE, alpha=.5), args)
 
-	    x <- as(x, "matrix")
-	    #x[is.na(x)]<-0
-	    if(items) x <- t(x) 
-
-	    if(!is.null(y)) { 
-		y <- as(y, "matrix")
-		#y[is.na(y)]<-0
-		if(items) y <- t(y) 
+	    ### FIX this code!
+	    ## shortcut for Cosine (compute sparse)
+	    #if(tolower(method)=="cosine" && is.null(y)) {
+	    #	x <- as(x, "dgCMatrix")
+	    #	return(as.dist(1- crossprod(x / sqrt(rowSums(x ^ 2)))))
+	    #}
+	    
+	    ## conditional similarity (Karypis 2001)
+	    ## returned as distance!
+	    if(method == "conditional" 
+		    && is.null(y) 
+		    && which == "items") {
+		sim <- .conditional_sim(as(x, "dgCMatrix"), args)
+		return(as.dist(1/(1+sim)))
+	    }
+	    
+	    ## Karypis similarity
+	    ## returned as distance!
+	    if(method == "karypis" 
+		    && is.null(y) 
+		    && which == "items") {
+		sim <- .karypis_sim(as(x, "dgCMatrix"), args)
+		return(as.dist(1/(1+sim)))
 	    }
 
-	    ## in proxy
-	    dist(x = x, y = y, method = method, args = args)
+	    ## do regular distances
+	    
+	    x <- as(x, "dgCMatrix")
+	    if(tolower(which) == "items") x <- t(x) 
+	    x <- as(x, "matrix")
+	    ## 0 in the rating matrix means missing value!
+	    if(!args$na_as_zero) x[x==0] <- NA
+
+
+	    if(!is.null(y)) { 
+		y <- as(y, "dgCMatrix")
+		if(tolower(which) == "items") y <- t(y) 
+		y <- as(y, "matrix")
+		if(!args$na_as_zero) y[y==0] <- NA
+	    }
+
+	    ## dist in proxy
+	    dist(x = x, y = y, method = method)
 	})
 
+
+## conditional similarity (Karypis 2001)
+.conditional_sim <- function(x, args=NULL){
+    n <- ncol(x)
+
+    ## sim(v,u) = freq(uv) / freq(v)
+    uv <-  crossprod(x)
+    v <- matrix(colSums(x), nrow = n, ncol = n, byrow = FALSE)
+
+    sim <- uv/v
+
+    ## fix if freq was 0
+    sim[is.na(sim)] <- 0
+
+    sim
+}
+	    
+## Karypis similarity
+.karypis_sim <- function(x, args=NULL) {
+    
+    ## get alpha
+    args <- .get_parameters(list(alpha = .5), args)
+    
+    n <- ncol(x)
+
+    ## normalize rows to unit length
+    x <- x/rowSums(x)
+
+    ## for users without items
+    x[is.na(x)] <- 0
+
+    ## sim(v,u) = 
+    ##      sum_{for all i: r_i,v >0} r_i,u / freq(v) / freq(u)^alpha
+    uv <-  crossprod(x, x>0)
+    v <- matrix(colSums(x), nrow = n, ncol = n, byrow = FALSE)
+    u <- t(v) 
+
+    sim <- uv/v/u^args$alpha 
+
+    ##  fix if freq = 0
+    sim[is.na(sim)] <- 0
+    sim
+
+}
 

@@ -129,9 +129,13 @@ setMethod(".splitKnownUnknown", signature(data="realRatingMatrix"),
 		take <- unlist(lapply(items, sample, given))
 
 		tripUnknown <- trip
-		tripUnknown@x[take] <- 0
+		tripUnknown@x <- tripUnknown@x[-take]
+		tripUnknown@i <- tripUnknown@i[-take]
+		tripUnknown@j <- tripUnknown@j[-take]
 		tripKnown <- trip
-		tripKnown@x[-take] <- 0
+		tripKnown@x <- tripKnown@x[take]
+		tripKnown@i <- tripKnown@i[take]
+		tripKnown@j <- tripKnown@j[take]
 
 		known <- new("realRatingMatrix", 
 			data = as(tripKnown, "dgCMatrix"))

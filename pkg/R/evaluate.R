@@ -51,6 +51,14 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 	test_known <- getData(scheme, type="known", run=run)
 	test_unknown <- getData(scheme, type="unknown", run=run)
 
+	### binarize a realRatingMatrix?
+	if(!is.na(scheme@goodRating)) {
+	    if(!is(test_known, "realRatingMatrix")) stop("goodRating only works for a realRatingMatrix!")
+	    test_unknown <- binarize(test_unknown, scheme@goodRating)
+    	}else{
+	if (is(test_known, "realRatingMatrix")) warning("You probably want to set goodRating for a realRatingMatrix!")
+	}
+
 	## train recommender
 	r <- Recommender(train, method, parameter=parameter)
 	cm <- matrix(NA, nrow=length(n), ncol=9, 
@@ -67,17 +75,17 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		pred <- bestN(topN, NN)
 
 		## create confusion matrix
-		tp <- colSums(as(pred, "ngCMatrix")*as(test_unknown, "ngCMatrix"))
-		tp_fn <- colCounts(test_unknown)
-		tp_fp <- colCounts(pred)
+		tp <- rowSums(as(pred, "ngCMatrix")*as(test_unknown, "ngCMatrix"))
+		tp_fn <- rowCounts(test_unknown)
+		tp_fp <- rowCounts(pred)
 
 		cm[i, "TP"] <- mean(tp)
 		cm[i, "FP"] <- mean(tp_fp - tp)
 		cm[i, "FN"] <- mean(tp_fn - tp)
-		## Reduced TN by the number of known items. Bug
+		## Reduced TN by the number of given items. Bug
 		## reported by ("Zhang, Martin F" <Martin.F.Zhang@asia.ccb.com>)
-		cm[i, "TN"] <- mean(ncol(train) - tp_fp - tp_fn + tp 
-			- scheme@given)
+		cm[i, "TN"] <- ncol(train) - cm[i, "TP"] -  cm[i, "FP"] - 
+			cm[i, "FN"] - scheme@given
 		cm[i, "PP"] <- mean(tp_fp)
 
 		## calculate some important measures
