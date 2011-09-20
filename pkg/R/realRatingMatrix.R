@@ -20,6 +20,16 @@ setAs("realRatingMatrix", "dgCMatrix",
 	function(from) from@data)
 
 
+## from matrix
+setAs("matrix", "realRatingMatrix", function(from) {
+	    if(any(from==0, na.rm=TRUE)) {
+		warning("Zero ratings will be lost! Add one to the ratings.")
+	    }
+	    
+	    from[is.na(from)] <-0
+	    
+	    new("realRatingMatrix", data = as(from, "dgCMatrix"))
+	})
 
 ## from a data.frame with columns user, item, rating
 setAs("data.frame", "realRatingMatrix", function(from) {
@@ -27,7 +37,7 @@ setAs("data.frame", "realRatingMatrix", function(from) {
 		item	<- from[,2]
 		rating	<- as.numeric(from[,3])
 
-		if(any(rating==0)) warning("Zero ratings will be lost! Add one to the ratings.")
+		if(any(rating==0, na.rm=TRUE)) warning("Zero ratings will be lost! Add one to the ratings.")
 
 		i <- factor(user)
 		j <- factor(item)

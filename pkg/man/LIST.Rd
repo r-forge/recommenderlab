@@ -17,7 +17,7 @@ Create a list representation for variouse objects used in \pkg{recommenderlab}.
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{from}{ .}
+  \item{from}{ object to be represented as a list.}
   \item{decode}{ use item names or item IDs (col numbers) for items? }
   \item{ratings}{ create list of ratings?}
   \item{...}{ further arguments (currently unused).}

@@ -61,7 +61,7 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 		    && is.null(y) 
 		    && which == "items") {
 		sim <- .conditional_sim(as(x, "dgCMatrix"), args)
-		return(as.dist(1/(1+sim)))
+		return(as.dist(1-sim))
 	    }
 	    
 	    ## Karypis similarity
@@ -70,7 +70,7 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 		    && is.null(y) 
 		    && which == "items") {
 		sim <- .karypis_sim(as(x, "dgCMatrix"), args)
-		return(as.dist(1/(1+sim)))
+		return(as.dist(1-sim))
 	    }
 
 	    ## do regular distances
@@ -93,6 +93,13 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 	    dist(x = x, y = y, method = method)
 	})
 
+setMethod("similarity", signature(x = "ratingMatrix"),
+	function(x, y = NULL, method = NULL, args = NULL, 
+		which = "users") {
+	    sim <- 1/(1+dissimilarity(x, y, method, args, which))
+	    attr(sim, "type") <- "simil"
+	    sim
+	})
 
 ## conditional similarity (Karypis 2001)
 .conditional_sim <- function(x, args=NULL){

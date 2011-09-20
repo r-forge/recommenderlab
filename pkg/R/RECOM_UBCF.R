@@ -1,7 +1,7 @@
 ## collaborative filtering  
 
 ## simple k-nearest neighbor
-knn <- function(n, d) head(order(d, decreasing=FALSE), n+1)[-1]
+knn <- function(n, d) head(order(d, decreasing=FALSE, na.last=NA), n)
 
 BIN_UBCF <- function(data, parameter = NULL){
 
@@ -20,7 +20,7 @@ BIN_UBCF <- function(data, parameter = NULL){
                     ), p 
             )
 
-    predict <- function(model, newdata, n=10) {
+    predict <- function(model, newdata, n=10, ...) {
         n <- as.integer(n)
 
         ## cross dissimilaries
@@ -51,7 +51,8 @@ BIN_UBCF <- function(data, parameter = NULL){
             neighbors <- knn(model$nn, d_cross)
 
             if(!model$weighted)
-                recom <- order(colCounts(model$data[neighbors,]), decreasing=TRUE)
+                recom <- order(colCounts(model$data[neighbors,]), 
+		    decreasing=TRUE)
             else{
                 w <- drop(d_cross[neighbors])
 
@@ -89,6 +90,9 @@ REAL_UBCF <- function(data, parameter = NULL){
                     ), parameter) 
 
     if(p$sample) data <- sample(data, p$sample)
+    
+    ## normalize data
+    data <- normalize(data)
 
     model <- c(list(
                     description = "UBCF-Real data: contains full or sample of data set",
@@ -96,47 +100,50 @@ REAL_UBCF <- function(data, parameter = NULL){
                     ), p 
             )
 
-    predict <- function(model, newdata, n=10) {
-        n <- as.integer(n)
+    predict <- function(model, newdata, n=10, 
+	    type=c("topNList", "ratings"), ...) {
 
-        ## cross dissimilaries
-	d_cross_all <- dissimilarity(newdata, model$data, 
+	type <- match.arg(type)
+	n <- as.integer(n)
+	
+	## normalize new data
+	r_u_bar <- rowMeans(newdata)
+	newdata <- normalize(newdata)
+
+	## similarities
+	sim <- similarity(newdata, model$data, 
 		method = model$method)
 
-        reclist <- list()
-        for(i in 1:nrow(newdata)) {
-            reclist[[i]] <- numeric(0)
-            user <- newdata[i]
+	neighbors <- apply(sim, MARGIN=1, FUN=function(x) head(
+			order(x, decreasing=TRUE, na.last=TRUE), model$nn))
 
-            ## find knn
-            d_cross <- d_cross_all[i,]
-            neighbors <- knn(model$nn, d_cross)
+	## r_ui = r_u_bar + [sum_k s_uk * r_ai - r_a_bar] / sum_k s_uk
+	## k is the neighborhood
+	## r_ai - r_a_bar_ is normalize(r_ai)
 
-            if(!model$weighted) {
-		data_neighbors <- model$data[neighbors,]
+	s_uk <- sapply(1:nrow(sim), FUN=function(x) 
+		sim[x, neighbors[,x]])
+	sum_s_uk <- colSums(s_uk)
 
-		### normalize (subtract average)
-		ratings <- colSums(normalize(data_neighbors))
+	r_a_norms <- sapply(1:nrow(sim), FUN=function(x) 
+		drop(as(crossprod(as(model$data[neighbors[,x],], "dgCMatrix"),
+				sim[x,neighbors[,x]]),"matrix")))
 
-	    }else{
-		stop("This needs to be implemented!!!")
-		w <- drop(d_cross[neighbors])
+	r_a_norms[r_a_norms == 0] <- NA
+	ratings <- r_u_bar + t(r_a_norms)/sum_s_uk
+	
+	## remove known items
+	ratings[as(as(newdata, "ngCMatrix"), "matrix")] <- NA
 
-                ## make it a similarity
-                w <- max(w, 1) - w
+	if(type=="ratings") {
+	    return(as(ratings, "realRatingMatrix"))
+	}
 
-                m <- as(model$data[neighbors,], "dgCMatrix") 
-                ratings <- crossprod(m, w) / colSums(as(m, "lgCMatrix")*w)
-            }
+	reclist <- apply(ratings, MARGIN=1, FUN=function(x)
+		head(order(x, decreasing=TRUE, na.last=NA), n))
 
-
-            ## remove known items
-            knows <- colCounts(user) >0
-	    ratings[knows] <- NA
-	    reclist[[i]] <- head(
-		    order(ratings, decreasing = TRUE), n)
-
-        }
+	if(!is(reclist, "list")) reclist <- lapply(1:ncol(reclist),
+		FUN=function(i) reclist[,i])
 
         new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
     }

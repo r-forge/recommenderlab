@@ -10,19 +10,21 @@ Predict Recommendations
 Creates recommendations using a recommender model and data about new users.
 }
 \usage{
-\S4method{predict}{Recommender}(object, newdata, n = 10, ...)
+\S4method{predict}{Recommender}(object, newdata, n = 10, type="topNList"...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{a recommender model (class \code{"Recommender"}).}
   \item{newdata}{data about new users (class \code{"ratingMatrix"}).}
   \item{n}{ number of recommendations in the top-N list.}
+  \item{type}{ type of recommendation. The default type is a top-N recommendation list. Some recommenders can also create other results (e.g., predicted ratings)}
   \item{\dots}{further arguments.}
 }
 %\details{
 %}
 \value{
-Returns an object of class \code{"topNList"}.
+Returns an object of class \code{"topNList"} or of other appropriate 
+classes.
 }
 \seealso{
 \code{\linkS4class{Recommender}},

@@ -3,15 +3,19 @@
 \alias{dissimilarity}
 \alias{dissimilarity,binaryRatingMatrix-method}
 \alias{dissimilarity,realRatingMatrix-method}
+\alias{similarity}
+\alias{similarity,ratingMatrix-method}
 \title{
-Dissimilarity Calculation Between Rating Data
+Dissimilarity and Similarity Calculation Between Rating Data
 }
 \description{
-Calculate dissimilarities between ratings by users and for items.
+Calculate dissimilarities/similarities between ratings by users and for items.
 }
 \usage{
 \S4method{dissimilarity}{binaryRatingMatrix}(x, y = NULL, method = NULL, args = NULL, which="users")
 \S4method{dissimilarity}{realRatingMatrix}(x, y = NULL, method = NULL, args = NULL, which="users")
+similarity(x, y = NULL, method = NULL, args = NULL, ...)
+\S4method{similarity}{ratingMatrix}(x, y = NULL, method = NULL, args = NULL, which="users")
 }
 \arguments{
   \item{x}{a rating matrix.}
@@ -26,11 +30,14 @@ Calculate dissimilarities between ratings by users and for items.
   \item{args}{a list of additional arguments for the methods.}
   \item{which}{a character string indicating if the dissimilarity should be 
             calculated between \code{"users"} or \code{"items"}.}
+  \item{...}{further arguments.} 
 }
-%\details{
-%}
+\details{
+Similarities are computed from dissimilarities using \eqn{s=1/(1+d)}.
+}
 \value{
-  returns an object of class \code{dist} of an appropriate object (e.g., 
+  returns an object of class \code{dist}, \code{simil} 
+  or an appropriate object (e.g., 
   a matrix) to represent a cross-dissimilarity.
 }
 \seealso{
