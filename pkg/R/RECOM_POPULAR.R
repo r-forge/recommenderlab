@@ -1,24 +1,27 @@
 ## always recommends the top-N popular items (without known items)
 BIN_POPULAR <- function(data, parameter = NULL) {
 
-	model <- list(
-		description = "Order of items by popularity",
-		popOrder = order(colCounts(data), decreasing=TRUE)
-	)
+    model <- list(
+	    description = "Order of items by popularity",
+	    popOrder = order(colCounts(data), decreasing=TRUE)
+	    )
 
-    predict <- function(model, newdata, n=10) {
-		n <- as.integer(n)
+    predict <- function(model, newdata, n=10, 
+	    ...) {
+	
+	n <- as.integer(n)
 
-		## remove known items and take highest
-		reclist <- lapply(LIST(newdata, decode= FALSE),
-			function(x) head(model$popOrder[!(model$popOrder %in% names(x))], n))
+
+	## remove known items and take highest
+	reclist <- lapply(LIST(newdata, decode= FALSE),
+		function(x) head(model$popOrder[!(model$popOrder %in% names(x))], n))
 
         new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
     }
 
-	## construct recommender object
-	new("Recommender", method = "POPULAR", dataType = class(data),
-		ntrain = nrow(data), model = model, predict = predict)
+    ## construct recommender object
+    new("Recommender", method = "POPULAR", dataType = class(data),
+	    ntrain = nrow(data), model = model, predict = predict)
 }
 
 ## register recommender
@@ -34,24 +37,36 @@ recommenderRegistry$set_entry(
 REAL_POPULAR <- function(data, parameter = NULL) {
 
 
-	model <- list(
-		description = "Order of items by popularity",
-		### only one high vote would dominate
-		#popOrder = order(colMeans(data), decreasing=TRUE)
-		### many votes and high votes 
-		### normalize (subtract mean ratings)
-		popOrder = order(colSums(normalize(data)), decreasing=TRUE) 
-	)
+    model <- list(
+	    description = "Order of items by popularity",
+	    ### only one high vote would dominate
+	    #popOrder = order(colMeans(data), decreasing=TRUE)
+	    ### many votes and high votes 
+	    ### normalize (subtract mean ratings)
+	    popOrder = order(colSums(normalize(data)), decreasing=TRUE), 
+	    ratings = colMeans(data, na.rm=TRUE) 
+	    )
 
-    predict <- function(model, newdata, n=10) {
-		n <- as.integer(n)
+    predict <- function(model, newdata, n=10,
+	    type=c("topNList", "ratings"), ...) {
+	
+	n <- as.integer(n)
+	type <- match.arg(type)
 
-		## remove known items and take highest
-		reclist <- lapply(LIST(newdata, decode= FALSE),
-			function(x) head(model$popOrder[
-				!(model$popOrder %in% names(x))], n))
+	if(type=="ratings") {
+	    ratings <- matrix(model$ratings, 
+		    nrow=nrow(newdata), ncol=ncol(newdata), byrow=TRUE)
+	    ## remove known ratings
+	    ratings[as(as(newdata, "ngCMatrix"), "matrix")] <- NA
+	    return(as(ratings, "realRatingMatrix"))
+	}
 
-        new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
+	## remove known items and take highest
+	reclist <- lapply(LIST(newdata, decode= FALSE),
+		function(x) head(model$popOrder[
+			!(model$popOrder %in% names(x))], n))
+
+	new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
     }
 
 	## construct recommender object

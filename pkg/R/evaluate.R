@@ -13,13 +13,10 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
                 for(r in runs) {
                     if(progress) cat(r)
 
-                    time <- system.time(
-                            cm[[r]] <- .do_run_by_n(scheme, method, 
-                                    run=r, n=n, parameter=parameter, 
-                                    progress=progress, keepModel=keepModel)
-                            )
+		    cm[[r]] <- .do_run_by_n(scheme, method, 
+			    run=r, n=n, parameter=parameter, 
+			    progress=progress, keepModel=keepModel)
 
-                    if(progress) cat(" [", time[1]+time[2], " s] ", sep="")
                 }
 			
 		if(progress) cat("\n")
@@ -43,6 +40,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 	})
 
 
+## evaluation work horse
 .do_run_by_n <- function(scheme, method, run, n, parameter = NULL,
 	progress=FALSE, keepModel=TRUE) {
 
@@ -52,21 +50,25 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 	test_unknown <- getData(scheme, type="unknown", run=run)
 
 	### binarize a realRatingMatrix?
-	if(!is.na(scheme@goodRating)) {
-	    if(!is(test_known, "realRatingMatrix")) stop("goodRating only works for a realRatingMatrix!")
+	if (is(test_known, "realRatingMatrix")) {
+	    if(is.na(scheme@goodRating)) stop("You need to set goodRating in the evaluationScheme for a realRatingMatrix!")
+
 	    test_unknown <- binarize(test_unknown, scheme@goodRating)
-    	}else{
-	if (is(test_known, "realRatingMatrix")) warning("You probably want to set goodRating for a realRatingMatrix!")
 	}
 
 	## train recommender
-	r <- Recommender(train, method, parameter=parameter)
+	time_model <- system.time(
+		r <- Recommender(train, method, parameter=parameter)
+		)
+	
 	cm <- matrix(NA, nrow=length(n), ncol=9, 
 		dimnames= list(n=n, 
 			c("TP", "FP", "FN", "TN", "PP", "recall","precision","FPR","TPR")))
 
 	
-	topN <- predict(r, test_known, n=max(n))
+	time_predict <- system.time(
+		topN <- predict(r, test_known, n=max(n))
+		)
 	
 	for(i in 1:length(n)) {
 		NN <- n[i]
@@ -75,7 +77,12 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		pred <- bestN(topN, NN)
 
 		## create confusion matrix
-		tp <- rowSums(as(pred, "ngCMatrix")*as(test_unknown, "ngCMatrix"))
+		tp <- rowSums(as(pred, "ngCMatrix") * as(test_unknown, "ngCMatrix"))
+		## The algorithm predicted known items!!!
+		pred_known <- rowSums(as(pred, "ngCMatrix") * as(test_known, "ngCMatrix"))
+		if(any(pred_known>0)) warning(paste("The algorithm ", 
+				r@model," predicted known items!!!"))
+
 		tp_fn <- rowCounts(test_unknown)
 		tp_fp <- rowCounts(pred)
 
@@ -84,8 +91,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		cm[i, "FN"] <- mean(tp_fn - tp)
 		## Reduced TN by the number of given items. Bug
 		## reported by ("Zhang, Martin F" <Martin.F.Zhang@asia.ccb.com>)
-		cm[i, "TN"] <- ncol(train) - cm[i, "TP"] -  cm[i, "FP"] - 
-			cm[i, "FN"] - scheme@given
+		cm[i, "TN"] <- ncol(train) - scheme@given + mean(pred_known) - cm[i, "TP"] -  cm[i, "FP"] - cm[i, "FN"]
 		cm[i, "PP"] <- mean(tp_fp)
 
 		## calculate some important measures
@@ -95,6 +101,12 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		cm[i, "FPR"] <- cm[i, "FP"] / (cm[i, "FP"] + cm[i, "TN"]) 
 
 	}
+                    
+	time_usage <- function(x) x[1]+x[2]
+
+	if(progress) cat(" [", 
+		time_usage(time_model), "sec/",
+		time_usage(time_predict),"sec] ", sep="")
 
 	new("confusionMatrix", cm = cm, model = 
 		if(keepModel) getModel(r) else NULL)

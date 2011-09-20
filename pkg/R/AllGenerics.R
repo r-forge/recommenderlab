@@ -45,9 +45,16 @@ setGeneric("rowCounts",
 setGeneric("bestN",
 	function(x, ...) standardGeneric("bestN"))
 
+setGeneric("calcPredictionError", 
+	function(x, data, ...) standardGeneric("calcPredictionError"))
+
 setGeneric("evaluationScheme",
 	function(data, ...) standardGeneric("evaluationScheme"))
 
 setGeneric("Recommender",
 	function(data, ...) standardGeneric("Recommender"))
+
+setGeneric("similarity",
+	function(x, y = NULL, method = NULL, args = NULL, ...) 
+	standardGeneric("similarity"))
 

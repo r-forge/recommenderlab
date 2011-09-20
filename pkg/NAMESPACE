@@ -38,8 +38,8 @@ exportMethods(
 		"image",
 		"sample",
 		"summary",
+		"calcPredictionError",
 		"predict",
-		"dissimilarity",
 #		"colMeans",
 #		"rowMeans",
 		"colCounts",
@@ -58,6 +58,7 @@ exportMethods(
 		"getData",
 		"getConfusionMatrix",
 		"dissimilarity",
+		"similarity",
 		"evaluationScheme",
 		"Recommender"
 		)

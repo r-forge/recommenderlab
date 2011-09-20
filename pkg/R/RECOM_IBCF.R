@@ -36,7 +36,7 @@ BIN_IBCF <- function(data, parameter= NULL) {
         ), p
     )
 
-    predict <- function(model, newdata, n = 10) {
+    predict <- function(model, newdata, n = 10, ...) {
 	n <- as.integer(n)
 
 	sim <- model$sim 
@@ -82,22 +82,25 @@ REAL_IBCF <- function(data, parameter= NULL) {
 		    ), parameter)
 
 
-    db <- normalize(db)
-    d <- dissimilarity(db, method=p$method, which="items", 
-	    args=list(alpha=p$alpha, na_as_zero=p$na_as_zero))
-    sim <- as.matrix(1/(1+d))
+    data <- normalize(data)
+    
+    ## this might not fit into memory! Maybe use a sample?
+    sim <- as.matrix(1/(1+ 
+	    dissimilarity(db, method=p$method, which="items", 
+		args=list(alpha=p$alpha, na_as_zero=p$na_as_zero))))
 
     ## normalize rows to 1
     if(p$normalize) sim <- sim/rowSums(sim)
 
     ## reduce similarity matrix to keep only the k highest similarities
-    diag(sim) <- 0
-    sim[!is.finite(sim)] <- 0
+    diag(sim) <- NA
+    ##sim[!is.finite(sim)] <- NA
 
-    sim <- apply(sim, MARGIN=1, FUN=function(x) {
-		x[head(order(x, decreasing=FALSE), length(x) - p$k)] <- 0
-		x
-	    })
+    for(i in 1:nrow(sim)) 
+	sim[i,head(order(sim[i,], decreasing=FALSE, na.last=FALSE), 
+	    ncol(sim) - p$k)] <- 0
+    
+    ## make sparse
     sim <- as(sim, "dgCMatrix")
 
 
@@ -107,17 +110,29 @@ REAL_IBCF <- function(data, parameter= NULL) {
 		    ), p
 	    )
 
-    predict <- function(model, newdata, n = 10) {
+    predict <- function(model, newdata, n = 10, 
+	    type=c("topNList", "ratings"), ...) {
+	
+	type <- match.arg(type)
 	n <- as.integer(n)
-
 	sim <- model$sim 
-
 	u <- as(newdata, "dgCMatrix")
-	ratings <- as(crossprod(sim,t(u)), "matrix") / colSums(sim)
+	
+	## predict all ratings
+	ratings <- tcrossprod(sim,u) / tcrossprod(sim, u!=0)
+
+	## remove known ratings
+	ratings[as(t(u!=0), "matrix")] <- NA
+
+	if(type=="ratings") {
+	    return(as(as.matrix(ratings), "realRatingMatrix"))
+	}
 
 	reclist <- apply(ratings, MARGIN=2, FUN=function(x) 
-		head(order(x, decreasing=TRUE), n))
-	reclist <- lapply(1:ncol(reclist), FUN=function(i) reclist[,i])
+		head(order(x, decreasing=TRUE, na.last=NA), n))
+	
+	if(!is(reclist, "list")) reclist <- lapply(1:ncol(reclist), 
+		FUN=function(i) reclist[,i])
 
 	new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
 
