@@ -6,64 +6,73 @@ BIN_IBCF <- function(data, parameter= NULL) {
             k = 30, 
             method="Jaccard",
             normalize = FALSE, 
-            alpha = 0.5), parameter)
+            alpha = 0.5
+	    ), parameter)
     
+    ## MFH: we do not have normalize for binary data
+    #data <- normalize(data)
     
-    ## for other similarites: use 1/1+ dissimilarites defined in arules
-    sim <- 1 / (1+as.matrix(dissimilarity(data, which = "items",
-            method = p$method, args=list(alpha=p$alpha))))
+    ## this might not fit into memory! Maybe use a sample?
+    sim <- as.matrix(similarity(data, method=p$method, which="items", 
+		args=list(alpha=p$alpha)))
+
+    ## reduce similarity matrix to keep only the k highest similarities
+    diag(sim) <- NA
+    ##sim[!is.finite(sim)] <- NA
     
     ## normalize rows to 1
-    if(p$normalize) sim <- sim/rowSums(sim)
-    
-    ## reduce similarity matrix to keep only the k highest similarities
-    diag(sim) <- 0
-    for(i in 1:nrow(sim)) {
-        o <- order(sim[i,], decreasing=TRUE)
-        o <- o[(p$k+1):length(o)]
-        sim[i,o] <- 0
-    }
+    if(p$normalize) sim <- sim/rowSums(sim, na.rm=TRUE)
 
-    ## normalize rows to 1 after
-    #if(normalize) s_items <- s_items/rowSums(s_items)
+    for(i in 1:nrow(sim)) 
+	sim[i,head(order(sim[i,], decreasing=FALSE, na.last=FALSE), 
+	    ncol(sim) - p$k)] <- 0
+    
+
     
     ## make sparse
     sim <- as(sim, "dgCMatrix")
 
+
     model <- c(list(
-            description = "IBCF: Reduced similarity matrix",
-            sim = sim
-        ), p
-    )
+		    description = "IBCF: Reduced similarity matrix",
+		    sim = sim
+		    ), p
+	    )
+    
 
-    predict <- function(model, newdata, n = 10, ...) {
+    predict <- function(model, newdata, n = 10, 
+	    type=c("topNList", "ratings"), ...) {
+
+	type <- match.arg(type)
 	n <- as.integer(n)
-
 	sim <- model$sim 
+	u <- as(newdata, "dgCMatrix")
 
-	reclist <- list()
-	for(i in 1:nrow(newdata)) {
-	    user <- newdata[i,] 
-	    u <- as(user, "dgCMatrix")
+	## predict all ratings (average similarity)
+	#ratings <- tcrossprod(sim,u)
+	ratings <- tcrossprod(sim,u) / tcrossprod(sim!=0, u!=0)
 
-	    known <- as.logical(u)
-	    u <- u[, known]
-	    sim_u <- sim[known,]
+	## remove known ratings
+	ratings[as(t(u!=0), "matrix")] <- NA
 
-	    ## add similarites for known items
-	    x <- crossprod(sim_u, u) / colSums(sim_u, na.rm=TRUE)
-
-	    ## find N items with highest score
-	    reclist[[i]] <- head(order(as(x, "vector"), decreasing=TRUE), n)
+	if(type=="ratings") {
+	    return(as(as.matrix(ratings), "realRatingMatrix"))
 	}
+
+	reclist <- apply(ratings, MARGIN=2, FUN=function(x) 
+		head(order(x, decreasing=TRUE, na.last=NA), n))
+
+	if(!is(reclist, "list")) reclist <- lapply(1:ncol(reclist), 
+		FUN=function(i) reclist[,i])
 
 	new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
 
     }
 
-	## construct recommender object
-	new("Recommender", method = "IBCF", dataType = class(data),
-		ntrain = nrow(data), model = model, predict = predict)
+    ## construct recommender object
+    new("Recommender", method = "IBCF", dataType = class(data),
+	    ntrain = nrow(data), model = model, predict = predict)
+
 }
 
 ## register recommender
@@ -85,9 +94,8 @@ REAL_IBCF <- function(data, parameter= NULL) {
     data <- normalize(data)
     
     ## this might not fit into memory! Maybe use a sample?
-    sim <- as.matrix(1/(1+ 
-	    dissimilarity(db, method=p$method, which="items", 
-		args=list(alpha=p$alpha, na_as_zero=p$na_as_zero))))
+    sim <- as.matrix(similarity(data, method=p$method, which="items", 
+		args=list(alpha=p$alpha, na_as_zero=p$na_as_zero)))
 
     ## normalize rows to 1
     if(p$normalize) sim <- sim/rowSums(sim)
