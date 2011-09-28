@@ -96,7 +96,15 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 setMethod("similarity", signature(x = "ratingMatrix"),
 	function(x, y = NULL, method = NULL, args = NULL, 
 		which = "users") {
-	    sim <- 1/(1+dissimilarity(x, y, method, args, which))
+
+	    d <- dissimilarity(x, y, method, args, which)
+	    
+	    ## FIXME: other measures in [0,1]
+	    if(tolower(attr(d, "method")) %in% c("jaccard", "cosine")) {
+		sim <- 1-d
+	    }else {
+		sim <- 1/(1+dissimilarity(x, y, method, args, which))
+	    }
 	    attr(sim, "type") <- "simil"
 	    sim
 	})

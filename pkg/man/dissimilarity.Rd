@@ -33,7 +33,8 @@ similarity(x, y = NULL, method = NULL, args = NULL, ...)
   \item{...}{further arguments.} 
 }
 \details{
-Similarities are computed from dissimilarities using \eqn{s=1/(1+d)}.
+Similarities are computed from dissimilarities using \eqn{s=1/(1+d)}
+or \eqn{s=1-d} depending on the measure.
 }
 \value{
   returns an object of class \code{dist}, \code{simil} 
@@ -49,12 +50,14 @@ data(MSWeb)
 
 ## between 5 users
 dissimilarity(sample(MSWeb, 5), method = "jaccard")
+similarity(sample(MSWeb, 5), method = "jaccard")
 
 ## between first 3 items
 dissimilarity(MSWeb[,1:3], method = "jaccard", which = "items")
+similarity(MSWeb[,1:3], method = "jaccard", which = "items")
 
 ## cross-dissimilarity between first 2 users and users 10-20
-dissimilarity(MSWeb[1:2,], MSWeb[10:20,])
+dissimilarity(MSWeb[1:2,], MSWeb[10:20,], method="jaccard")
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

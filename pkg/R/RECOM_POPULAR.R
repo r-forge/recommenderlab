@@ -6,15 +6,12 @@ BIN_POPULAR <- function(data, parameter = NULL) {
 	    popOrder = order(colCounts(data), decreasing=TRUE)
 	    )
 
-    predict <- function(model, newdata, n=10, 
-	    ...) {
-	
+    predict <- function(model, newdata, n=10, ...) {
 	n <- as.integer(n)
-
 
 	## remove known items and take highest
 	reclist <- lapply(LIST(newdata, decode= FALSE),
-		function(x) head(model$popOrder[!(model$popOrder %in% names(x))], n))
+		function(x) head(model$popOrder[!(model$popOrder %in% x)], n))
 
         new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
     }
