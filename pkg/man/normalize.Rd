@@ -1,5 +1,6 @@
 \name{normalize}
 \alias{normalize}
+\alias{normalize,realRatingMatrix-method}
 \title{Normalize the ratings}
 \description{
 Provides the generic for normalize and 
