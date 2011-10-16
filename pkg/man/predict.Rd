@@ -10,7 +10,7 @@ Predict Recommendations
 Creates recommendations using a recommender model and data about new users.
 }
 \usage{
-\S4method{predict}{Recommender}(object, newdata, n = 10, type="topNList"...)
+\S4method{predict}{Recommender}(object, newdata, n = 10, type="topNList", ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

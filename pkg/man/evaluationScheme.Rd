@@ -10,8 +10,8 @@ bootstrap samples.
 }
 \usage{
 evaluationScheme(data, ...)
-\S4method{evaluationScheme}{ratingMatrix}(data, method="split", train=0.9, 
-k=10, given=3)
+\S4method{evaluationScheme}{ratingMatrix}(data, method="split", 
+    train=0.9, k=10, given=3, goodRating = NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -22,6 +22,12 @@ k=10, given=3)
 	\item{given}{single number of items given for evaluation or
 	  a vector of length of data giving the number of items given for each
 	    observation. }
+	\item{goodRating}{numeric; threshold at which ratings are considered 
+	good for evaluation. E.g., with \code{goodRating=3} all items 
+	with actual user rating of greater or equal 3 are 
+	considered positives. Note that this argument is only used if 
+	the ratingMatrix is
+	a of subclass realRatingMatrix!}
 	\item{\dots}{further arguments. }
 }
 \details{

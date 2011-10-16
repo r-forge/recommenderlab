@@ -7,7 +7,7 @@ setMethod("evaluationScheme", signature(data = "ratingMatrix"),
 	    ## given can be one integer or a vector of length data
 	    given <- as.integer(given)
 	    if(length(given)!=1 && length(given)!=n)
-		stop("length of given has to be one or length of data!")
+		stop("Length of given has to be one or length of data!")
 
 	    ## check size
 	    if(any(rowCounts(data)<given))
