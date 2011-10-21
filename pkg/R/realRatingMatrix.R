@@ -52,8 +52,11 @@ setAs("data.frame", "realRatingMatrix", function(from) {
 	})
 
 
+
+
+
 setMethod("LIST", signature(from = "realRatingMatrix"),
-	function(from, decode = TRUE, ratings = TRUE, ...) {
+	function(from, decode = TRUE, ratings = TRUE,...) {
 		trip <- as(from@data, "dgTMatrix")
 		lst <- split(trip@j+1L, trip@i)
 		rts <- split(trip@x, trip@i)
@@ -124,6 +127,53 @@ setMethod("binarize", signature(x = "realRatingMatrix"),
 			itemInfo = data.frame(labels=colnames(x)))
 		new("binaryRatingMatrix", data = x)
 	})
+
+setMethod("hist", signature(x = "realRatingMatrix"),
+	function(x, main="Histogram of Ratings", xlab="Ratings", breaks="FD",...){
+	    graphics::hist(x@data@x, main=main, xlab=xlab, breaks=breaks, ...)
+	})
+
+
+setMethod("getTopNLists", signature(x = "realRatingMatrix"),
+	function(x, n= 10, min_rating = NA){
+	    n <- as.integer(n)
+	    x.m <- as(x, "matrix")
+
+	    if(!is.na(min_rating)) x.m[x.m<min_rating] <- NA
+
+	    reclist <- lapply(1:nrow(x), FUN=function(i) {
+			head(order(as(x.m[i,],"matrix"), 
+					decreasing=TRUE, na.last=NA), n)
+		    })
+	    
+	    new("topNList", items = reclist, itemLabels = colnames(x), n = n)
+	})
+
+
+### compute standard deviation
+
+.dgC2list <- function(x, row=TRUE) {
+ if(row) x <- t(x)   
+ lapply(2:length(x@p), FUN = function(i) {
+	     if(x@p[i-1L]==x@p[i]) numeric(0)
+	     else x@x[(x@p[i-1L]+1L):x@p[i]]
+	 })
+}
+
+setMethod("rowSds", signature(x = "realRatingMatrix"),
+	function(x, ...) {
+	    s <- sapply(.dgC2list(x@data, row=TRUE), sd)
+	    names(s) <- rownames(x)
+	    s
+	})
+
+setMethod("colSds", signature(x = "realRatingMatrix"),
+	function(x, ...) {
+	    s <- sapply(.dgC2list(x@data, row=FALSE), sd)
+	    names(s) <- colnames(x)
+	    s
+	})
+
 
 
 ## create test data

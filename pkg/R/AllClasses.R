@@ -1,5 +1,11 @@
+## helper
+setClassUnion("listOrNull", c("list", "NULL"))
+
 ## Ratings
-setClass("ratingMatrix")
+setClass("ratingMatrix",
+	representation(
+		normalize = "listOrNull"
+	))
 
 setClass("binaryRatingMatrix",
 	contains="ratingMatrix",
@@ -51,7 +57,6 @@ setClass("evaluationScheme",
 )
 
 
-setClassUnion("listOrNull", c("list", "NULL"))
 
 setClass("confusionMatrix",
 	representation(

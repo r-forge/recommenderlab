@@ -93,16 +93,22 @@ setMethod("sample", signature(x = "ratingMatrix"),
 ## show
 setMethod("show", signature(object = "ratingMatrix"),
 	function(object) {
-		cat(nrow(object), 'x', ncol(object), "rating matrix of class",
-			sQuote(class(object)), "\nwith",
-			nratings(object), "ratings.\n")
-		invisible(NULL)
+	    cat(nrow(object), 'x', ncol(object), "rating matrix of class",
+		    sQuote(class(object)), "with",
+		    nratings(object), "ratings.\n")
+	    if(!is.null(object@normalize)) {
+		cat("Normalized using",object@normalize$method,"on ") 
+		if(object@normalize$row) cat("rows.")
+		else cat("columns.")
+		cat("\n")
+	    }
+	    invisible(NULL)
 	})
 
 ## image
 setMethod("image", signature(x = "ratingMatrix"),
 	function(x, xlab = "Items (Columns)", ylab = "Users (Rows)", ...)
-	image(as(x, "dgTMatrix"), ylab = ylab, xlab = xlab, ...)
+	Matrix::image(as(x, "dgTMatrix"), ylab = ylab, xlab = xlab, ...)
 )
 
 

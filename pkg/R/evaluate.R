@@ -16,7 +16,6 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 		    cm[[r]] <- .do_run_by_n(scheme, method, 
 			    run=r, n=n, parameter=parameter, 
 			    progress=progress, keepModel=keepModel)
-
                 }
 			
 		if(progress) cat("\n")
@@ -33,9 +32,17 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
 		#list(RANDOM = list(name = "RANDOM", parameter = NULL), 
 		#	POPULAR = list(...
 	
-		results <- lapply(method, FUN = function(a) evaluate(x, a$n,
-				n = n , parameter = a$p))	
-	
+		results <- lapply(method, FUN = function(a) try(evaluate(x, a$n,
+				n = n , parameter = a$p)))	
+
+		## handle recommenders that have failed
+		errs <- sapply(results, is, "try-error")
+		if(any(errs)) {
+		    warning(paste("\n  Recommender '", names(results)[errs], 
+				    "' has failed and has been removed from the results!", sep=''))
+			results[errs] <- NULL
+		}
+
 		as(results, "evaluationResultList")
 	})
 

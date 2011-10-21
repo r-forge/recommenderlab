@@ -86,13 +86,15 @@ REAL_UBCF <- function(data, parameter = NULL){
                     method = "cosine", 
                     nn = 25, 
                     weighted=FALSE,
-                    sample = FALSE
+                    sample = FALSE,
+		    normalize="center",
+		    min_rating = NA
                     ), parameter) 
 
     if(p$sample) data <- sample(data, p$sample)
     
     ## normalize data
-    data <- normalize(data)
+    if(!is.null(p$normalize)) data <- normalize(data, method=p$normalize)
 
     model <- c(list(
                     description = "UBCF-Real data: contains full or sample of data set",
@@ -106,9 +108,8 @@ REAL_UBCF <- function(data, parameter = NULL){
 	type <- match.arg(type)
 	n <- as.integer(n)
 	
-	## normalize new data
-	r_u_bar <- rowMeans(newdata)
-	newdata <- normalize(newdata)
+	if(!is.null(model$normalize)) 
+	    newdata <- normalize(newdata, method=model$normalize)
 
 	## similarities
 	sim <- similarity(newdata, model$data, 
@@ -119,33 +120,33 @@ REAL_UBCF <- function(data, parameter = NULL){
 
 	## r_ui = r_u_bar + [sum_k s_uk * r_ai - r_a_bar] / sum_k s_uk
 	## k is the neighborhood
-	## r_ai - r_a_bar_ is normalize(r_ai)
+	## r_ai - r_a_bar_ is normalize(r_ai) = newdata
 
 	s_uk <- sapply(1:nrow(sim), FUN=function(x) 
 		sim[x, neighbors[,x]])
 	sum_s_uk <- colSums(s_uk)
 
-	r_a_norms <- sapply(1:nrow(sim), FUN=function(x) 
-		drop(as(crossprod(as(model$data[neighbors[,x],], "dgCMatrix"),
-				sim[x,neighbors[,x]]),"matrix")))
+	## calculate the weighted sum
+	r_a_norms <- sapply(1:nrow(newdata), FUN=function(i) {
+		    ## neighbors ratings of active user i
+		    r_neighbors <- as(model$data[neighbors[,i]], "dgCMatrix") 
+		    drop(as(crossprod(r_neighbors, s_uk[,i]), "matrix"))
+		})	
 
-	r_a_norms[r_a_norms == 0] <- NA
-	ratings <- r_u_bar + t(r_a_norms)/sum_s_uk
+	ratings <- t(r_a_norms)/sum_s_uk
 	
 	## remove known items
 	ratings[as(as(newdata, "ngCMatrix"), "matrix")] <- NA
+	ratings <- as(ratings, "realRatingMatrix")
+	ratings@normalize <- newdata@normalize
+	
+	## denormalize
+	if(!is.null(model$normalize)) 
+	    ratings <- denormalize(ratings)
 
-	if(type=="ratings") {
-	    return(as(ratings, "realRatingMatrix"))
-	}
+	if(type=="ratings") return(ratings)
 
-	reclist <- apply(ratings, MARGIN=1, FUN=function(x)
-		head(order(x, decreasing=TRUE, na.last=NA), n))
-
-	if(!is(reclist, "list")) reclist <- lapply(1:ncol(reclist),
-		FUN=function(i) reclist[,i])
-
-        new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
+	getTopNLists(ratings, n=n, min_rating=model$min_rating)
     }
 
     ## construct recommender object

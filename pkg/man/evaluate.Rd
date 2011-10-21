@@ -3,7 +3,6 @@
 \alias{evaluate}
 \alias{evaluate,evaluationScheme,character-method}
 \alias{evaluate,evaluationScheme,list-method}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Evaluate a Recommender Models
 }
