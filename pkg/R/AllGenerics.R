@@ -15,6 +15,9 @@ setGeneric("nratings",
 setGeneric("normalize",
 	function(x, ...) standardGeneric("normalize"))
 
+setGeneric("denormalize",
+	function(x, ...) standardGeneric("denormalize"))
+
 setGeneric("getData",
 	function(x, ...) standardGeneric("getData"))
 
@@ -26,6 +29,9 @@ setGeneric("getRuns",
 
 setGeneric("getConfusionMatrix",
 	function(x, ...) standardGeneric("getConfusionMatrix"))
+
+setGeneric("getTopNLists",
+	function(x, ...) standardGeneric("getTopNLists"))
 
 setGeneric("evaluate",
 	function(x, method, ...) standardGeneric("evaluate"))
@@ -41,6 +47,12 @@ setGeneric("colCounts",
 
 setGeneric("rowCounts",
 	function(x, ...) standardGeneric("rowCounts"))
+
+setGeneric("rowSds",
+	function(x, ...) standardGeneric("rowSds"))
+
+setGeneric("colSds",
+	function(x, ...) standardGeneric("colSds"))
 
 setGeneric("bestN",
 	function(x, ...) standardGeneric("bestN"))

@@ -5,12 +5,10 @@ BIN_IBCF <- function(data, parameter= NULL) {
 	p <- .get_parameters(list(
             k = 30, 
             method="Jaccard",
-            normalize = FALSE, 
+	    normalize_sim_matrix = FALSE,
             alpha = 0.5
 	    ), parameter)
     
-    ## MFH: we do not have normalize for binary data
-    #data <- normalize(data)
     
     ## this might not fit into memory! Maybe use a sample?
     sim <- as.matrix(similarity(data, method=p$method, which="items", 
@@ -21,7 +19,7 @@ BIN_IBCF <- function(data, parameter= NULL) {
     ##sim[!is.finite(sim)] <- NA
     
     ## normalize rows to 1
-    if(p$normalize) sim <- sim/rowSums(sim, na.rm=TRUE)
+    if(p$normalize_sim_matrix) sim <- sim/rowSums(sim, na.rm=TRUE)
 
     for(i in 1:nrow(sim)) 
 	sim[i,head(order(sim[i,], decreasing=FALSE, na.last=FALSE), 
@@ -80,25 +78,32 @@ recommenderRegistry$set_entry(
 	method="IBCF", dataType = "binaryRatingMatrix", fun=BIN_IBCF, 
 	description="Recommender based on item-based collaborative filtering (binary rating data).")
 
+
+
+
+
 REAL_IBCF <- function(data, parameter= NULL) {
 
     p <- .get_parameters(list(
 		    k = 30, 
 		    method="Cosine",
-		    normalize = FALSE, 
+		    normalize = "center", 
+		    normalize_sim_matrix = FALSE,
 		    alpha = 0.5,
-		    na_as_zero = FALSE
+		    na_as_zero = FALSE,
+		    min_rating = NA
 		    ), parameter)
 
 
-    data <- normalize(data)
+    if(!is.null(p$normalize))
+	data <- normalize(data, method=p$normalize)
     
     ## this might not fit into memory! Maybe use a sample?
     sim <- as.matrix(similarity(data, method=p$method, which="items", 
 		args=list(alpha=p$alpha, na_as_zero=p$na_as_zero)))
 
     ## normalize rows to 1
-    if(p$normalize) sim <- sim/rowSums(sim)
+    if(p$normalize_sim_matrix) sim <- sim/rowSums(sim)
 
     ## reduce similarity matrix to keep only the k highest similarities
     diag(sim) <- NA
@@ -124,25 +129,28 @@ REAL_IBCF <- function(data, parameter= NULL) {
 	type <- match.arg(type)
 	n <- as.integer(n)
 	sim <- model$sim 
+	
+	if(!is.null(model$normalize)) 
+	    newdata <- normalize(newdata, method=model$normalize)
+	
 	u <- as(newdata, "dgCMatrix")
 	
 	## predict all ratings
 	ratings <- tcrossprod(sim,u) / tcrossprod(sim, u!=0)
 
 	## remove known ratings
-	ratings[as(t(u!=0), "matrix")] <- NA
-
-	if(type=="ratings") {
-	    return(as(as.matrix(ratings), "realRatingMatrix"))
-	}
-
-	reclist <- apply(ratings, MARGIN=2, FUN=function(x) 
-		head(order(x, decreasing=TRUE, na.last=NA), n))
+	ratings <- t(as.matrix(ratings))
+	ratings[as(u!=0, "matrix")] <- NA
 	
-	if(!is(reclist, "list")) reclist <- lapply(1:ncol(reclist), 
-		FUN=function(i) reclist[,i])
+	ratings <- as(ratings, "realRatingMatrix")
+	ratings@normalize <- newdata@normalize
 
-	new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
+	if(!is.null(model$normalize)) 
+	    ratings <- denormalize(ratings)
+
+	if(type=="ratings") return(ratings)
+
+	getTopNLists(ratings, n=n, min_rating=model$min_rating)
 
     }
 
@@ -151,8 +159,18 @@ REAL_IBCF <- function(data, parameter= NULL) {
 	    ntrain = nrow(data), model = model, predict = predict)
 }
 
+
+## for testing 
+#recommenderRegistry$delete_entry( method="IBCF2", dataType = "realRatingMatrix")
+#recommenderRegistry$set_entry(
+#	method="IBCF2", dataType = "realRatingMatrix", fun=REAL_IBCF,
+#	description="Recommender based on item-based collaborative filtering (real data).")
+
+
 ## register recommender
 recommenderRegistry$set_entry(
 	method="IBCF", dataType = "realRatingMatrix", fun=REAL_IBCF,
 	description="Recommender based on item-based collaborative filtering (real data).")
+
+
 

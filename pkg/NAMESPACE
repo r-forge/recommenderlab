@@ -1,5 +1,4 @@
-importFrom("graphics", "plot") ## we need the generic for plot
-
+importFrom("graphics", "plot", "hist") ## we need the generic for plot
 importFrom("proxy", "dist")
 
 ## get generics and methods
@@ -35,6 +34,7 @@ exportMethods(
 		"coerce",	## setAs
 		"show",
 		"plot",
+		"hist",
 		"image",
 		"sample",
 		"summary",
@@ -44,6 +44,8 @@ exportMethods(
 #		"rowMeans",
 		"colCounts",
 		"rowCounts",
+		"colSds",
+		"rowSds",
 		"LIST",
 		"binarize",
 		"avg",
@@ -53,10 +55,12 @@ exportMethods(
 		"nitems",
 		"nusers",
 		"normalize",
+		"denormalize",
 		"getRuns",
 		"getModel",
 		"getData",
 		"getConfusionMatrix",
+		"getTopNLists",
 		"dissimilarity",
 		"similarity",
 		"evaluationScheme",

@@ -30,7 +30,7 @@ setMethod("dissimilarity", signature(x = "binaryRatingMatrix"),
 	    if(!is.null(y)) y <- y@data
 
 	    ## dissimilarity in arules sets the method attribute 
-	    dissimilarity(x, y, method, args, which)
+	    arules::dissimilarity(x, y, method, args, which)
 	}
 	)
 
@@ -73,7 +73,8 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 		
 
 	    ## do regular distances
-	    
+	    ## FIXME: we can do some distances faster
+
 	    x <- as(x, "dgCMatrix")
 	    if(which == "items") x <- t(x) 
 	    x <- as(x, "matrix")
@@ -89,7 +90,7 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 	    }
 
 	    ## dist in proxy
-	    dist(x = x, y = y, method = method)
+	    proxy::dist(x = x, y = y, method = method)
 	})
 
 setMethod("similarity", signature(x = "ratingMatrix"),

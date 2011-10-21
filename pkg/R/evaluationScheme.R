@@ -1,7 +1,6 @@
 setMethod("evaluationScheme", signature(data = "ratingMatrix"), 
-	function(data, method="split", train=0.9, k=10, given=3, goodRating=NA) {
+	function(data, method="split", train=0.9, k=NULL, given=3, goodRating=NA) {
 	    goodRating <- as.numeric(goodRating)
-	    k <- as.integer(k)
 	    n <- nrow(data)
 
 	    ## given can be one integer or a vector of length data
@@ -18,6 +17,12 @@ setMethod("evaluationScheme", signature(data = "ratingMatrix"),
 	    method_ind <- pmatch(method, methods)
 	    if(is.na(method_ind)) stop("Unknown method!")
 	    method <- methods[method_ind]
+	    
+	    ## set default value for k
+	    if(is.null(k)) {
+		if(method_ind == 1) k <- 1L
+		else k <- 10L
+	    }else k <- as.integer(k)
 
 	    ## split
 	    if(method_ind == 1) runsTrain <- replicate(k, 
