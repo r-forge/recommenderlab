@@ -6,10 +6,6 @@
 ## dim
 setMethod("dim", signature(x = "ratingMatrix"), 
 	function(x) dim(x@data))
-setMethod("nitems", signature(x = "ratingMatrix"), 
-	function(x, ...) ncol(x))
-setMethod("nusers", signature(x = "ratingMatrix"), 
-	function(x, ...) nrow(x))
 
 ## dimnames
 setMethod("dimnames", signature(x = "ratingMatrix"), 
@@ -20,6 +16,8 @@ setReplaceMethod("dimnames", signature(x = "ratingMatrix",
 		dimnames(x@data) <- value
 		x
 	})
+
+setAs("ratingMatrix", "list", function(from) LIST(from))
 
 ## row/col counts, sums, etc.
 ## Matrix does not handle dimnames well
@@ -70,9 +68,16 @@ setMethod("rowMeans", signature(x = "ratingMatrix"),
 setMethod("nratings", signature(x = "ratingMatrix"), 
 	    function(x, ...) sum(rowCounts(x)))
 
+
+setMethod("getNormalize", signature(x = "ratingMatrix"), 
+	    function(x, ...) x@normalize)
+
+
 ## subset
 setMethod("[", signature(x = "ratingMatrix"),
 		function(x, i, j, ..., drop) {
+			if(!missing(drop)) warning("drop not implemented for ratingMatrix!")	
+
 			if(missing(i)) i <- 1:nrow(x)
 			if(missing(j)) j <- 1:ncol(x)
 
@@ -107,8 +112,10 @@ setMethod("show", signature(object = "ratingMatrix"),
 
 ## image
 setMethod("image", signature(x = "ratingMatrix"),
-	function(x, xlab = "Items (Columns)", ylab = "Users (Rows)", ...)
-	Matrix::image(as(x, "dgTMatrix"), ylab = ylab, xlab = xlab, ...)
+	function(x, xlab = "Items (Columns)", ylab = "Users (Rows)", 
+		colorkey=TRUE, ...)
+	Matrix::image(as(x, "dgTMatrix"), ylab = ylab, xlab = xlab, 
+		colorkey = colorkey, ...)
 )
 
 

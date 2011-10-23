@@ -21,11 +21,14 @@ Jester <- J1[,-1]
 
 #Jester <- as(as.matrix(Jester+11), "realRatingMatrix")
 Jester <- as(as.matrix(Jester), "realRatingMatrix")
+colnames(Jester) <- paste('j',1:ncol(Jester),sep='')
+rownames(Jester) <- paste('u',1:nrow(Jester),sep='')
 save(Jester, file="Jester.rda")
 
 
 ### a 5k sample of Jester
 Jester5k <- sample(Jester, 5000)
+
 save(Jester5k, file="Jester5k.rda")
 
 

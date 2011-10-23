@@ -11,14 +11,15 @@ bootstrap samples.
 \usage{
 evaluationScheme(data, ...)
 \S4method{evaluationScheme}{ratingMatrix}(data, method="split", 
-    train=0.9, k=10, given=3, goodRating = NA)
+    train=0.9, k=NULL, given=3, goodRating = NA)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
 	\item{data}{data set.}
 	\item{method}{a character string defining the recommender method to use (see details).}
 	\item{train}{fraction of the data set used for training.}
-	\item{k}{number of folds/times to run the evaluation.}
+	\item{k}{number of folds/times to run the evaluation (defaults to 10 
+	    for cross-validation and bootstrap).}
 	\item{given}{single number of items given for evaluation or
 	  a vector of length of data giving the number of items given for each
 	    observation. }

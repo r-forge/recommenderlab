@@ -122,7 +122,7 @@ setMethod("similarity", signature(x = "ratingMatrix"),
 		    %in% c("jaccard", "cosine")) {
 		sim <- 1-d
 	    }else{
-		sim <- 1/(1+dissimilarity(x, y, method, args, which))
+		sim <- 1/(1+d)
 	    }
 
 	    attr(sim, "type") <- "simil"

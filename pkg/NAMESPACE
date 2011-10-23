@@ -1,10 +1,10 @@
-importFrom("graphics", "plot", "hist") ## we need the generic for plot
+importFrom("graphics", "plot") ## we need the generic for plot
 importFrom("proxy", "dist")
 
 ## get generics and methods
 importFrom("Matrix", "rowSums", "colSums", "rowMeans", "colMeans", "summary")
 ## get just methods
-importMethodsFrom("Matrix", "image", "t", "crossprod", "tcrossprod")
+importMethodsFrom("Matrix", "image", "t", "crossprod", "tcrossprod", "which")
 
 ## get generics and methods
 importFrom("arules", "predict", "nitems", "sample", "LIST", 
@@ -34,7 +34,6 @@ exportMethods(
 		"coerce",	## setAs
 		"show",
 		"plot",
-		"hist",
 		"image",
 		"sample",
 		"summary",
@@ -52,10 +51,10 @@ exportMethods(
 		"evaluate",
 		"bestN",
 		"nratings",
-		"nitems",
-		"nusers",
 		"normalize",
 		"denormalize",
+		"getNormalize",
+		"getRatings",
 		"getRuns",
 		"getModel",
 		"getData",
@@ -64,5 +63,6 @@ exportMethods(
 		"dissimilarity",
 		"similarity",
 		"evaluationScheme",
+		"removeKnownRatings",
 		"Recommender"
 		)

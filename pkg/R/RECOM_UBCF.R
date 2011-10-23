@@ -3,6 +3,9 @@
 ## simple k-nearest neighbor
 knn <- function(n, d) head(order(d, decreasing=FALSE, na.last=NA), n)
 
+.knn <- function(sim, k) apply(sim, MARGIN=1, FUN=function(x) head(
+		    order(x, decreasing=TRUE, na.last=TRUE), k))
+
 BIN_UBCF <- function(data, parameter = NULL){
 
     p <- .get_parameters(list( 
@@ -15,10 +18,10 @@ BIN_UBCF <- function(data, parameter = NULL){
     if(p$sample) data <- sample(data, p$sample)
 
     model <- c(list(
-                    description = "UBCF-Binary Data: contains full or sample of data set",
-                    data = data
-                    ), p 
-            )
+		    description = "UBCF-Binary Data: contains full or sample of data set",
+		    data = data
+		    ), p 
+	    )
 
     predict <- function(model, newdata, n=10, ...) {
         n <- as.integer(n)
@@ -111,12 +114,11 @@ REAL_UBCF <- function(data, parameter = NULL){
 	if(!is.null(model$normalize)) 
 	    newdata <- normalize(newdata, method=model$normalize)
 
-	## similarities
+	## predict ratings
 	sim <- similarity(newdata, model$data, 
 		method = model$method)
-
-	neighbors <- apply(sim, MARGIN=1, FUN=function(x) head(
-			order(x, decreasing=TRUE, na.last=TRUE), model$nn))
+	
+	neighbors <- .knn(sim, model$nn) 
 
 	## r_ui = r_u_bar + [sum_k s_uk * r_ai - r_a_bar] / sum_k s_uk
 	## k is the neighborhood
@@ -135,13 +137,13 @@ REAL_UBCF <- function(data, parameter = NULL){
 
 	ratings <- t(r_a_norms)/sum_s_uk
 	
-	## remove known items
-	ratings[as(as(newdata, "ngCMatrix"), "matrix")] <- NA
-	ratings <- as(ratings, "realRatingMatrix")
-	ratings@normalize <- newdata@normalize
-	
-	## denormalize
-	if(!is.null(model$normalize)) 
+	ratings <- new("realRatingMatrix", data=dropNA(ratings),
+		normalize = getNormalize(newdata))
+	## prediction done
+
+	removeKnownRatings(ratings, newdata)
+
+	if(!is.null(model$normalize))
 	    ratings <- denormalize(ratings)
 
 	if(type=="ratings") return(ratings)

@@ -3,14 +3,14 @@
 setGeneric(".splitKnownUnknown",
 	function(data, ...) standardGeneric(".splitKnownUnknown"))
 
-setGeneric("nitems",
-	function(x, ...) standardGeneric("nitems"))
-
-setGeneric("nusers",
-	function(x, ...) standardGeneric("nusers"))
-
 setGeneric("nratings",
 	function(x, ...) standardGeneric("nratings"))
+
+setGeneric("getRatings",
+	function(x, ...) standardGeneric("getRatings"))
+
+setGeneric("getNormalize",
+	function(x, ...) standardGeneric("getNormalize"))
 
 setGeneric("normalize",
 	function(x, ...) standardGeneric("normalize"))
@@ -62,6 +62,9 @@ setGeneric("calcPredictionError",
 
 setGeneric("evaluationScheme",
 	function(data, ...) standardGeneric("evaluationScheme"))
+
+setGeneric("removeKnownRatings",
+	function(x, ...) standardGeneric("removeKnownRatings"))
 
 setGeneric("Recommender",
 	function(data, ...) standardGeneric("Recommender"))

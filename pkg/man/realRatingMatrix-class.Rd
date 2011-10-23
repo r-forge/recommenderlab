@@ -4,20 +4,24 @@
 \alias{realRatingMatrix-class}
 \alias{coerce,matrix,realRatingMatrix-method}
 \alias{coerce,realRatingMatrix,matrix-method}
+\alias{coerce,realRatingMatrix,data.frame-method}
 \alias{coerce,realRatingMatrix,dgTMatrix-method}
 \alias{coerce,realRatingMatrix,ngCMatrix-method}
 \alias{coerce,realRatingMatrix,dgCMatrix-method}
 \alias{coerce,data.frame,realRatingMatrix-method}
 \alias{rowSds}
-\alias{colSds}
 \alias{rowSds,realRatingMatrix-method}
+\alias{colSds}
 \alias{colSds,realRatingMatrix-method}
-\alias{coerce,data.frame,realRatingMatrix-method}
 %\alias{LIST,realRatingMatrix-method}
-\alias{binarize,realRatingMatrix-method}
 \alias{binarize}
-\alias{getTopNLists,realRatingMatrix-method}
+\alias{binarize,realRatingMatrix-method}
 \alias{getTopNLists}
+\alias{getTopNLists,realRatingMatrix-method}
+\alias{getRatings}
+\alias{getRatings,realRatingMatrix-method}
+\alias{removeKnownRatings}
+\alias{removeKnownRatings,realRatingMatrix-method}
 
 \title{Class "realRatingMatrix": Real-valued Rating Matrix}
 \description{A matrix containing ratings (typically 1-5 stars, etc.). 
@@ -37,21 +41,30 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 }
 \section{Methods}{
   \describe{
-    \item{coerce}{\code{signature(from = "matrix", to = "realRatingMatrix")}}
+    \item{coerce}{\code{signature(from = "matrix", to = "realRatingMatrix")}: 
+	a numeric matrix with NAs for missing values.}
+    \item{coerce}{\code{signature(from = "data.frame", to = "realRatingMatrix")}: 
+	a data.frame with three columns. Col 1 contains user ids, col 2 contains	item ids and col 3 contains ratings.}
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "matrix")}}
+    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "data.frame")}}
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "dgTMatrix")}}
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "ngCMatrix")}}
-    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "dgCMatrix")}}
-    \item{coerce}{\code{signature(from = "data.frame", to = "realRatingMatrix")}}
-    \item{hist}{\code{signature(x = "realRatingMatrix")}: create a histogram
-	for the ratings in \code{x}. }
+    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "dgCMatrix_NA")}}
+    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "data.frame")}}
+    
     \item{binarize}{\code{signature(x = "realRatingMatrix")}: create a 
         \code{"binaryRatingMatrix"} by setting all ratings larger or equal to 
-        the argument \code{threshold} (default: 3) as 1 and all others to 0.}
+        the argument \code{min_rating} as 1 and all others to 0.}
+    \item{getRatings}{\code{signature(x = "realRatingMatrix")}: returns all 
+	ratings in \code{x} as a numeric vector. }
     \item{getTopNLists}{\code{signature(x = "realRatingMatrix")}: create 
         top-N lists from the ratings in x. Arguments are \code{n} 
-	and \code{threshold}. Items with a rating below \code{min_rating} will 
+	and \code{min_rating}. Items with a rating below \code{min_rating} will 
 	not be part of the top-N list.}
+    \item{removeKnownRatings}{\code{signature(x = "realRatingMatrix")}: removes
+	all ratings in \code{x} for which ratings are available in 
+	the realRatingMatrix (of same dimensions as \code{x})
+	passed as the argument \code{known}. }
     \item{rowSds}{\code{signature(x = "realRatingMatrix")}: calculate 
 	the standard deviation of ratings for rows (users).}
     \item{colSds}{\code{signature(x = "realRatingMatrix")}: calculate 
@@ -59,23 +72,49 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 	 }
 }
 \seealso{
-	\code{\link[Matrix:dgCMatrix-class]{dgCMatrix}} in \pkg{Matrix}
-	%\code{\linkS4class[Matrix]{dgCMatrix}}
+	See \code{\link{ratingMatrix}},
+	\code{\link{binaryRatingMatrix}} and
+	\code{\link{LIST}}.
+	Also see \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}},
+	\code{\link[Matrix:dgCMatrix-class]{dgTMatrix}} and
+	\code{\link[Matrix:dgCMatrix-class]{ngCMatrix}}
+	in \pkg{Matrix}.
 }
 \examples{
 ## create a matrix with ratings
-m <- matrix(sample(c(NA,1:5),100, replace=TRUE), nrow=10, ncol=10)
+m <- matrix(sample(c(NA,0:5),100, replace=TRUE, prob=c(.7,rep(.3/6,6))), 
+	nrow=10, ncol=10, dimnames = list(
+	    user=paste('u', 1:10, sep=''),
+	    item=paste('u', 1:10, sep='')    
+    ))
 m
 
 ## coerce into a realRatingMAtrix
 r <- as(m, "realRatingMatrix")
 r
 
+## get some information
+dimnames(r)
+rowCounts(r)
+colCounts(r)
+rowMeans(r)
+
+
+## histogram of ratings
+hist(getRatings(r), breaks="FD")
+
+## inspect a subset
+image(r[1:5,1:5])
+
 ## coerce it back to see if it worked
 as(r, "matrix")
 
+## coerce to data.frame
+as(r, "data.frame")
+
 ## binarize into a binaryRatingMatrix with all 4+ rating a 1
-b <- binarize(r, threshold=4)
+b <- binarize(r, min_rating=4)
 b
+as(b, "matrix")
 }
 \keyword{classes}

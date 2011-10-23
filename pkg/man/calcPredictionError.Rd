@@ -28,7 +28,7 @@ Returns a matrix with columns for the different error measures. For
 has only a single row with the global averages.
 }
 \seealso{
-\code{\linkS4class{binaryRatingMatrix}}.
+\code{\linkS4class{realRatingMatrix}}.
 }
 \examples{
 data(MovieLense)
