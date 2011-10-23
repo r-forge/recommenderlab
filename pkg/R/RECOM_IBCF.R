@@ -15,8 +15,8 @@ BIN_IBCF <- function(data, parameter= NULL) {
 		args=list(alpha=p$alpha)))
 
     ## reduce similarity matrix to keep only the k highest similarities
-    diag(sim) <- NA
-    ##sim[!is.finite(sim)] <- NA
+    diag(sim) <- 0
+    ##sim[!is.finite(sim)] <- 0
     
     ## normalize rows to 1
     if(p$normalize_sim_matrix) sim <- sim/rowSums(sim, na.rm=TRUE)
@@ -116,7 +116,7 @@ REAL_IBCF <- function(data, parameter= NULL) {
     ## make sparse
     sim <- as(sim, "dgCMatrix")
 
-
+ 
     model <- c(list(
 		    description = "IBCF: Reduced similarity matrix",
 		    sim = sim
@@ -128,22 +128,21 @@ REAL_IBCF <- function(data, parameter= NULL) {
 	
 	type <- match.arg(type)
 	n <- as.integer(n)
-	sim <- model$sim 
 	
 	if(!is.null(model$normalize)) 
 	    newdata <- normalize(newdata, method=model$normalize)
 	
-	u <- as(newdata, "dgCMatrix")
-	
 	## predict all ratings
-	ratings <- tcrossprod(sim,u) / tcrossprod(sim, u!=0)
-
-	## remove known ratings
-	ratings <- t(as.matrix(ratings))
-	ratings[as(u!=0, "matrix")] <- NA
+	sim <- model$sim 
+	u <- as(newdata, "dgCMatrix")
+	ratings <- as(tcrossprod(sim,u) / tcrossprod(sim, u!=0), "matrix")
 	
-	ratings <- as(ratings, "realRatingMatrix")
-	ratings@normalize <- newdata@normalize
+	ratings <- new("realRatingMatrix", data=dropNA(ratings), 
+		normalize = getNormalize(newdata))
+	## prediction done
+
+	removeKnownRatings(ratings, newdata)
+	p
 
 	if(!is.null(model$normalize)) 
 	    ratings <- denormalize(ratings)

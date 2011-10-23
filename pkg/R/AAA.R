@@ -16,6 +16,3 @@
 
     p
 }
-
-.zero <- 1e-50
-.make_zero <- function(x) round(x, -.25)

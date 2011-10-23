@@ -1,6 +1,7 @@
 ## helper
 setClassUnion("listOrNull", c("list", "NULL"))
 
+
 ## Ratings
 setClass("ratingMatrix",
 	representation(

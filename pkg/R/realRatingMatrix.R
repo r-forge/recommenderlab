@@ -1,47 +1,17 @@
-## in the sparse representation 0 means missing
 
 setAs("matrix", "realRatingMatrix",
-	function(from) new("realRatingMatrix", data = as(from, "dgCMatrix")))
-
-setAs("realRatingMatrix", "matrix",
-	function(from) { 
-		m <- as(from@data, "matrix")
-		m[m==0] <- NA
-		m
-	})
-
-setAs("realRatingMatrix", "dgTMatrix",
-	function(from) as(as(from, "dgCMatrix"), "dgTMatrix"))
-
-setAs("realRatingMatrix", "ngCMatrix",
-	function(from) as(as(from, "dgCMatrix"), "ngCMatrix"))
-
-setAs("realRatingMatrix", "dgCMatrix",
-	function(from) from@data)
-
-
-## from matrix
-setAs("matrix", "realRatingMatrix", function(from) {
-	    if(any(from==0, na.rm=TRUE)) {
-		warning("Zero ratings will be lost! Add one to the ratings.")
-	    }
-	    
-	    from[is.na(from)] <-0
-	    
-	    new("realRatingMatrix", data = as(from, "dgCMatrix"))
-	})
+	function(from) new("realRatingMatrix", 
+		data = dropNA(from)))
 
 ## from a data.frame with columns user, item, rating
+## this perserves 0s
 setAs("data.frame", "realRatingMatrix", function(from) {
 		user	<- from[,1]
 		item	<- from[,2]
 		rating	<- as.numeric(from[,3])
 
-		if(any(rating==0, na.rm=TRUE)) warning("Zero ratings will be lost! Add one to the ratings.")
-
 		i <- factor(user)
 		j <- factor(item)
-
 
 		dgT <- new("dgTMatrix", i = as.integer(i)-1L, j = as.integer(j)-1L, 
 			x = rating,
@@ -52,8 +22,29 @@ setAs("data.frame", "realRatingMatrix", function(from) {
 	})
 
 
+setAs("realRatingMatrix", "data.frame",
+	function(from) { 
+	    dgT <- t(as(from, "dgTMatrix"))	
+	    df <- data.frame(user=rownames(from)[dgT@i+1L], 
+		    item=colnames(from)[dgT@j+1L], 
+		    rating=dgT@x)
+	    
+	    ## sort by users
+	    df[order(df[,1]),]
+	})
 
 
+setAs("realRatingMatrix", "matrix",
+	function(from) dropNA2matrix(from@data))
+
+setAs("realRatingMatrix", "dgCMatrix",
+	function(from) from@data)
+
+setAs("realRatingMatrix", "dgTMatrix",
+	function(from) as(from@data, "dgTMatrix"))
+
+setAs("realRatingMatrix", "ngCMatrix",
+	function(from) as(from@data, "ngCMatrix"))
 
 setMethod("LIST", signature(from = "realRatingMatrix"),
 	function(from, decode = TRUE, ratings = TRUE,...) {
@@ -73,66 +64,35 @@ setMethod("LIST", signature(from = "realRatingMatrix"),
 		
 		names(rts) <- rownames(from)
 		rts
-	}
-)
+	})
 
-#ratingMatrixFromList <- function(from, itemLabels, userLabels = NULL) {
-#	i <- rep(1:length(from), lapply(from, length))
-#	j <- unlist(from)
-#
-#	if(is.null(userLabels)) userLabels <- names(from)
-#
-#	dgT <- new("dgTMatrix", i = i-1L, j = as.integer(j)-1L,
-#		x = rep(1, length(j)),
-#		Dim = c(length(from), length(itemLabels)),
-#		Dimnames = list(userLabels, itemLabels))
-#
-#	as(as(dgT, "dgCMatrix"), "ratingMatrix")
-#}
-
-
-## from a list with userID as labels and items (only binary)
-#setAs("list", "ratingMatrix", function(from) {
-#		i <- rep(1:length(from), lapply(from, length))
-#		j <- as.factor(unlist(from))
-#
-#		dgT <- new("dgTMatrix", i = i-1L, j = as.integer(j)-1L, 
-#			x = rep(1, length(j)),
-#			Dim = c(length(from), length(levels(j))),
-#			Dimnames = list(labels(from),levels(j)))
-#	
-#		as(as(dgT, "dgCMatrix"), "ratingMatrix")
-#	})
-#
-
-setAs("ratingMatrix", "list", function(from) LIST(from))
-
-
-
-### FIXME: I dont know how that works
-#setMethod("subset", signature(x = "realRatingMatrix"),
-	#	function(x, subset, ...){
-		#		if (missing(subset)) return(x)
-		#i <- eval(substitute(subset, list(x= as(x, "dgCMatrix"))))
-		#
-		#new("realRatingMatrix", as(drop0(as(x, "dgCMatrix")*as(i,"dgCMatrix"))))
-		#	})
 
 setMethod("binarize", signature(x = "realRatingMatrix"),
-	function(x, threshold = 3, ...){
+	function(x, min_rating, ...){
 		x <- x@data
-		x <- drop0(x*(x>=threshold))
+		x@x <- as.numeric(x@x>=min_rating)
+		x <- drop0(x)
 		if(is.null(colnames(x))) colnames(x) <- 1:ncol(x)
 		x <- new("itemMatrix", data = t(as(x, "ngCMatrix")), 
 			itemInfo = data.frame(labels=colnames(x)))
 		new("binaryRatingMatrix", data = x)
 	})
 
-setMethod("hist", signature(x = "realRatingMatrix"),
-	function(x, main="Histogram of Ratings", xlab="Ratings", breaks="FD",...){
-	    graphics::hist(x@data@x, main=main, xlab=xlab, breaks=breaks, ...)
-	})
 
+setMethod("getRatings", signature(x = "realRatingMatrix"),
+	function(x) x@data@x )
+
+
+setMethod("removeKnownRatings", signature(x = "realRatingMatrix"),
+	function(x, known) {
+	    if(!is(known, "realRatingMatrix")) stop("known needs to be a realRatingMatrix!")
+	    
+	    ## FIXME: make sparse
+	    xm <- dropNA2matrix(x@data)
+	    xm[as(as(known@data, "ngCMatrix"),"matrix")] <- NA
+	    x@data <- dropNA(xm)
+	    x
+	})
 
 setMethod("getTopNLists", signature(x = "realRatingMatrix"),
 	function(x, n= 10, min_rating = NA){
@@ -166,6 +126,7 @@ setMethod("rowSds", signature(x = "realRatingMatrix"),
 	    names(s) <- rownames(x)
 	    s
 	})
+
 
 setMethod("colSds", signature(x = "realRatingMatrix"),
 	function(x, ...) {

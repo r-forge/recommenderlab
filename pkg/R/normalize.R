@@ -12,7 +12,6 @@ setMethod("normalize", signature(x = "realRatingMatrix"),
 		data <- t(x@data)
 		means <- rowMeans(x)
 		data@x <- data@x-rep(means, rowCounts(x))
-		data@x[data@x==0] <- .zero
 
 		if(method_id==2) { ## Z-Score
 		    sds <- rowSds(x)
@@ -26,7 +25,6 @@ setMethod("normalize", signature(x = "realRatingMatrix"),
 		data <- x@data
 		means <- colMeans(x)
 		data@x <- data@x-rep(means, colCounts(x))
-		data@x[data@x==0] <- .zero
 
 		if(method_id==2) { ## Z-score
 		    sds <- colSds(x)
@@ -77,7 +75,7 @@ setMethod("denormalize", signature(x = "realRatingMatrix"),
 		    data@x <- data@x/rep(sds, colCounts(x))
 		}
 		
-		data@x <- data@x+rep(means, colCounts(x))
+		data@x <- as.numeric(data@x+rep(means, colCounts(x)))
 
 		x@data <- data
 	    }

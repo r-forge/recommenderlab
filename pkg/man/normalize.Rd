@@ -9,10 +9,10 @@ Provides the generic for normalize/denormalize and
 a method to normalize/denormalize the ratings in a realRatingMatrix.}
 \usage{
 normalize(x, ...)
-\S4method{normalize}{realRatingMatrix}(x, method="center", row=TRUE,)
+\S4method{normalize}{realRatingMatrix}(x, method="center", row=TRUE)
 denormalize(x, ...)
-\S4method{normalize}{realRatingMatrix}(x, method=NULL, row=NULL, 
-factors=NULL, ...)
+\S4method{denormalize}{realRatingMatrix}(x, method=NULL, row=NULL, 
+    factors=NULL)
 }
 \arguments{
   \item{x}{a realRatingMatrix.}
@@ -20,6 +20,7 @@ factors=NULL, ...)
   \item{row}{should the rows be normalized or the columns?}
   \item{factors}{a list with the factors used for normalizing 
   (elements are "mean" and "sds").}
+  \item{...}{further arguments (currently unused).}
 }
 \details{
 Normalization tries to reduce the individual rating bias by subtracting 
@@ -35,16 +36,29 @@ A normalized realRatingMatrix.
 }
 %% \seealso{}
 \examples{
-data(Jester5k)
+## create a matrix with ratings
+    m <- matrix(sample(c(NA,0:5),100, replace=TRUE, prob=c(.7,rep(.3/6,6))),
+	    nrow=10, ncol=10, dimnames = list(
+		users=paste('u', 1:10, sep=''),
+		items=paste('u', 1:10, sep='')
+		))
 
-db <- Jester5k[1:5,1:5]
-## original ratings
-as(db, "matrix")
+## do normalization
+r <- as(m, "realRatingMatrix")
+r_n1 <- normalize(r) 
+r_n2 <- normalize(r, method="Z-score")
 
+r
+r_n1
+r_n2
 
-## normalized ratings
-as(normalize(db), "matrix")
-as(normalize(db, method="Z-score"), "matrix")
+## show normalized data
+image(r, main="Raw Data")
+image(r_n1, main="Normalized: Centered")
+image(r_n2, main="Normalized: Z-Score")
 
+## check if denormalization works
+identical(r, denormalize(r_n1))
+identical(r, denormalize(r_n2))
 }
 \keyword{manipulation}
