@@ -1,6 +1,16 @@
 ## helper
 setClassUnion("listOrNull", c("list", "NULL"))
 
+## Recommender
+setClass("Recommender",
+	representation(
+		method	= "character", 
+		dataType= "character", 
+		ntrain	= "integer",
+		model	= "list",
+		predict = "function"
+	)
+)
 
 ## Ratings
 setClass("ratingMatrix",
@@ -21,18 +31,9 @@ setClass("realRatingMatrix",
 	))
 
 
-## Recommender
-setClass("Recommender",
-	representation(
-		method	= "character", 
-		dataType= "character", 
-		ntrain	= "integer",
-		model	= "list",
-		predict = "function"
-	)
-)
 
 ## Top-N list
+## items is a list of index vectors with the top N items.
 setClass("topNList",
 	representation(
 		items   = "list",
@@ -56,8 +57,6 @@ setClass("evaluationScheme",
 		goodRating = "numeric"
 	)
 )
-
-
 
 setClass("confusionMatrix",
 	representation(

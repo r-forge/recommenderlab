@@ -2,7 +2,7 @@
 setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 	function(x, method, n=1:10, parameter=NULL, 
 		progress = TRUE, keepModel=FALSE) {
-		## fixme: do individual runs missing
+		## FIXME: do individual runs missing
 
 		scheme <- x
 		runs <- 1:scheme@k
@@ -11,7 +11,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 		
 		cm <- list()
                 for(r in runs) {
-                    if(progress) cat(r)
+                    if(progress) cat(r, " ")
 
 		    cm[[r]] <- .do_run_by_n(scheme, method, 
 			    run=r, n=n, parameter=parameter, 
@@ -111,7 +111,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "list"),
                     
 	time_usage <- function(x) x[1]+x[2]
 
-	if(progress) cat(" [", 
+	if(progress) cat("[", 
 		time_usage(time_model), "sec/",
 		time_usage(time_predict),"sec] ", sep="")
 

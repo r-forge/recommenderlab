@@ -91,7 +91,7 @@ REAL_IBCF <- function(data, parameter= NULL) {
 		    normalize_sim_matrix = FALSE,
 		    alpha = 0.5,
 		    na_as_zero = FALSE,
-		    min_rating = NA
+		    minRating = NA
 		    ), parameter)
 
 
@@ -111,10 +111,10 @@ REAL_IBCF <- function(data, parameter= NULL) {
 
     for(i in 1:nrow(sim)) 
 	sim[i,head(order(sim[i,], decreasing=FALSE, na.last=FALSE), 
-	    ncol(sim) - p$k)] <- 0
+	    ncol(sim) - p$k)] <- NA
     
     ## make sparse
-    sim <- as(sim, "dgCMatrix")
+    sim <- dropNA(sim)
 
  
     model <- c(list(
@@ -135,21 +135,21 @@ REAL_IBCF <- function(data, parameter= NULL) {
 	## predict all ratings
 	sim <- model$sim 
 	u <- as(newdata, "dgCMatrix")
+	
 	ratings <- as(tcrossprod(sim,u) / tcrossprod(sim, u!=0), "matrix")
 	
 	ratings <- new("realRatingMatrix", data=dropNA(ratings), 
 		normalize = getNormalize(newdata))
 	## prediction done
 
-	removeKnownRatings(ratings, newdata)
-	p
+	ratings <- removeKnownRatings(ratings, newdata)
 
 	if(!is.null(model$normalize)) 
 	    ratings <- denormalize(ratings)
 
 	if(type=="ratings") return(ratings)
 
-	getTopNLists(ratings, n=n, min_rating=model$min_rating)
+	getTopNLists(ratings, n=n, minRating=model$minRating)
 
     }
 

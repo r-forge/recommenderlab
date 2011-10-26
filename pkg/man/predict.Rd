@@ -40,8 +40,8 @@ rec <- Recommender(MSWeb10[1:100,], method = "POPULAR")
 pre <- predict(rec, MSWeb10[101:102], n = 10)
 pre
 
-LIST(pre)
-LIST(pre, decode = FALSE)
+getList(pre)
+getList(pre, decode = FALSE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

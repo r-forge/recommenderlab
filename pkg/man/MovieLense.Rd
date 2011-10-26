@@ -48,7 +48,7 @@ mean(rowMeans(MovieLense))
 rec <- Recommender(MovieLense, method="POP")
 
 pre <- predict(rec, MovieLense[1])
-LIST(pre)
+as(pre, "list")
 
 }
 \keyword{datasets}

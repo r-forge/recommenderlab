@@ -66,6 +66,9 @@ setGeneric("evaluationScheme",
 setGeneric("removeKnownRatings",
 	function(x, ...) standardGeneric("removeKnownRatings"))
 
+setGeneric("removeKnownItems",
+	function(x, ...) standardGeneric("removeKnownItems"))
+
 setGeneric("Recommender",
 	function(data, ...) standardGeneric("Recommender"))
 
@@ -73,3 +76,8 @@ setGeneric("similarity",
 	function(x, y = NULL, method = NULL, args = NULL, ...) 
 	standardGeneric("similarity"))
 
+setGeneric("getData.frame",
+	function(from, ...) standardGeneric("getData.frame"))
+
+setGeneric("getList",
+	function(from, ...) standardGeneric("getList"))
