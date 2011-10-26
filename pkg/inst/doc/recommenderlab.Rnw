@@ -37,9 +37,7 @@
 
 \begin{document}
 
-\title{Developing and Testing Recommendation Algorithms
-with 
-\pkg{recommenderlab}\footnote{This research was funded in part by the NSF Industry/University Cooperative Research Center for Net-Centric Software \& Systems.}
+\title{\pkg{recommenderlab}: A Framwork for Developing and Testing Recommendation Algorithms\footnote{This research was funded in part by the NSF Industry/University Cooperative Research Center for Net-Centric Software \& Systems.}
 }
 \author{Michael Hahsler}
 \maketitle
@@ -73,13 +71,14 @@ set.seed(1234)
 
 \section{Introduction}
 Predicting ratings and creating personalized recommendations for products like
-books, songs or movies online came a long way from the first system using
+books, songs or movies online came a long way from 
+Information Lense,
+the first system using
 \emph{social filtering} created by \cite{recommender:Malone:1987} more than 20
 years ago.  Today recommender systems are an accepted technology used by market
 leaders in several industries (e.g., by 
 Amazon\footnote{\url{http://www.amazon.com}}, 
-Netflix\footnote{\url{http://www.netflix.com}}, 
-iTunes\footnote{\url{http://www.apple.com/itunes/}} and 
+Netflix\footnote{\url{http://www.netflix.com}} and 
 Pandora\footnote{\url{http://www.pandora.com}}).  
 Recommender
 systems apply statistical and knowledge discovery techniques to the problem of
@@ -106,7 +105,7 @@ which rank high for the user's most desirable attributes.
 Typically, the preference structure can be elicited by analyzing which 
 items the user prefers. For example, for movies the Internet Movie 
 Database\footnote{\url{http://www.imdb.com/}}
-contains a white range of attributes to describe movies including
+contains a wide range of attributes to describe movies including
 genre, director, write, cast, storyline, etc. For music, Pandora,
 a personalized online radio station,
 creates a stream of music via content-based recommendations
@@ -168,8 +167,8 @@ Crab, easyrec, MyMediaLite and Vogoo PHP LIB aim at providing simple
 recommender systems to be easily integrated into web sites. 
 SVDFeature focuses only on matrix factorization. 
 Cofi provides a Java package which implements many 
-collaborative filtering algorithms. Development ended 2005. 
-LensKit is a relative new software package with the aim
+collaborative filtering algorithms (active development ended 2005). 
+LensKit is a relatively new software package with the aim
 to provide reference implementations for common collaborative 
 filtering algorithms. This software has not reached a stable version
 at the time this paper was written (October, 2011).
@@ -177,18 +176,19 @@ Finally, Apache Mahout, a machine learning
 library aimed to be scalable to large data sets incorporated
 collaborative filtering algorithms formerly developed under the 
 name Taste. 
+%% FIXME: Interface to Mahout
 
 The \proglang{R} extension package~\pkg{recommenderlab} 
 described in this paper 
 has a completely different goal to the existing software packages. It 
 is not a library to create recommender applications
 but provides a general research infrastructure for recommender systems.
-The focus is on data handling, 
+The focus is on consistent and efficient data handling, 
 easy incorporation of algorithms (either implemented in R or
 interfacing existing algorithms), 
-experiment set up and the evaluation of the results. 
+experiment set up and evaluation of the results. 
 
-\marginpar{Add: structure}
+% FIXME: structure
 %This paper is structured as follows. Section~\ref{sec:CF} introduces
 %collaborative filtering and applies popular methods to the top-$N$
 %recommendation problem on 0-1 data.
@@ -366,33 +366,40 @@ is $i_2, i_1, i_7$ and $i_5$. However, for a real application we
 probably would
 not recommend items $i_7$ and $i_5$ because of their low ratings.
 
-The performance of the recommender algorithm can be improved by removing 
-user rating bias.
-The first is to normalize the rating data before applying the 
+The fact that some users in the neighborhood are more similar to
+the active user than others can be 
+incorporated as weights into
+Equation~(\ref{equ:aggregation1}). 
+
+\begin{equation}
+\hat{r}_{aj}=\frac{1}{\sum_{i\in\set{N}(a)} s_{ai}} \sum_{i\in\set{N}(a)} s_{ai} r_{ij}$$
+\label{equ:aggregation2}
+\end{equation}
+$s_{ai}$ is the similarity between the active user~$u_a$ and user
+$u_i$ in the neighborhood. 
+
+For some types of data the performance of the recommender algorithm can 
+be improved by removing user rating bias.
+This can be done by normalizing the rating data before applying the 
 recommender algorithm.
 Any normalization 
 function $h: \mathbb{R}^{n \times m} \mapsto \mathbb{R}^{n \times m}$ 
 can be used for preprocessing. Ideally, this function is reversible
 to map the predicted rating on the normalized scale back
-to the rating scale. 
+to the original rating scale. 
 Normalization is used to remove individual rating bias by 
 users who consistently always use lower or higher
 ratings than other users. 
 A popular method is to center the rows of the user-item rating matrix 
-by subtracting 
-from each rating of a user the user's average rating.
-
-$$h(r_{ui}) = r_{ui} - \bar{r}_u$$
+by
+$$h(r_{ui}) = r_{ui} - \bar{r}_u,$$
+where $\bar{r}_u$ is the mean of all available ratings in row~$u$ of 
+the user-item rating matrix $\mat{R}$.
 
 Other methods like Z-score normalization which also takes rating variance 
-into account 
-can be found in the 
+into account can be found in the 
 literature \citep[see, e.g.,][]{recommender:Desrosiers:2011}. 
 
-An option is to
-introduce a weight for each user's ratings into 
-Equation~(\ref{equ:aggregation1}) to account for the fact that some users
-in the neighborhood are more similar to the active user than others.
 
 The two main problems of user-based CF are that the whole
 user database has to be kept in memory and that 
@@ -436,15 +443,26 @@ Popular are again Pearson correlation and Cosine similarity.
 %$\mathrm{Freq}(y)^\alpha$ reduces the problem with rare $x$.
 %
 All pairwise similarities are stored in a $n \times n$ 
-similarity matrix $\mat{S}$,
-which is again normalized such that rows sum up to $1$.
+similarity matrix $\mat{S}$.
+%%,
+%%which is again normalized such that rows sum up to $1$.
 To reduce the model size
 to $n \times k$ with $k \ll n$, 
 for each item only a list of the $k$ most similar
-items and their similarity values are stored~\citep{recommender:Sarwar:2001}.
-This can improve the
-space and time complexity significantly by sacrificing 
-some recommendation quality.
+items and their similarity values are stored.
+The $k$ items which are most similar to item $i$ is
+denoted by the set $\set{S}(i)$ which can be seen as the 
+neighborhood of size $k$ of the item.
+Retaining only $k$ similarities per item improves the
+space and time complexity significantly but potentially sacrifices
+some recommendation quality~\citep{recommender:Sarwar:2001}.
+
+To make a recommendation based on the model 
+we use the similarities to calculate a weighted sum of the user's ratings
+for related items.
+
+$$\hat{r}_{ui} =  \frac{1}{\sum_{j \in \set{S}(i)}{s_{ij}}} 
+    \sum_{j \in \set{S}(i)}{s_{ij} r_{uj}}$$
 
 \begin{figure}
 \centerline{\includegraphics[width=9cm]{item-based2}}
@@ -453,16 +471,10 @@ some recommendation quality.
 \end{figure}
 
 
-Figure~\ref{fig:IBCF} shows an example for $n=8$ items. For the 
-similarity matrix $\mat{S}$ only $k=3$ largest entries are
+Figure~\ref{fig:IBCF} shows an example for $n=8$ items with $k=3$. For the 
+similarity matrix $\mat{S}$ only the $k=3$ largest entries are
 stored per row (these entries are marked using bold face).
-To make a recommendation based on the model 
-we use the similarities to calculate a weighted sum of the user's ratings
-for related items.
-
-$$\hat{r}_{ui} = \frac{\sum_{j \in s_i}{s_{ij} r_{uj}}}{\sum_{j \in s_i}{|s_{ij}|}}$$
-
-In Figure~\ref{fig:IBCF} we assume that we have ratings for the  
+For the example we assume that we have ratings for the  
 active user for items
 $i_1, i_5$ and $i_8$. The rows corresponding to these items are highlighted
 in the item similarity matrix. We can now compute the weighted sum using
@@ -489,18 +501,15 @@ in large scale recommender systems (e.g., by Amazon.com).
 
 \subsection{Other collaborative filtering methods}
 
-Slope-one
+Over time several other model-based approaches have been developed.
+A popular simple item-based apporach is the \emph{Slope One} 
+algorithm \cite{recommender:Lemire:2005}.
+Another family of algorithms is based on latent factors approach using
+matrix decomposition~\cite{recommender:Koren:2009}.
 
-Latent models (SVD)
+\subsection{User and Item-Based CF using 0-1 Data}
 
-Clustering
-
-Popular
-
-
-\subsection{Recommendations from 0-1 Data}
-
-Very limited research
+Less research
 is available for situations where no large amount of detailed
 directly elicited rating data is available.
 %~\citep[some notable exceptions are][]{recommender:Weiss:2001,recommender:Mild:2003,recommender:Lee:2005,recommender:Pan:2008}.
@@ -547,32 +556,27 @@ r_{jk}=
 \end{cases}
 \end{equation}
 
-\cite{recommender:Pan:2008} call
-this type of data in the context of collaborative filtering
-analogous to similar situations for classifiers
-\emph{one-class data} since only the 1-class is pure and contains only
-positive examples. The 0-class is a mixture of positive and negative examples.
 Two strategies to deal with one-class data is to assume all missing ratings 
 (zeros) are negative examples or to assume that all missing ratings are unknown.
-Here will will follow mostly the first strategy based on the assumption that
-users typically favor only a small fraction of the items and thus most
-items with no rating will be indeed negative examples. However, it has to be
-said that \cite{recommender:Pan:2008} propose strategies which represent a
+%Here will will follow mostly the first strategy based on the assumption that
+%users typically favor only a small fraction of the items and thus most
+%items with no rating will be indeed negative examples. However, it has to be
+%said that 
+In addition,
+\cite{recommender:Pan:2008} propose strategies which represent a
 trade-off between the two extreme strategies based on wighted low rank
 approximations of the rating matrix and on negative example sampling which
 might improve results across all recommender algorithms. 
-This is however outside
-the scope of this paper.
+%This is however outside
+%the scope of this paper.
 
-Neighborhood
-
-However, for 0-1 data that would lead
-to the problem that the vectors $\vec{x}$ and $\vec{y}$ only contain ones
-and thus no useful measure can be calculated. 
-
-If we assume that most zeroes are actually items that the user does not like,
-we can use all items in the similarity calculation. However, this will produce
-significant errors for newer users with very few ones. 
+If we assume that users  typically favor only a small fraction of the items and thus most items with no rating will be indeed negative examples. 
+then we have no missing values and can use the approaches 
+described above for real valued rating data. However,
+if we assume all zeroes are missing values, then this lead
+to the problem that we cannot compute similarities using
+Pearson correlation or Cosine similarity since the
+not missing parts of the vectors only contains ones.
 A similarity measure which
 only focuses on matching ones 
 and thus prevents the problem with zeroes
@@ -582,21 +586,18 @@ $$\mathrm{sim_{Jaccard}}(\set{X},\set{Y}) = \frac{|\set{X}\cap \set{Y}|}
 where
 $\set{X}$ and $\set{Y}$ are the sets of the items with a 1 in user profiles
 $u_a$ and $u_b$, respectively.
+The Jaccard index can be used between users for user-based filtering
+and between items for item-based filtering as described above.
 
-Aggregation
-
-For 0-1 data we suggest, following \cite{recommender:Weiss:2001}, 
-to calculate the following score.
-$$s_{aj} = \sum_{i\in\set{N}(a)}{w_{ai}\, r_{ij}}$$
-This score is not normalized but can be easily used to find the
-top-$N$ items with the highest score.
-
+%For 0-1 data we suggest, following \cite{recommender:Weiss:2001}, 
+%to calculate the following score.
+%$$s_{aj} = \sum_{i\in\set{N}(a)}{w_{ai}\, r_{ij}}$$
+%This score is not normalized but can be easily used to find the
+%top-$N$ items with the highest score.
+%\marginpar{More on this!}
 
 
-
-\marginpar{More on this!}
-
-\subsection{Association Rules}
+\subsection{Recommendations Based on Association Rules}
 \label{sec:AR}
 Recommender systems based on association rules
 produce recommendations based on a dependency model for items 
@@ -1558,30 +1559,33 @@ recommenderRegistry$set_entry(
 \section{Conclusion}
 \label{sec:conclusion}
 
-Being able to use automated recommender systems 
-offers a big advantage for online
-retailers and for many other applications. But
-often no extensive data base of rating data is available and
-it makes sense to think about using 0-1 data, which is in many
-cases easier to obtain, instead.
-Unfortunately there is only limited research on collaborative filtering 
-based recommender systems using 0-1 data available.
+%% FIXME
+To come...
 
-In this paper we described the \proglang{R} 
-extension package~\pkg{recommenderlab}
-which is especially geared towards developing and testing
-recommender algorithms for 0-1 data.
-The package allows to create evaluation schemes following accepted 
-methods and then use them to evaluate and compare recommender algorithms.
-Adding new recommender algorithms to the package is facilitates using
-a registry to manage the algorithms. 
-
-\pkg{recommenderlab} currently includes several algorithms for 0-1 data,
-however, the infrastructure is flexible enough to also 
-extend to the more conventional non-binary rating data and its algorithms.
-In the future we will add more and more of these algorithms to the package and
-we hope that some algorithms will also 
-be contributed by other researchers.
+%Being able to use automated recommender systems 
+%offers a big advantage for online
+%retailers and for many other applications. But
+%often no extensive data base of rating data is available and
+%it makes sense to think about using 0-1 data, which is in many
+%cases easier to obtain, instead.
+%Unfortunately there is only limited research on collaborative filtering 
+%based recommender systems using 0-1 data available.
+%
+%In this paper we described the \proglang{R} 
+%extension package~\pkg{recommenderlab}
+%which is especially geared towards developing and testing
+%recommender algorithms for 0-1 data.
+%The package allows to create evaluation schemes following accepted 
+%methods and then use them to evaluate and compare recommender algorithms.
+%Adding new recommender algorithms to the package is facilitates using
+%a registry to manage the algorithms. 
+%
+%\pkg{recommenderlab} currently includes several algorithms for 0-1 data,
+%however, the infrastructure is flexible enough to also 
+%extend to the more conventional non-binary rating data and its algorithms.
+%In the future we will add more and more of these algorithms to the package and
+%we hope that some algorithms will also 
+%be contributed by other researchers.
 
 %Applying collaborative filtering methods to binary and 
 %especially to 0-1 data is difficult because  
