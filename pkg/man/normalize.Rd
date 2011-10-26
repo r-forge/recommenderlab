@@ -37,10 +37,10 @@ A normalized realRatingMatrix.
 %% \seealso{}
 \examples{
 ## create a matrix with ratings
-    m <- matrix(sample(c(NA,0:5),100, replace=TRUE, prob=c(.7,rep(.3/6,6))),
-	    nrow=10, ncol=10, dimnames = list(
-		users=paste('u', 1:10, sep=''),
-		items=paste('u', 1:10, sep='')
+    m <- matrix(sample(c(NA,0:5),50, replace=TRUE, prob=c(.5,rep(.5/6,6))),
+	    nrow=5, ncol=10, dimnames = list(
+		users=paste('u', 1:5, sep=''),
+		items=paste('i', 1:10, sep='')
 		))
 
 ## do normalization

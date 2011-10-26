@@ -14,7 +14,7 @@
 %\alias{LIST,binaryRatingMatrix-method}
 
 \title{Class "binaryRatingMatrix": A Binary Rating Matrix}
-\description{A matrix to represent binary ratings. Here 1 codes for a possitive
+\description{A matrix to represent binary ratings. Here 1 codes for a positive
 rating and 0 codes no positive rating (either no or a negative rating.) This 
 coding is common for market basked data where products are either bought or
 not.}

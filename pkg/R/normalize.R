@@ -1,6 +1,12 @@
 setMethod("normalize", signature(x = "realRatingMatrix"),
 	function(x, method="center", row=TRUE){
 
+	    if(!is.null(x@normalize)) {
+		warning("x was already normalized!")
+		return(x)
+	    }
+	    
+	    
 	    methods <- c("center", "Z-score")
 	    method_id <- pmatch(method, methods)
 	    if(is.na(method_id)) stop("Unknown normalization method!")

@@ -29,6 +29,11 @@ exportClasses(
 		"evaluationResultList"
 		)
 
+export(
+		"dropNA",
+		"dropNA2matrix"
+	    )
+
 exportMethods(
 		"[",
 		"coerce",	## setAs
@@ -37,6 +42,7 @@ exportMethods(
 		"image",
 		"sample",
 		"summary",
+
 		"calcPredictionError",
 		"predict",
 #		"colMeans",
@@ -45,7 +51,6 @@ exportMethods(
 		"rowCounts",
 		"colSds",
 		"rowSds",
-		"LIST",
 		"binarize",
 		"avg",
 		"evaluate",
@@ -64,5 +69,8 @@ exportMethods(
 		"similarity",
 		"evaluationScheme",
 		"removeKnownRatings",
-		"Recommender"
+		"removeKnownItems",
+		"Recommender",
+		"getList",
+		"getData.frame"
 		)

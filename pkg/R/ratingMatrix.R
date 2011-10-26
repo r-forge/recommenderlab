@@ -17,7 +17,31 @@ setReplaceMethod("dimnames", signature(x = "ratingMatrix",
 		x
 	})
 
-setAs("ratingMatrix", "list", function(from) LIST(from))
+## coercion
+setAs("ratingMatrix", "list", function(from) getList(from))
+
+## this expects all ratingMatrices to be coercable to dgTMatrix 
+setMethod("getData.frame", signature(from = "ratingMatrix"),
+	function(from, decode = TRUE, ratings = TRUE,...) {
+	    dgT <- as(from, "dgTMatrix")
+
+	    if(decode) {
+		df <- data.frame(user=rownames(from)[dgT@i+1L],
+			item=colnames(from)[dgT@j+1L],
+			rating=dgT@x)
+	    }else{
+		df <- data.frame(user=dgT@i+1L,
+			item=dgT@j+1L,
+			rating=dgT@x)
+	    }
+
+	    if(!ratings) df <- df[,-3]
+
+	    ## sort by users
+	    df[order(df[,1]),]
+	})
+
+setAs("ratingMatrix", "data.frame", function(from) getData.frame(from))
 
 ## row/col counts, sums, etc.
 ## Matrix does not handle dimnames well
@@ -75,15 +99,15 @@ setMethod("getNormalize", signature(x = "ratingMatrix"),
 
 ## subset
 setMethod("[", signature(x = "ratingMatrix"),
-		function(x, i, j, ..., drop) {
-			if(!missing(drop)) warning("drop not implemented for ratingMatrix!")	
+	function(x, i, j, ..., drop) {
+	    if(!missing(drop)) warning("drop not implemented for ratingMatrix!")	
 
-			if(missing(i)) i <- 1:nrow(x)
-			if(missing(j)) j <- 1:ncol(x)
+	    if(missing(i)) i <- 1:nrow(x)
+	    if(missing(j)) j <- 1:ncol(x)
 
-			x@data <- x@data[i,j, ..., drop=FALSE]
-			x
-		})
+	    x@data <- x@data[i,j, ..., drop=FALSE]
+	    x
+	})
 
 
 ## sample
@@ -113,9 +137,13 @@ setMethod("show", signature(object = "ratingMatrix"),
 ## image
 setMethod("image", signature(x = "ratingMatrix"),
 	function(x, xlab = "Items (Columns)", ylab = "Users (Rows)", 
-		colorkey=TRUE, ...)
+		colorkey=TRUE, ...) {
+	
+	## binaryRatingMatrix does not need a colorkey
+	if(is(x, "binaryRatingMatrix")) colorkey <- FALSE
+
 	Matrix::image(as(x, "dgTMatrix"), ylab = ylab, xlab = xlab, 
 		colorkey = colorkey, ...)
-)
+    })
 
 

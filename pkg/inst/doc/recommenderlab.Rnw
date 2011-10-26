@@ -94,15 +94,15 @@ the economic impact of research in this field is reflected by the Netflix
 Prize\footnote{\url{http://www.netflixprize.com/}}, a challenge to improve 
 the predictions of Netflix's movie recommender system by more than 
 10\% in terms
-of the root mean square error. The grand price of 1 million dollar was just
-awarded to the Belcore Pragmatic Chaos team.
+of the root mean square error. The grand price of 1 million dollar was
+awarded in September 2009 to the Belcore Pragmatic Chaos team.
 
 \cite{recommender:Ansari:2000} categorizes recommender systems into
 \emph{content-based} approaches and \emph{collaborative filtering.} 
 Content-based approaches are based on the idea that
 if we can elicit the preference structure of a customer (user)
 concerning product (item) attributes then we can recommend items
-which rank high for the user's most desireable attributes. 
+which rank high for the user's most desirable attributes. 
 Typically, the preference structure can be elicited by analyzing which 
 items the user prefers. For example, for movies the Internet Movie 
 Database\footnote{\url{http://www.imdb.com/}}
@@ -159,7 +159,7 @@ Vogoo PHP LIB & Collaborative filtering engine for personalizing web sites & PHP
 \end{table}
 
 Several projects were initiated
-to implement recommender algorithms for colaborative filtering. 
+to implement recommender algorithms for collaborative filtering. 
 Table~\ref{tab:software} gives an overview of open-source projects
 which provide code which can be used by researchers.
 The extend of (currently available) functionality as well as the target 
@@ -180,7 +180,7 @@ name Taste.
 
 The \proglang{R} extension package~\pkg{recommenderlab} 
 described in this paper 
-has a completely different goal to the existin software packages. It 
+has a completely different goal to the existing software packages. It 
 is not a library to create recommender applications
 but provides a general research infrastructure for recommender systems.
 The focus is on data handling, 
@@ -347,7 +347,7 @@ We want to create recommendations for the active user $u_a$
 shown at the bottom of the matrix.  To find the
 $k$-neighborhood (i.e., the $k$ nearest neighbors) we calculate the similarity
 between the active user and all other users 
-based on theit ratings
+based on their ratings
 in the database and then select the
 $k$ users with the highest similarity. To the right in Figure~\ref{fig:UBCF}
 we see a $2$-dimensional representation of the similarities (users with higher
@@ -466,9 +466,9 @@ In Figure~\ref{fig:IBCF} we assume that we have ratings for the
 active user for items
 $i_1, i_5$ and $i_8$. The rows corresponding to these items are highlighted
 in the item similarity matrix. We can now compute the weighted sum using
-the similarites (only the reduced matrix with the $k=3$
+the similarities (only the reduced matrix with the $k=3$
 highest ratings is used) and the user's ratings. 
-The result (below the matrix) shows that $i_3$ has the highest extimated
+The result (below the matrix) shows that $i_3$ has the highest estimated
 rating for the active user. 
 
 Similar to user-based recommender algorithms, user-bias can be reduced
@@ -487,7 +487,7 @@ are possible~\citep{recommender:Deshpande:2004}.
 Furthermore, item-based CF is successfully applied 
 in large scale recommender systems (e.g., by Amazon.com).
 
-\subsection{Other colaborative filtering methods}
+\subsection{Other collaborative filtering methods}
 
 Slope-one
 
@@ -744,7 +744,7 @@ Pearson Correaltion (PC)
 \subsection{Evaluation Top-$N$ recommenders}
 
 The items in the predicted top-$N$ lists and the 
-withheld items  liked by the user (typically determined by a imple threshold
+withheld items  liked by the user (typically determined by a simple threshold
 on the actual rating) for all test users $\set{U}_{test}$ 
 can be aggregated into a so called {\em confusion matrix} depicted in
 table~\ref{tab_confusion} (see \cite{recommender:Kohavi:1998}) 
@@ -898,9 +898,9 @@ implementations \class{realRatingMatrix} and
 matrices $\mat{R}$.
 \class{realRatingMatrix} implements a rating matrix with real valued 
 ratings stored in sparse format defined in package \pkg{Matrix}.
-Sparse matrices in \pkg{Matrix} typically do not store 0s explicitely,
+Sparse matrices in \pkg{Matrix} typically do not store 0s explicitly,
 however for \class{realRatingMatrix} we use these sparse matrices
-such that instead of 0s, NAs are not explicitely stored.
+such that instead of 0s, NAs are not explicitly stored.
 
 \class{binaryRatingMatrix} implements a 0-1 rating matrix using the
 implementation of \class{itemMatrix} defined in package~\pkg{arules}.
@@ -974,59 +974,106 @@ with several examples.
 \label{sec:examples}
 \subsection{Data handling in recommenderlab}
 This fist example shows how to manage data in recommender lab.
-First, we load the package. Then and then we create a small 
-artificial data set as a matrix and show how to convert it into 
-a realRatingMatrix which stores the data in sparse format (only non-NA values
-are stored explicitely).
+First, we load the package and create a small 
+artificial data set as a matrix. 
 <<>>=
 library("recommenderlab")
-data <- matrix(sample(c(0:5, NA), 100, 
-    replace=TRUE, prob=c(rep(.3/6,6),.7)), ncol=10,
-    dimnames=list(user=paste("u", 1:10, sep=''), 
+data <- matrix(sample(c(0:5, NA), 50, 
+    replace=TRUE, prob=c(rep(.4/6,6),.6)), ncol=10,
+    dimnames=list(user=paste("u", 1:5, sep=''), 
 	item=paste("i", 1:10, sep='')))
 data
-
-r <- as(data, "realRatingMatrix")
-r
-
-#as(r,"dgCMatrix")
-
-as(r,"matrix")
-
-head(as(r,"data.frame"))
 @
 
-normalize
+With coercion, the matrix can be easily converted into 
+a realRatingMatrix object which stores the data in sparse 
+format (only non-NA values are stored explicitly).
+
+<<>>=
+r <- as(data, "realRatingMatrix")
+r
+#as(r,"dgCMatrix")
+@
+
+The realRatingMatrix can be coerced back into a matrix, a list or
+a data.frame any time for closer inspection.
+<<>>=
+as(r, "matrix")
+head(as(r, "list"))
+head(as(r, "data.frame"))
+@
+
+The list contains one entry for each user (row in the matrix) an each
+entry is a vector with only the items for which a rating is available.
+The data.frame contains all ratings as a triplet of user, item and rating.
+
+An important operation for rating matrices is to normalize the entries
+to, e.g., remove rating bias by subtracting the row mean from
+all ratings in the row. This is can be easily done using
+\code{normalize()}.
+
 <<>>=
 r_m <- normalize(r)
 r_m
 @
 
-image
-<<fig=TRUE>>=
+Small portions of rating matrices can bi visually inspected using 
+\code{image()}.
+
+<<eval=FALSE>>=
+image(r, main = "Raw Ratings")
+image(r_m, main = "Normalized Ratings")
+@
+
+<<image1, fig=TRUE, include=FALSE, echo=FALSE>>=
 print(image(r, main = "Raw Ratings"))
 @
-<<fig=TRUE>>=
+<<image2, fig=TRUE, include=FALSE, echo=FALSE>>=
 print(image(r_m, main = "Normalized Ratings"))
 @
 
+\begin{figure}
+\begin{minipage}[b]{.48\linewidth}
+\centerline{\includegraphics[width=\linewidth]{recommenderlab-image1}}
+\end{minipage}
+\begin{minipage}[b]{.48\linewidth}
+\centerline{\includegraphics[width=\linewidth]{recommenderlab-image2}}
+\end{minipage}
+\caption{Image plot 
+the artificial rating data before and after normalization.}
+\label{fig:image1}
+\end{figure}
 
-binarize
+
+Figure~\ref{fig:image1} shows the resulting plots.
+
+A matrix with real valued ratings can be transformed into a 0-1 matrix 
+with \code{binarize()} and
+a user specified threshold (\code{min\_ratings}) 
+on the raw or normalized ratings. In the following only 
+items with a rating of 4 or higher will become a positive
+rating in the new binary rating matrix.
 <<>>=
-r_b <- binarize(r, min_rating=4)
+r_b <- binarize(r, minRating=4)
 as(r_b, "matrix")
 @
 
+We will use the data set Jester5k for the rest of this section.  This data set
+comes with \pkg{recommenderlab} and contains a sample of 5000 users from the
+anonymous ratings data from the Jester Online Joke Recommender System collected
+between April 1999 and May 2003~\citep{recommender:Goldberg:2001}. The
+data set contains ratings for 100 jokes on a scale from -10 to 10. All
+users in the data set have rated 36 or more jokes.
 
 <<>>=
 data(Jester5k)
 Jester5k
 @
 
-Jester5k contains \Sexpr{nrow(Jester5k)} users with 
-\Sexpr{nratings(Jester5k)}~ratings for
-\Sexpr{ncol(Jester5k)} items. For the following examples we use
+Jester5k contains 
+\Sexpr{nratings(Jester5k)}~ratings. For the following examples we use
 only a subset of the data containing a sample of 1000 users.
+For random sampling \func{sample} is provided for rating matrices.
 
 <<>>=
 r <- sample(Jester5k, 1000) 
@@ -1034,167 +1081,115 @@ r
 @
 
 This subset still contains \Sexpr{nratings(r)}~ratings.
-Next, we want to inspect the ratings for the first user. 
-We can inspect the user's ratings
-by coercing the first row into a matrix, but here we
-use the function
-\code{LIST()} which produces for each user a list which
-only contains the items for which ratings are available.
+Next, we inspect the ratings for the first user. We can select
+an individual user with the extraction operator.
 
 <<>>=
-LIST(r[1,])
+rowCounts(r[1,])
+as(r[1,], "list")
+rowMeans(r[1,])
 @
 
-We can look at several distributions to understand the data better.
-First, we look at the distribution of ratings using a histogram.
+The user has rated \Sexpr{rowCounts(r[1,])} jokes, the list shows 
+the ratings and the user's rating average is \Sexpr{rowMeans(r[1,])} .
 
-<<fig=TRUE>>=
-hist(getRatings(r))
+Next, we look at several distributions to understand the data better.
+\code{getRatings()} extracts a vector with all 
+non-missing
+ratings from a rating matrix.
+
+<<hist1, fig=TRUE, include=FALSE>>=
+hist(getRatings(r), breaks=100)
 @
+\begin{figure}
+\centerline{\includegraphics[width=.5\linewidth]{recommenderlab-hist1}}
+\caption{Raw rating distribution for as sample of Jester.} 
+\label{fig:hist1}
+\end{figure}
 
-In the histogram in Fig~\ref{} that the data has an interesting distribution
-where all negative values occur with a almost indentical frequency and
+In the histogram in Figure~\ref{fig:hist1} 
+shoes an interesting distribution
+where all negative values occur with a almost identical frequency and
 the positive ratings more frequent with a steady decline towards the 
-rating 10.
+rating 10. Since this distribution can be the result of users with strong
+rating bias, we look next at the rating distribution after normalization.
 
-
-<<fig=TRUE>>=
-hist(getRatings(normalize(r)))
+<<hist2, fig=TRUE, include=FALSE>>=
+hist(getRatings(normalize(r)), breaks=100)
 @
-
-<<fig=TRUE>>=
-hist(getRatings(normalize(r, method="Z-score")))
-@
-
-<<fig=TRUE>>=
-hist(rowCounts(r))
-@
-
-<<fig=TRUE>>=
-hist(colMeans(r))
-@
-
-
-
-
-
-
-
-\subsection{A first session}
-
-This fist example shows how to train and
-use a recommender algorithm.
-For the example we use the data set \emph{MSWeb} which is included in
-\pkg{recommenderlab}. 
-The data set contains anonymous web click-stream data 
-from \url{www.microsoft.com} 
-for 38,000 anonymous, randomly selected users. For each
-user, the data lists all the areas of the web site (called Vroots; 
-e.g., MS Office, Windows NT Server) 
-that the user visited
-in a one week time frame \citep{recommender:Breese:1998}.
-
-We first load the package and the data set and then select for the
-example only users who visited more than 5 areas.
-Since the areas/items are columns in the 0-1 rating matrix, we select all 
-rows/users with a row count larger than 5.
-
-<<>>=
-library("recommenderlab")
-data(MSWeb)
-
-MSWeb5 <- MSWeb[rowCounts(MSWeb) >5,]
-MSWeb5
-@
-
-The used data set contains \Sexpr{nrow(MSWeb5)} users with more 
-than $5$ items and
-\Sexpr{ncol(MSWeb5)} items.  
-To understand the distribution of the number of
-areas/items each user visited, we can produce a histogram.
-
-<<rowCounts, fig=TRUE, include=FALSE, height=4>>=
-hist(rowCounts(MSWeb5), breaks=20)
+<<hist3, fig=TRUE, include=FALSE>>=
+hist(getRatings(normalize(r, method="Z-score")), breaks=100)
 @
 
 \begin{figure}
-\centerline{\includegraphics[scale=1]{recommenderlab-rowCounts}}
-\caption{Distribution of the number of items per user (rowCounts).}
-\label{fig:rowCounts}
+\begin{minipage}[b]{.48\linewidth}
+\centerline{\includegraphics[width=\linewidth]{recommenderlab-hist2}}
+\end{minipage}
+\begin{minipage}[b]{.48\linewidth}
+\centerline{\includegraphics[width=\linewidth]{recommenderlab-hist3}}
+\end{minipage}
+\caption{Histogram of normalized ratings using row centering (left) and 
+Z-score normalization (right).}
+\label{fig:hist2}
 \end{figure}
 
-Since the rows in the rating matrix represent the users, the histogram in
-Figure~\ref{fig:rowCounts} shows the distribution of the users with $6, 7,
-\ldots$ items (note that we required users to have at least 5 items).
-On average a user has \Sexpr{round(mean(rowSums(MSWeb5)), 2)}
-items in her/his profile.
+Figure~\ref{fig:hist2} shows that the distribution of ratings
+ins closer to a normal distribution after row centering and 
+Z-score normalization additionally reduces the variance further.
 
-The profile of users can be inspected with \func{LIST}. 
-For example, we can see what areas the first two users visited. 
+Finally, we look at how many jokes each user has rated and what the 
+mean rating for each Joke is.
 
-<<>>=
-LIST(MSWeb5[1:2])
+<<hist4, fig=TRUE, include=FALSE>>=
+hist(rowCounts(r), breaks=50)
 @
 
-It is also interesting to study the popularity of items.
-To get a first idea, we use an image plot
-for 200 randomly chosen users.
-
-<<eval=FALSE>>=
-image(sample(MSWeb5, 200))
-@
-<<image, fig=TRUE, include=FALSE, echo=FALSE>>=
-plot(image(sample(MSWeb5, 200)))
+<<hist5, fig=TRUE, include=FALSE>>=
+hist(colMeans(r), breaks=20)
 @
 
 \begin{figure}
-\centerline{\includegraphics[scale=1]{recommenderlab-image}}
-\caption{Image plot of 200 randomly chosen users in the rating matrix $\mat{R}$.
-Dark squares represent 1s in the matrix.}
-\label{fig:image}
+\begin{minipage}[b]{.48\linewidth}
+\centerline{\includegraphics[width=\linewidth]{recommenderlab-hist4}}
+\end{minipage}
+\begin{minipage}[b]{.48\linewidth}
+\centerline{\includegraphics[width=\linewidth]{recommenderlab-hist5}}
+\end{minipage}
+\caption{Distribution of the number of rated items per user (left) and
+of the average ratings per joke (right).}
+\label{fig:hist3}
 \end{figure}
 
 
-Figure~\ref{fig:image} shows that some items are 
-by far more popular than others. We can further 
-look at the
-distribution of how many user profiles contain an item. 
-This is done by plotting a histogram for the column sums of the rating matrix.
+Figure~\ref{fig:hist3} shows that there are unusually many
+users with ratings around 70 and users who have rated all jokes.
+The average ratings per joke look closer to a normal distribution with
+a mean above 0.
 
-<<colCounts, fig=TRUE, include=FALSE, height=4>>=
-hist(colCounts(MSWeb5), breaks=25)
-@
 
-\begin{figure}
-\centerline{\includegraphics[scale=1]{recommenderlab-colCounts}}
-\caption{Distribution of item popularity (colCounts).}
-\label{fig:colCounts}
-\end{figure}
-
-The histogram is shown in Figure~\ref{fig:colCounts}.
-We see a typical distribution where 
-the number of items falls quickly with popularity and 
-only very few items are extremely popular (tail of the distribution).
+\subsection{Creating a recommender}
 
 A recommender is created using the creator function \func{recommender}.
 Here we create a simple recommender which generates recommendations 
 solely on the popularity of items (the number of users who have the item in
-their profile). We create a recommender using the first 1000 users in the
-data set.
+their profile). We create a recommender 
+from the first 1000 users in the Jester5k data set.
 
 <<>>=
-r <- Recommender(MSWeb5[1:1000], method = "POPULAR")
+r <- Recommender(Jester5k[1:1000], method = "POPULAR")
 r
 @
 
 The model can be obtained from a recommender using \func{getModel}.
 <<>>=
-getModel(r)
+names(getModel(r))
+getModel(r)$topN
 @
 
-In this case the model is just a short description and a simple 
-vector called \code{popOrder} containing the order of items
-according to popularity in the data set.
+In this case the model has a
+top-$N$ list to store the popularity order and further
+elements (average ratings, if it used normalization and the
+used aggregation function).
 
 Recommendations are generated by \func{predict} in the same way predict
 is used in \proglang{R} for other types of models. The result 
@@ -1203,15 +1198,14 @@ Here we create top-5 recommendation lists for two
 users who were not used to learn the model.
 
 <<>>=
-recom <- predict(r, MSWeb5[1001:1002], n=5)
+recom <- predict(r, Jester5k[1001:1002], n=5)
 recom
 @
 
 The result are two ordered top-$N$ recommendation lists,
-one for each user. The recommended items can be inspected 
-using \func{LIST}.
+one for each user. The recommended items can be inspected as a list.
 <<>>=
-LIST(recom)
+as(recom, "list")
 @
 
 Since the top-$N$ lists are ordered, we can extract sublists of
@@ -1220,8 +1214,21 @@ recommendations for each list using \func{bestN}.
 <<>>=
 recom3 <- bestN(recom, n = 3)
 recom3
-LIST(recom3)
+as(recom3, "list")
 @
+
+
+Many recommender algorithms can also predict ratings. This is 
+implemented using \func{predict} with the parameter \code{type}
+set to \code{"ratings"}.
+
+<<>>=
+recom <- predict(r, Jester5k[1001:1002], type="ratings")
+recom
+as(recom, "matrix")[,1:5]
+@
+
+
 
 Next we will look at the evaluation of recommender algorithms.
 
@@ -1237,7 +1244,8 @@ for the test users all but three randomly selected items are withheld
 for evaluation.
 
 <<>>=
-scheme <- evaluationScheme(MSWeb5, method="cross", k=4, given=3)
+scheme <- evaluationScheme(Jester5k[1:1000], method="cross", k=4, given=3,
+    goodRating=5)
 scheme
 @
 
@@ -1315,23 +1323,22 @@ user-based CF, item-based CF, and association rule based recommendations.
 Note that when running the following code, the CF based algorithms
 are very slow.
 
-<<echo=FALSE>>=
-load("xresults.rda")
-@
 
-<<eval=FALSE>>=
-## this needs to be saved to disk! see run_recommender.R
+
+<<>>=
+scheme <- evaluationScheme(Jester5k[1:1000], method="split", train = .9, 
+    k=1, given=20, goodRating=5)
+scheme
+
 algorithms <- list(
         "random items" = list(name="RANDOM", param=NULL),
         "popular items" = list(name="POPULAR", param=NULL),
-        "user-based CF" = list(name="UBCF", param=list(method="Jaccard", nn=50)),
-        "item-based CF" = list(name="IBCF", param=list(method="Jaccard", k=50)),
-        "association rules" = list(name="AR", param=list(supp=0.001, conf=0.2, maxlen=2))
+        "user-based CF" = list(name="UBCF", param=list(method="Cosine", 
+		nn=50, minRating=5))
         )
 
 ## run algorithms
 results <- evaluate(scheme, algorithms, n=c(1, 3, 5, 10, 15, 20))
-## save(results, file="xresults.rda")
 @
 
 The result is an object of class~\class{evaluationResultList} for the
@@ -1345,7 +1352,7 @@ the name specified when calling \func{evaluate}.
 
 <<>>=
 names(results)
-results[["association rules"]]
+results[["user-based CF"]]
 @
 
 
@@ -1356,7 +1363,7 @@ annotate can be used to annotate the points on selected curves with the
 list length.
 
 <<roc2, fig=TRUE, include=FALSE>>=
-plot(results, annotate=c(1,3), legend="right")
+plot(results, annotate=c(1,3), legend="topleft")
 @
 \begin{figure}
 \centerline{\includegraphics[scale=1]{recommenderlab-roc2}}
@@ -1387,20 +1394,25 @@ For comparison we will check how the algorithms compare given less information
 using instead of a given-3 a given-1 scheme.
 
 <<>>=
-scheme1 <- evaluationScheme(MSWeb5, method="cross", k=4, given=1)
-scheme1
+Jester_binary <- binarize(Jester5k, minRating=5)
+Jester_binary <- Jester_binary[rowCounts(Jester_binary)>20]
+Jester_binary
+scheme_binary <- evaluationScheme(Jester_binary[1:1000], method="split", train=.9, k=1, given=20)
+scheme_binary
+
+algorithms_binary <- list(
+        "random items" = list(name="RANDOM", param=NULL),
+        "popular items" = list(name="POPULAR", param=NULL),
+        "user-based CF" = list(name="UBCF", param=list(method="Jaccard", nn=50))
+        )
 @
 
-<<eval=FALSE>>=
-results1 <- evaluate(scheme1, algorithms, n=c(1,3,5,10,15,20))
-## save(results1, file="xresults1.rda")
-@
-<<echo=FALSE>>=
-load("xresults1.rda")
+<<>>=
+results_binary <- evaluate(scheme_binary, algorithms_binary, n=c(1,3,5,10,15,20))
 @
 
 <<roc3, fig=TRUE, include=FALSE>>=
-plot(results1, annotate=c(1,3), legend="right")
+plot(results_binary, annotate=c(1,3), legend="bottomright")
 @
 \begin{figure}
 \centerline{\includegraphics[scale=1]{recommenderlab-roc3}}

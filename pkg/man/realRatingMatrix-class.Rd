@@ -4,7 +4,6 @@
 \alias{realRatingMatrix-class}
 \alias{coerce,matrix,realRatingMatrix-method}
 \alias{coerce,realRatingMatrix,matrix-method}
-\alias{coerce,realRatingMatrix,data.frame-method}
 \alias{coerce,realRatingMatrix,dgTMatrix-method}
 \alias{coerce,realRatingMatrix,ngCMatrix-method}
 \alias{coerce,realRatingMatrix,dgCMatrix-method}
@@ -16,8 +15,6 @@
 %\alias{LIST,realRatingMatrix-method}
 \alias{binarize}
 \alias{binarize,realRatingMatrix-method}
-\alias{getTopNLists}
-\alias{getTopNLists,realRatingMatrix-method}
 \alias{getRatings}
 \alias{getRatings,realRatingMatrix-method}
 \alias{removeKnownRatings}
@@ -31,10 +28,10 @@ Objects can be created by calls of the form \code{new("realRatingMatrix", data =
 (see package~\pkg{Matrix}), or by coercion from a regular matrix.
 }
 \section{Slots}{
-	 \describe{
-    \item{\code{data}:}{Object of class \code{"dgCMatrix"}, a sparse matrix
-	defined in package \pkg{Matrix}.}
-  }
+    \describe{
+	\item{\code{data}:}{Object of class \code{"dgCMatrix"}, a sparse matrix
+	    defined in package \pkg{Matrix}.}
+    }
 }
 \section{Extends}{
 Class \code{"\linkS4class{ratingMatrix}"}, directly.
@@ -43,24 +40,20 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
   \describe{
     \item{coerce}{\code{signature(from = "matrix", to = "realRatingMatrix")}: 
 	a numeric matrix with NAs for missing values.}
-    \item{coerce}{\code{signature(from = "data.frame", to = "realRatingMatrix")}: 
-	a data.frame with three columns. Col 1 contains user ids, col 2 contains	item ids and col 3 contains ratings.}
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "matrix")}}
-    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "data.frame")}}
+    \item{coerce}{\code{signature(from = "data.frame", to = "realRatingMatrix")}: 
+	coercion from a data.frame with three columns. 
+	Col 1 contains user ids, col 2 contains	item ids and 
+	col 3 contains ratings.}
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "dgTMatrix")}}
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "ngCMatrix")}}
-    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "dgCMatrix_NA")}}
-    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "data.frame")}}
+    \item{coerce}{\code{signature(from = "realRatingMatrix", to = "dgCMatrix")}}
     
     \item{binarize}{\code{signature(x = "realRatingMatrix")}: create a 
         \code{"binaryRatingMatrix"} by setting all ratings larger or equal to 
-        the argument \code{min_rating} as 1 and all others to 0.}
+        the argument \code{minRating} as 1 and all others to 0.}
     \item{getRatings}{\code{signature(x = "realRatingMatrix")}: returns all 
 	ratings in \code{x} as a numeric vector. }
-    \item{getTopNLists}{\code{signature(x = "realRatingMatrix")}: create 
-        top-N lists from the ratings in x. Arguments are \code{n} 
-	and \code{min_rating}. Items with a rating below \code{min_rating} will 
-	not be part of the top-N list.}
     \item{removeKnownRatings}{\code{signature(x = "realRatingMatrix")}: removes
 	all ratings in \code{x} for which ratings are available in 
 	the realRatingMatrix (of same dimensions as \code{x})
@@ -68,13 +61,14 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
     \item{rowSds}{\code{signature(x = "realRatingMatrix")}: calculate 
 	the standard deviation of ratings for rows (users).}
     \item{colSds}{\code{signature(x = "realRatingMatrix")}: calculate 
-	the standard deviation of ratings for colums (items).}
+	the standard deviation of ratings for columns (items).}
 	 }
 }
 \seealso{
-	See \code{\link{ratingMatrix}},
-	\code{\link{binaryRatingMatrix}} and
-	\code{\link{LIST}}.
+	See \code{\linkS4class{ratingMatrix}} inherited methods,
+	\code{\linkS4class{binaryRatingMatrix}}, 
+	\code{\linkS4class{topNList}}, 
+	\code{\link{getList}} and \code{\link{getData.frame}}.
 	Also see \code{\link[Matrix:dgCMatrix-class]{dgCMatrix}},
 	\code{\link[Matrix:dgCMatrix-class]{dgTMatrix}} and
 	\code{\link[Matrix:dgCMatrix-class]{ngCMatrix}}
@@ -113,7 +107,7 @@ as(r, "matrix")
 as(r, "data.frame")
 
 ## binarize into a binaryRatingMatrix with all 4+ rating a 1
-b <- binarize(r, min_rating=4)
+b <- binarize(r, minRating=4)
 b
 as(b, "matrix")
 }

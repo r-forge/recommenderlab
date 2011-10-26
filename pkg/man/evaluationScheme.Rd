@@ -2,7 +2,6 @@
 \Rdversion{1.1}
 \alias{evaluationScheme}
 \alias{evaluationScheme,ratingMatrix-method}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{Create an Evaluation Scheme}
 \description{
 Creates from a data set an evaluation scheme. The scheme can be a simple split into training and test data, k-fold cross-evaluation or using k

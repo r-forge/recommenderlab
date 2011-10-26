@@ -1,5 +1,6 @@
 setMethod("evaluationScheme", signature(data = "ratingMatrix"), 
-	function(data, method="split", train=0.9, k=NULL, given=3, goodRating=NA) {
+	function(data, method="split", train=0.9, k=NULL, 
+		given=3, goodRating=NA) {
 	    goodRating <- as.numeric(goodRating)
 	    n <- nrow(data)
 
