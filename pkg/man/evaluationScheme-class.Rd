@@ -22,7 +22,7 @@ Objects can be created by
     \item{\code{goodRating}:}{Object of class \code{"numeric"}; Rating at which an item is considered a positive for evaluation. }
     \item{\code{k}:}{Object of class \code{"integer"}; number of runs for evaluation. Default is 1 for method "split" and 10 for "cross-validation" and "bootstrap".}
     \item{\code{knownData}:}{Object of class \code{"ratingMatrix"}; data set with only known (given) items. }
-    \item{\code{method}:}{Object of class \code{"character"}; evaluation method. Available methods are: "split", "cross-validation" and "bootstrap"}
+    \item{\code{method}:}{Object of class \code{"character"}; evaluation method. Available methods are: "split", "cross-validation" and "bootstrap".}
     \item{\code{runsTrain}:}{Object of class \code{"list"}; internal repesentation for the split in training and test data for the evaluation runs.}
     \item{\code{train}:}{Object of class \code{"numeric"}; portion of data used for training for "split" and "bootstrap".}
     \item{\code{unknownData}:}{Object of class \code{"ratingMatrix"}; data set with only unknown items. }
@@ -41,7 +41,8 @@ Objects can be created by
 %\author{ ~~who you are~~ }
 %\note{ ~~further notes~~ }
 \seealso{
-	\code{\linkS4class{ratingMatrix}}
+	\code{\linkS4class{ratingMatrix}} and
+	the creator function \code{\link{evaluationScheme}}.
 }
 %\examples{
 %}

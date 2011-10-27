@@ -28,7 +28,7 @@ Information Retrieval, 4(2), 133-151. July 2001.
 data(Jester5k)
 Jester5k
 
-## number of ratings
-hist(rowCounts(Jester5k))
+nratings(Jester5k)
+hist(getRatings(Jester5k), main="Distribution of ratings")
 }
 \keyword{datasets}

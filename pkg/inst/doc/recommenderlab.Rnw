@@ -47,16 +47,10 @@
 \abstract{The problem of creating recommendations given a large data base from
 directly elicited ratings  (e.g., ratings of 1 through 5 stars) is a popular
 research area which was lately boosted by the Netflix Prize
-competition.  While computing recommendations using these type of data has
-direct application for example for large on-line retailers, there are many
-potential applications for recommender systems where such data is not
-available. In many cases 
-there might be 0-1 rating data available or can be derived
-from other data sources (e.g., purchase records, Web click data) which can be
-utilized. 
-%Although this type of data differs significantly from directly
-%elicited ratings, only very limited research is available for
-%0-1 data.  
+competition. While several libraries which implement recommender algorithms 
+have been developed over the last decade there still is the need for a 
+framework which facilitates recommender system research
+by providing a common development and evaluation environment.
 This paper describes \pkg{recommenderlab} which provides the
 infrastructure to test and develop recommender algorithms for rating data and 
 0-1 data in a unified framework. The Package provides basic algorithms and 
@@ -188,16 +182,15 @@ easy incorporation of algorithms (either implemented in R or
 interfacing existing algorithms), 
 experiment set up and evaluation of the results. 
 
-% FIXME: structure
-%This paper is structured as follows. Section~\ref{sec:CF} introduces
-%collaborative filtering and applies popular methods to the top-$N$
-%recommendation problem on 0-1 data.
-%In section~\ref{sec:evaluation} we discuss the evaluation of recommender 
-%algorithms.
-%We introduce the infrastructure provided by \pkg{recommenderlab}
-%in section~\ref{sec:infrastructure}. In section~\ref{sec:examples} we 
-%illustrate the capabilities on the package to create and evaluate
-%recommender algorithms. We conclude with section~\ref{sec:conclusion}.
+This paper is structured as follows. Section~\ref{sec:CF} introduces
+collaborative filtering and 
+some of its popular algorithms.
+In section~\ref{sec:evaluation} we discuss the evaluation of recommender 
+algorithms.
+We introduce the infrastructure provided by \pkg{recommenderlab}
+in section~\ref{sec:infrastructure}. In section~\ref{sec:examples} we 
+illustrate the capabilities on the package to create and evaluate
+recommender algorithms. We conclude with section~\ref{sec:conclusion}.
 
 \section{Collaborative Filtering}
 \label{sec:CF}
@@ -298,15 +291,17 @@ Popular similarity measures for CF are
 the \emph{Pearson correlation coefficient} and
 the \emph{Cosine similarity}. These similarity measures are defined
 between two users $u_x$ and $u_y$ as
-$$\mathrm{sim_{Pearson}}(\vec{x},\vec{y}) = 
+\begin{equation}
+\mathrm{sim_{Pearson}}(\vec{x},\vec{y}) = 
 	    \frac{\sum_{i \in I} (\vec{x}_i \, \bar{\vec{x}})(\vec{y}_i \, \bar{\vec{y}})}
 		{(|I| -1) \, \mathrm{sd}(\vec{x}) \, \mathrm{sd}(\vec{y})}
-$$
-
+\end{equation}
 and
-$$\mathrm{sim_{Cosine}}(\vec{x},\vec{y}) = 
+\begin{equation}
+\mathrm{sim_{Cosine}}(\vec{x},\vec{y}) = 
 	    \frac{\vec{x}\cdot\vec{y}}
-		    {\|\vec{x}\| \|\vec{y}\|},$$
+		    {\|\vec{x}\| \|\vec{y}\|},
+\end{equation}
 where
 $\vec{x} = r_{x}$ and 
 $\vec{y} = r_{y}$ represent the 
@@ -326,7 +321,7 @@ aggregated to form the predicted rating for the active user.
 The easiest form is to just average the ratings in the neighborhood.
 
 \begin{equation}
-\hat{r}_{aj}=\frac{1}{|\set{N}(a)|} \sum_{i\in\set{N}(a)} r_{ij}$$
+\hat{r}_{aj}=\frac{1}{|\set{N}(a)|} \sum_{i\in\set{N}(a)} r_{ij}
 \label{equ:aggregation1}
 \end{equation}
 
@@ -372,7 +367,7 @@ incorporated as weights into
 Equation~(\ref{equ:aggregation1}). 
 
 \begin{equation}
-\hat{r}_{aj}=\frac{1}{\sum_{i\in\set{N}(a)} s_{ai}} \sum_{i\in\set{N}(a)} s_{ai} r_{ij}$$
+\hat{r}_{aj}=\frac{1}{\sum_{i\in\set{N}(a)} s_{ai}} \sum_{i\in\set{N}(a)} s_{ai} r_{ij}
 \label{equ:aggregation2}
 \end{equation}
 $s_{ai}$ is the similarity between the active user~$u_a$ and user
@@ -461,8 +456,10 @@ To make a recommendation based on the model
 we use the similarities to calculate a weighted sum of the user's ratings
 for related items.
 
-$$\hat{r}_{ui} =  \frac{1}{\sum_{j \in \set{S}(i)}{s_{ij}}} 
-    \sum_{j \in \set{S}(i)}{s_{ij} r_{uj}}$$
+\begin{equation}
+\hat{r}_{ui} =  \frac{1}{\sum_{j \in \set{S}(i)}{s_{ij}}} 
+    \sum_{j \in \set{S}(i)}{s_{ij} r_{uj}}
+\end{equation}
 
 \begin{figure}
 \centerline{\includegraphics[width=9cm]{item-based2}}
@@ -499,13 +496,6 @@ are possible~\citep{recommender:Deshpande:2004}.
 Furthermore, item-based CF is successfully applied 
 in large scale recommender systems (e.g., by Amazon.com).
 
-\subsection{Other collaborative filtering methods}
-
-Over time several other model-based approaches have been developed.
-A popular simple item-based apporach is the \emph{Slope One} 
-algorithm \cite{recommender:Lemire:2005}.
-Another family of algorithms is based on latent factors approach using
-matrix decomposition~\cite{recommender:Koren:2009}.
 
 \subsection{User and Item-Based CF using 0-1 Data}
 
@@ -581,8 +571,10 @@ A similarity measure which
 only focuses on matching ones 
 and thus prevents the problem with zeroes
 is the \emph{Jaccard index}:
-$$\mathrm{sim_{Jaccard}}(\set{X},\set{Y}) = \frac{|\set{X}\cap \set{Y}|}
-{|\set{X}\cup \set{Y}|},$$ 
+\begin{equation}
+\mathrm{sim_{Jaccard}}(\set{X},\set{Y}) = \frac{|\set{X}\cap \set{Y}|}
+{|\set{X}\cup \set{Y}|},
+\end{equation}
 where
 $\set{X}$ and $\set{Y}$ are the sets of the items with a 1 in user profiles
 $u_a$ and $u_b$, respectively.
@@ -597,9 +589,9 @@ and between items for item-based filtering as described above.
 %\marginpar{More on this!}
 
 
-\subsection{Recommendations Based on Association Rules}
+\subsection{Recommendations for 0-1 Data Based on Association Rules}
 \label{sec:AR}
-Recommender systems based on association rules
+Recommender systems using association rules
 produce recommendations based on a dependency model for items 
 given by a set of association 
 rules~\citep{Fu:2000,Mobasher:2001,Geyer-Schulz:2002,Lin:2002,Demiriz:2004}. 
@@ -678,6 +670,14 @@ it incorporates higher order effects between more than two items.
 %4 (based on our preliminary work presented in [Karypis 2001]) and the
 %dependency network-based algorithm [Heckman et al. 2000].
 
+\subsection{Other collaborative filtering methods}
+
+Over time several other model-based approaches have been developed.
+A popular simple item-based apporach is the \emph{Slope One} 
+algorithm \cite{recommender:Lemire:2005}.
+Another family of algorithms is based on latent factors approach using
+matrix decomposition~\cite{recommender:Koren:2009}.
+%% FIXME: Expand here
 
 \section{Evaluation of Recommender Algorithms}
 \label{sec:evaluation}
@@ -736,11 +736,25 @@ and then of top-$N$ recommendation lists.
 
 \subsection{Evaluation of predicted ratings}
 
-Root Mean Square Error (RMSE)
-Mean Squared Difference (MSD)
-Spearman Rank Correlation (SRC) 
-Pearson Correaltion (PC)
+A typical way to evaluate a prediction is to compute 
+the deviation of the prediction from the true value. 
+This is the basis for the \emph{Mean
+Average Error (MAE)}
 
+\begin{equation}
+\mathrm{MAE} = \frac{1}{|\set{K}|} \sum_{(i,j)\in \set{K}} |r_{ij} - \hat{r}_{ij})|,
+\end{equation}
+where $\set{K}$ is the set of all user-item pairings  $(i,j)$ 
+for which we have a predicted rating $\hat{r}_{ij}$ and a known rating
+$r_{ij}$ which was not used to learn the recommendation model.
+
+Another popular measure is the \emph{Root Mean Square Error (RMSE)}.
+\begin{equation}
+\mathrm{RMSE} = \sqrt{\frac{\sum_{(i,j)\in \set{K}} (r_{ij} - \hat{r}_{ij})^2}{|\set{K}|}}
+\end{equation}
+
+RMSE penalizes larger errors stronger than MAE and thus is suitable for
+situations where small prediction errors are not very important.
 
 \subsection{Evaluation Top-$N$ recommenders}
 
@@ -923,14 +937,22 @@ returns a \class{Recommender} object. Once we have a recommender object,
 we can predict top-$N$ recommendations for active users using
 
 \begin{center}
-\code{predict(object, newdata, n=10, ...)}. 
+\code{predict(object, newdata, n=10, type=c("topNList", "ratings"), ...)}. 
+
 \end{center}
 
+Predict can return either top-$N$ lists (default setting) or predicted ratings.
 \code{object} is the recommender
-object, \code{newdata} is the data for the active users and \code{n} is
-the number of recommended items $N$ in each top-$N$ list. \func{predict} will
-return a list of objects of class \class{topNList}, one for each 
-of the active users in \code{newdata}. 
+object, \code{newdata} is the data for the active users.
+For top-$N$ lists \code{n} is
+the maximal number of recommended items in each list and \func{predict} will
+return an objects of class \class{topNList} which contains
+one top-$N$ list for each active user. For ratings \code{n} is ignorred
+and an object of \class{realRatingMatrix} is returned. Each row
+contains the predicted ratings for one active user. Items for which a
+rating exists in \code{newdata} have a \code{NA} instead of a 
+predicted rating.
+
 
 The actual implementations for the recommendation algorithms are 
 managed using the registry mechanism provided by package \pkg{registry}.
@@ -973,17 +995,25 @@ In the following, we will illustrate the usage of \pkg{recommenderlab}
 with several examples.
 \section{Examples}
 \label{sec:examples}
-\subsection{Data handling in recommenderlab}
-This fist example shows how to manage data in recommender lab.
-First, we load the package and create a small 
-artificial data set as a matrix. 
+This fist few example shows how to manage data in recommender lab and then 
+we create and evaluate recommenders.
+First, we load the package.
+
 <<>>=
 library("recommenderlab")
-data <- matrix(sample(c(0:5, NA), 50, 
+@
+
+\subsection{Coercion to and from rating matrices}
+
+For this example we create a small 
+artificial data set as a matrix. 
+
+<<>>=
+m <- matrix(sample(c(as.numeric(0:5), NA), 50, 
     replace=TRUE, prob=c(rep(.4/6,6),.6)), ncol=10,
     dimnames=list(user=paste("u", 1:5, sep=''), 
 	item=paste("i", 1:10, sep='')))
-data
+m
 @
 
 With coercion, the matrix can be easily converted into 
@@ -991,23 +1021,32 @@ a realRatingMatrix object which stores the data in sparse
 format (only non-NA values are stored explicitly).
 
 <<>>=
-r <- as(data, "realRatingMatrix")
+r <- as(m, "realRatingMatrix")
 r
 #as(r,"dgCMatrix")
 @
 
-The realRatingMatrix can be coerced back into a matrix, a list or
-a data.frame any time for closer inspection.
+The realRatingMatrix can be coerced back into a matrix which is 
+identical to the original matrix. 
 <<>>=
-as(r, "matrix")
-head(as(r, "list"))
+identical(as(r, "matrix"),m)
+@
+
+
+It can also be coerced into a list 
+of users with their ratings for closer inspection 
+or
+into a data.frame with user/item/rating tuples.
+<<>>=
+as(r, "list")
 head(as(r, "data.frame"))
 @
 
-The list contains one entry for each user (row in the matrix) an each
-entry is a vector with only the items for which a rating is available.
-The data.frame contains all ratings as a triplet of user, item and rating.
+The data.frame version is especially suited for writing rating data to a
+file (e.g., by \func{write.csv}). 
+Cercion from data.frame and list into a rating matrix is also provided.
 
+\subsection{Normalization}
 An important operation for rating matrices is to normalize the entries
 to, e.g., remove rating bias by subtracting the row mean from
 all ratings in the row. This is can be easily done using
@@ -1048,6 +1087,8 @@ the artificial rating data before and after normalization.}
 
 Figure~\ref{fig:image1} shows the resulting plots.
 
+\subsection{Binarization of data}
+
 A matrix with real valued ratings can be transformed into a 0-1 matrix 
 with \code{binarize()} and
 a user specified threshold (\code{min\_ratings}) 
@@ -1059,6 +1100,8 @@ r_b <- binarize(r, minRating=4)
 as(r_b, "matrix")
 @
 
+
+\subsection{Inspection of data set properties}
 We will use the data set Jester5k for the rest of this section.  This data set
 comes with \pkg{recommenderlab} and contains a sample of 5000 users from the
 anonymous ratings data from the Jester Online Joke Recommender System collected
@@ -1192,8 +1235,9 @@ top-$N$ list to store the popularity order and further
 elements (average ratings, if it used normalization and the
 used aggregation function).
 
-Recommendations are generated by \func{predict} in the same way predict
-is used in \proglang{R} for other types of models. The result 
+Recommendations are generated by \func{predict} 
+(consistent with its use for other types of models in 
+\proglang{R}). The result 
 are recommendations in the form of an object of class~\class{TopNList}.
 Here we create top-5 recommendation lists for two
 users who were not used to learn the model.
@@ -1203,7 +1247,7 @@ recom <- predict(r, Jester5k[1001:1002], n=5)
 recom
 @
 
-The result are two ordered top-$N$ recommendation lists,
+The result contains two ordered top-$N$ recommendation lists,
 one for each user. The recommended items can be inspected as a list.
 <<>>=
 as(recom, "list")
@@ -1219,22 +1263,25 @@ as(recom3, "list")
 @
 
 
-Many recommender algorithms can also predict ratings. This is 
+Many recommender algorithms can also predict ratings. This is also
 implemented using \func{predict} with the parameter \code{type}
 set to \code{"ratings"}.
 
 <<>>=
 recom <- predict(r, Jester5k[1001:1002], type="ratings")
 recom
-as(recom, "matrix")[,1:5]
+as(recom, "matrix")[,1:10]
 @
 
+Predicted ratings are returned as an object of \class{realRatingMatrix}.
+The prediction contains \code{NA} for the items rated by the active users.
+In the example we show the predicted ratings for the first 10 items for
+the two active users.
 
-
-Next we will look at the evaluation of recommender algorithms.
 
 \subsection{Evaluation of a recommender algorithm}
 
+Next we will look at the evaluation of recommender algorithms.
 \pkg{recommenderlab} implements several 
 standard evaluation methods for recommender systems. 
 Evaluation starts with creating an evaluation scheme
@@ -1524,33 +1571,54 @@ lines 12--14 need to be replaced by the recommendation code.
 %\begin{verbatim}
 \begin{Verbatim}[gobble=0, numbers=left]
 ## always recommends the top-N popular items (without known items)
-BIN_POPULAR <- function(data, parameter = NULL) {
+REAL_POPULAR <- function(data, parameter = NULL) {
 
-  model <- list(
-    description = "Order of items by popularity",
-    popOrder = order(colCounts(data), decreasing=TRUE)
-  )
+    p <- .get_parameters(list(
+		normalize="center",
+		aggregation=colSums ## could also be colMeans
+		), parameter)
 
-  predict <- function(model, newdata, n=10) {
-    n <- as.integer(n)
+    ## normalize data
+    if(!is.null(p$normalize)) data <- normalize(data, method=p$normalize)
 
-    ## remove known items and take highest
-    reclist <- lapply(LIST(newdata, decode= FALSE),
-      function(x) head(model$popOrder[!(model$popOrder %in% x)], n))
+    topN <- new("topNList", 
+	    items = list(order(p$aggregation(data), decreasing=TRUE)),
+	    itemLabels = colnames(data),
+	    n= ncol(data))
 
-    new("topNList", items = reclist, itemLabels = colnames(newdata), n = n)
-  }
+    ratings <- new("realRatingMatrix", data = dropNA(t(colMeans(data))))
 
-  ## construct recommender object
-  new("Recommender", method = "POPULAR", dataType = "binaryRatingMatrix",
-    ntrain = nrow(data), model = model, predict = predict)
+    model <- c(list(topN = topN, ratings = ratings), p)
+
+    predict <- function(model, newdata, n=10, 
+	type=c("topNList", "ratings"), ...) {
+
+	type <- match.arg(type)
+
+	if(type=="topNList") {
+	    topN <- removeKnownItems(model$topN, newdata, replicate=TRUE)
+	    topN <- bestN(topN, n)
+	    return(topN)
+	}
+
+	## type=="ratings"
+	if(!is.null(model$normalize)) 
+	    newdata <- normalize(newdata, method=model$normalize)
+
+	ratings <- removeKnownRatings(model$ratings, newdata, replicate=TRUE)
+	ratings <- denormalize(ratings, factors=getNormalize(newdata))
+	return(ratings)
+    }
+
+    ## construct and return the recommender object
+    new("Recommender", method = "POPULAR", dataType = class(data),
+	    ntrain = nrow(data), model = model, predict = predict)
 }
 
 ## register recommender
 recommenderRegistry$set_entry(
-  method="POPULAR", dataType = "binaryRatingMatrix", fun=BIN_POPULAR, 
-  description="Recommender based on item popularity (binary data)."
-)
+	method="POPULAR", dataType = "realRatingMatrix", fun=REAL_POPULAR, 
+	description="Recommender based on item popularity (real data).")
 \end{Verbatim}
 %\end{verbatim}
 \end{table}
@@ -1560,7 +1628,6 @@ recommenderRegistry$set_entry(
 \label{sec:conclusion}
 
 %% FIXME
-To come...
 
 %Being able to use automated recommender systems 
 %offers a big advantage for online
@@ -1571,21 +1638,23 @@ To come...
 %Unfortunately there is only limited research on collaborative filtering 
 %based recommender systems using 0-1 data available.
 %
-%In this paper we described the \proglang{R} 
-%extension package~\pkg{recommenderlab}
-%which is especially geared towards developing and testing
-%recommender algorithms for 0-1 data.
-%The package allows to create evaluation schemes following accepted 
-%methods and then use them to evaluate and compare recommender algorithms.
-%Adding new recommender algorithms to the package is facilitates using
-%a registry to manage the algorithms. 
+In this paper we described the \proglang{R} 
+extension package~\pkg{recommenderlab}
+which is especially geared towards developing and testing
+recommender algorithms.
+%for 0-1 data.
+The package allows to create evaluation schemes following accepted 
+methods and then use them to evaluate and compare recommender algorithms.
+\pkg{recommenderlab} currently includes several standard algorithms and
+adding new recommender algorithms to the package is facilitated by the
+built in registry mechanism to manage algorithms. 
 %
 %\pkg{recommenderlab} currently includes several algorithms for 0-1 data,
 %however, the infrastructure is flexible enough to also 
 %extend to the more conventional non-binary rating data and its algorithms.
-%In the future we will add more and more of these algorithms to the package and
-%we hope that some algorithms will also 
-%be contributed by other researchers.
+In the future we will add more and more of these algorithms to the package and
+we hope that some algorithms will also 
+be contributed by other researchers.
 
 %Applying collaborative filtering methods to binary and 
 %especially to 0-1 data is difficult because  

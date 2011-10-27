@@ -17,7 +17,11 @@ Creates recommendations using a recommender model and data about new users.
   \item{object}{a recommender model (class \code{"Recommender"}).}
   \item{newdata}{data about new users (class \code{"ratingMatrix"}).}
   \item{n}{ number of recommendations in the top-N list.}
-  \item{type}{ type of recommendation. The default type is a top-N recommendation list. Some recommenders can also create other results (e.g., predicted ratings)}
+  \item{type}{ type of recommendation. The default type is 
+  \code{"topNList"} which creates
+  a top-N recommendation list with recommendations. 
+  Some recommenders can also create other results (e.g., predicted ratings with
+  the type \code{"ratings"}).}
   \item{\dots}{further arguments.}
 }
 %\details{
@@ -39,11 +43,7 @@ rec <- Recommender(MSWeb10[1:100,], method = "POPULAR")
 ## create recommendations
 pre <- predict(rec, MSWeb10[101:102], n = 10)
 pre
-
-getList(pre)
-getList(pre, decode = FALSE)
+as(pre, "list")
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
 %\keyword{ ~kwd1 }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
