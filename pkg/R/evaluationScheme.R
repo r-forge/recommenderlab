@@ -87,10 +87,19 @@ setMethod("show", signature(object = "evaluationScheme"),
 	    }
 
 	    writeLines(
-		    sprintf("Method: %s with %d runs (training set proportion: %1.3f)", 
-			    sQuote(object@method), object@k, object@train))
+		    sprintf("Method: %s with %d run(s).",
+			    sQuote(object@method), object@k))
+	    
+	    if(!is.na(object@train)) {
+		writeLines(
+			sprintf("Training set proportion: %1.3f",
+				object@train))
+	    }
+	    
+	    writeLines(sprintf("Good ratings: >=%f", object@goodRating))
+	    
 
-	    cat("Data set: ")
+	    writeLines("Data set: ", sep='')
 	    show(object@data)
 	    invisible(NULL)
 	})

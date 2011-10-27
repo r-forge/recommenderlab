@@ -21,11 +21,10 @@
 \alias{removeKnownRatings,realRatingMatrix-method}
 
 \title{Class "realRatingMatrix": Real-valued Rating Matrix}
-\description{A matrix containing ratings (typically 1-5 stars, etc.). 
-Note that 0 codes for a missing rating.}
+\description{A matrix containing ratings (typically 1-5 stars, etc.).}
 \section{Objects from the Class}{
 Objects can be created by calls of the form \code{new("realRatingMatrix", data = m)}, where \code{m} is sparse matrix of class \code{dgCMatrix} 
-(see package~\pkg{Matrix}), or by coercion from a regular matrix.
+(see package \pkg{Matrix}), or by coercion from a regular matrix.
 }
 \section{Slots}{
     \describe{
@@ -38,8 +37,7 @@ Class \code{"\linkS4class{ratingMatrix}"}, directly.
 }
 \section{Methods}{
   \describe{
-    \item{coerce}{\code{signature(from = "matrix", to = "realRatingMatrix")}: 
-	a numeric matrix with NAs for missing values.}
+    \item{coerce}{\code{signature(from = "matrix", to = "realRatingMatrix")}} 
     \item{coerce}{\code{signature(from = "realRatingMatrix", to = "matrix")}}
     \item{coerce}{\code{signature(from = "data.frame", to = "realRatingMatrix")}: 
 	coercion from a data.frame with three columns. 

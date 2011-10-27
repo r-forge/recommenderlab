@@ -16,18 +16,17 @@ available coercion to allow for parameters like \code{decode}.
 }
 \usage{
 getList(from, ...)
-getData.frame(from, ...)
-
 \S4method{getList}{realRatingMatrix}(from, decode = TRUE, ratings = TRUE, ...)
 \S4method{getList}{binaryRatingMatrix}(from, decode = TRUE, ...)
 \S4method{getList}{topNList}(from, decode = TRUE, ...)
+
+getData.frame(from, ...)
 \S4method{getData.frame}{ratingMatrix}(from, decode = TRUE, ratings = TRUE, ...)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{from}{ object to be represented as a list.}
-  \item{decode}{ use item names or item IDs (col numbers) for items? }
-  \item{ratings}{ create list of ratings?}
+  \item{decode}{ use item names or item IDs (column numbers) for items? }
+  \item{ratings}{ include ratings in the list or data.frame?}
   \item{...}{ further arguments (currently unused).}
 }
 \details{
@@ -36,16 +35,18 @@ data.frame has one row per rating with the user in the first column,
 the item as the second and the rating as the third.
 }
 \value{
-Returns a list or data.frame.
+Returns a list or a data.frame.
 }
 \seealso{
 \code{\linkS4class{binaryRatingMatrix}},
 \code{\linkS4class{realRatingMatrix}},
 \code{\linkS4class{topNList}}.
 }
-%\examples{
-%}
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+\examples{
+data(Jester5k)
+
+getList(Jester5k[1,])
+getData.frame(Jester5k[1,])
+}
 %\keyword{ ~kwd1 }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

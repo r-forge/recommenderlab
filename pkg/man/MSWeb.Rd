@@ -36,10 +36,12 @@ Conference on Uncertainty in Artificial Intelligence, Madison, WI.
 data(MSWeb)
 MSWeb
 
-image(MSWeb[1:100,1:100])
+nratings(MSWeb)
 
-hist(rowCounts(MSWeb))
+## look at first two users
+as(MSWeb[1:2,], "list")
 
-hist(colCounts(MSWeb))
+## items per user
+hist(rowCounts(MSWeb), main="Distribution of Vroots visited per user")
 }
 \keyword{datasets}

@@ -6,7 +6,9 @@
   Calculate the Prediction Error for a Recommendation
 }
 \description{
-  Calculates MAD, MSE and RMSE for predicted ratings given the actual 
+  Calculates MAD (mean average deviation), MSE (means squared error) 
+  and RMSE (root means squared error)
+  for predicted ratings given the actual 
   ratings by the user.
 }
 \usage{
@@ -31,10 +33,10 @@ has only a single row with the global averages.
 \code{\linkS4class{realRatingMatrix}}.
 }
 \examples{
-data(MovieLense)
+data(Jester5k)
 
-## create 90/10 split for the data
-e <- evaluationScheme(MovieLense[1:500], method="split", train=0.9, 
+## create 90/10 split (known/unknown) for the first 500 users in Jester5k
+e <- evaluationScheme(Jester5k[1:500], method="split", train=0.9, 
     k=1, given=15)
 e
 

@@ -32,6 +32,13 @@ setMethod("getList", signature(from = "binaryRatingMatrix"),
 	}
 )
 
+## FIXME: we could do this cheaper
+setAs("data.frame", "binaryRatingMatrix",
+	function(from) {
+	    rr <- as(from, "realRatingMatrix")
+	    binarize(rr, minRating=-Inf)
+	})
+
 
 ## FIXME: removeKnownRatings should be implemented here!
 #setMethod("removeKnownRatings", signature(x = "binaryRatingMatrix"),

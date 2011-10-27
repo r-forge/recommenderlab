@@ -7,7 +7,7 @@
 Plot Evaluation Results
 }
 \description{
-Creats precision-recall or ROC plots for recommender evaluation results.
+Creates precision-recall or ROC plots for recommender evaluation results.
 }
 \usage{
 \S4method{plot}{evaluationResults}(x, y,

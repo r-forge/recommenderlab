@@ -13,7 +13,8 @@ setAs("realRatingMatrix", "matrix",
 setAs("data.frame", "realRatingMatrix", function(from) {
 		user	<- from[,1]
 		item	<- from[,2]
-		rating	<- as.numeric(from[,3])
+		if(ncol(from)>=3) rating <- as.numeric(from[,3])
+		else rating <- rep(1, length(item))
 
 		i <- factor(user)
 		j <- factor(item)
@@ -84,6 +85,7 @@ setMethod("removeKnownRatings", signature(x = "realRatingMatrix"),
 	    if(replicate && nrow(x)==1) {
 		x@data <- as(t(crossprod(x@data, 
 					t(rep(1, nrow(known))))), "dgCMatrix")
+		rownames(x) <- rownames(known)
 	    }
 
 	    if(nrow(x) != nrow(known))

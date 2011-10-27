@@ -24,7 +24,7 @@
 \description{Recommendations a Top-N list. }
 \section{Objects from the Class}{
 Objects can be created by 
-\code{predict} with a recommender model and a new data.
+\code{predict} with a recommender model and new data.
 }
 \section{Slots}{
     \describe{
