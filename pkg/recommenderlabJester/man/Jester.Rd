@@ -15,7 +15,7 @@ April 1999 and May 2003.
 \details{
 24983 x 100 rating matrix (24983 users and 100 jokes) with
 with 1,810,455 ratings between -10.00 and +10.00. All selected users have
-rated 36 or more jokes.
+rated 15 or more jokes.
 }
 %\source{
 %}
