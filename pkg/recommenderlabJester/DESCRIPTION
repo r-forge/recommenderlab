@@ -1,0 +1,11 @@
+Package: recommenderlabJester
+Version: 1.0-0
+Date: 2011-XX-XX
+Title: Jester Dataset for recommenderlab
+Author: Michael Hahsler
+Maintainer: Michael Hahsler <michael@hahsler.net> 
+Description: Provides the Jester Dataset for recommenderlab
+Depends: recommenderlab (>= 0.1-3)
+URL: http://R-Forge.R-project.org/projects/recommenderlab/, http://lyle.smu.edu/IDA/recommenderlab/
+License: GPL-2
+Copyright: (C) Michael Hahsler
