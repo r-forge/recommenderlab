@@ -1,7 +1,7 @@
 \name{Jester}
 \alias{Jester}
 \docType{data}
-\title{Jester dataset}
+\title{Jester Dataset}
 \description{
 The data set contains the anonymous 
 ratings data from
@@ -13,7 +13,7 @@ April 1999 and May 2003.
   The format is: Formal class 'realRatingMatrix' [package "recommenderlab"] 
 }
 \details{
-24983 x 100 rating matrix (24983 users and 100 jokes) with
+24983 x 100 rating matrix (24983 users and 100 jokes)
 with 1,810,455 ratings between -10.00 and +10.00. All selected users have
 rated 15 or more jokes.
 }
