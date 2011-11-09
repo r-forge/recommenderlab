@@ -6,14 +6,14 @@
   Calculate the Prediction Error for a Recommendation
 }
 \description{
-  Calculates MAD (mean average deviation), MSE (means squared error) 
+  Calculates MAE (mean average error), MSE (means squared error) 
   and RMSE (root means squared error)
   for predicted ratings given the actual 
   ratings by the user.
 }
 \usage{
 calcPredictionError(x, data, ...)
-\S4method{calcPredictionError}{realRatingMatrix,realRatingMatrix}(x, data, byUser=TRUE)
+\S4method{calcPredictionError}{realRatingMatrix,realRatingMatrix}(x, data, byUser=FALSE)
 }
 \arguments{
   \item{x}{ Predicted ratings as a "realRatingMatrix"}
@@ -50,7 +50,7 @@ p
 ## compute error metrics averaged per user and then averaged over all 
 ## recommendations
 calcPredictionError(p, getData(e, "unknown"))
-calcPredictionError(p, getData(e, "unknown"), byUser=FALSE)
+calcPredictionError(p, getData(e, "unknown"), byUser=TRUE)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

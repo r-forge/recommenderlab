@@ -674,9 +674,10 @@ it incorporates higher order effects between more than two items.
 
 Over time several other model-based approaches have been developed.
 A popular simple item-based approach is the \emph{Slope One} 
-algorithm \cite{recommender:Lemire:2005}.
+algorithm \citep{recommender:Lemire:2005}.
 Another family of algorithms is based on latent factors approach using
-matrix decomposition~\cite{recommender:Koren:2009}.
+matrix decomposition~\citep{recommender:Koren:2009}.
+These algorithms are outside the scope of this introductory paper.
 %% FIXME: Expand here
 
 \section{Evaluation of Recommender Algorithms}
@@ -756,7 +757,7 @@ Another popular measure is the \emph{Root Mean Square Error (RMSE)}.
 RMSE penalizes larger errors stronger than MAE and thus is suitable for
 situations where small prediction errors are not very important.
 
-\subsection{Evaluation Top-$N$ recommenders}
+\subsection{Evaluation Top-$N$ recommendations}
 
 The items in the predicted top-$N$ lists and the 
 withheld items  liked by the user (typically determined by a simple threshold
@@ -956,7 +957,9 @@ predicted rating.
 
 The actual implementations for the recommendation algorithms are 
 managed using the registry mechanism provided by package \pkg{registry}.
-%The registry called \code{recommenderRegistry} uses the four fields
+The registry called \code{recommenderRegistry} 
+and stores recommendation method names and a short description.
+%uses the four fields
 %\code{method} (name of the recommendation algorithm), \code{dataType} (name of
 %the concrete implementation of \class{ratingMatrix} the algorithm works on),
 %\code{fun} (function to create a recommender model as an instance of class
@@ -965,7 +968,14 @@ managed using the registry mechanism provided by package \pkg{registry}.
 Generally, the registry mechanism is hidden from the user and the
 creator function \func{Recommender} uses it in the background to map 
 a recommender method name to its implementation. However, the 
-registry can be directly queried and new recommender algorithms can be added by the user. We will give and example for this feature 
+registry can be directly queried by
+
+\begin{center}
+\code{recommenderRegistry\$get\_entries()} 
+\end{center}
+
+and new recommender algorithms can be added by the user. 
+We will give and example for this feature 
 in the examples section of this paper.
 
 To evaluate recommender algorithms package~\pkg{recommenderlab}
@@ -1213,8 +1223,16 @@ a mean above 0.
 
 \subsection{Creating a recommender}
 
-A recommender is created using the creator function \func{recommender}.
-Here we create a simple recommender which generates recommendations 
+A recommender is created using the creator function \func{Recommender}.
+Available recommendation methods are stored in a registry.
+The registry can be queried. Here we are only interested in
+methods for real-valued rating data.
+
+<<>>=
+recommenderRegistry$get_entries(dataType = "realRatingMatrix")
+@
+
+Next, we create a recommender which generates recommendations 
 solely on the popularity of items (the number of users who have the item in
 their profile). We create a recommender 
 from the first 1000 users in the Jester5k data set.
@@ -1278,15 +1296,63 @@ The prediction contains \code{NA} for the items rated by the active users.
 In the example we show the predicted ratings for the first 10 items for
 the two active users.
 
-
-\subsection{Evaluation of a recommender algorithm}
-
+\subsection{Evaluation of predicted ratings}
 Next we will look at the evaluation of recommender algorithms.
 \pkg{recommenderlab} implements several 
 standard evaluation methods for recommender systems. 
 Evaluation starts with creating an evaluation scheme
 that determines what and how data is used for training and evaluation.
-Here we create a $4$-fold cross validation scheme 
+Here we create an evaluation scheme which splits the first 1000 users
+in Jester5k into a training set (90\%) and a test set (10\%). For 
+the test set 15 items will be given to the recommender algorithm 
+and the other items will be held out
+for computing the error.
+
+<<>>=
+e <- evaluationScheme(Jester5k[1:1000], method="split", train=0.9, given=15)
+e
+@
+
+We create two recommenders (user-based and item-based collaborative filtering) 
+using the training data.
+
+<<>>=
+r1 <- Recommender(getData(e, "train"), "UBCF")
+r1
+
+r2 <- Recommender(getData(e, "train"), "IBCF")
+r2
+@
+
+Next, we compute predicted ratings for the known part of the test data (15 items 
+for each user) using 
+the two algorithms. 
+
+<<>>=
+p1 <- predict(r1, getData(e, "known"), type="ratings")
+p1
+p2 <- predict(r2, getData(e, "known"), type="ratings")
+p2
+@
+
+Finally, we can calculate the error between the prediction and the
+unknown part of the test data.
+
+<<>>=
+error <- rbind(
+  calcPredictionError(p1, getData(e, "unknown")),
+  calcPredictionError(p2, getData(e, "unknown"))
+)
+rownames(error) <- c("UBCF","IBCF")
+error
+@
+
+In this example user-based collaborative filtering produces a smaller 
+prediction error.
+
+\subsection{Evaluation of a top-$N$ recommender algorithm}
+
+For this example we create a $4$-fold cross validation scheme 
 with the the Given-3 protocol, i.e.,
 for the test users all but three randomly selected items are withheld 
 for evaluation.
