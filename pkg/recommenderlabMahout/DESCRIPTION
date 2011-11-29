@@ -1,14 +1,13 @@
-Package: stream
+Package: recommenderlabMahout
 Version: 0.0-1
-Date: 2011-11-29
+Date: 2011-xx-xx
 Title: Developing and testing Recommender Algorithms using Apache Mahout and R
-Author: Akshaya Aradhya V, Dr.Michael Hahsler
+Author: Akshaya Aradhya V, Michael Hahsler
 Maintainer: Akshaya Aradhya V <aksy.aradhya@gmail.com>
-Description: Provides a research infrastructure to test and develop
-    recommender algorithms using Java, R and rJava.
-Depends: recommenderlab (>= 0.1-3)
-Imports: rJava (>= 0.6-3), MASS
+Description: Provides an interface to to recommender algorithms implemented in Mahout.
+Depends: recommenderlab (>= 0.1-3), rJava
+Imports: rJava (>= 0.6-3)
 SystemRequirements: Java (>= 5.0)
 URL: http://R-Forge.R-project.org/projects/recommenderlab/, http://lyle.smu.edu/IDA/recommenderlab/
 License: GPL-2
-Copyright: Freely available for research use when acknowledged with the following reference: Developed by Akshaya Aradhya V and Dr.Michael Hahsler, Intelligent Data Analysis Lab, Southern Methodist University, Dallas, Texas. 
+Copyright: Freely available for research use when acknowledged with the following reference: Developed by Akshaya Aradhya V and Michael Hahsler, Intelligent Data Analysis Lab, Southern Methodist University, Dallas, Texas. 
