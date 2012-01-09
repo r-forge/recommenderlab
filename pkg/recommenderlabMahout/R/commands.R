@@ -1,12 +1,23 @@
-testSlopeOne <- function() {
 
-test <- .jnew("java/lang/String","recommenderlabMahout/Work/movieRatings.dat")
+library(recommenderlabMahout)
+data(MovieLense)
+
+### use write.table
+write.csv(file = "data.csv",  as(MovieLense[1:20,], "data.frame"))
+
+
+
+testSlopeOne <- function(file = "data.csv") {
+
+data <- .jnew("java/lang/String", file)
 
 #recsystreeclustering <- .jnew("com/movieRecommender/test")
 #result = .jcall(recsystreeclustering,"[I","createRecommender","treeClusteringRecommender",test, as.integer(6012))
 #
-recsysslopeone <- .jnew("com/movieRecommender/test")
-result = .jcall(recsysslopeone,"[I","createRecommender","slopeOneRecommender",test, as.integer(6012))
+user <- 6012
+
+obj <- .jnew("com/movieRecommender/test")
+result = .jcall(obj,"[I","createRecommender","slopeOneRecommender",data, as.integer(user))
 result
 
 #
