@@ -14,7 +14,7 @@ MAHOUT_SLOPEONE <- function(data, parameter = NULL) {
 
     predict <- function(model, newdata, n=10, ...) {
 	
-	##do a rbind newdata with data in model
+	##bind the newdata with data in model
 
 
 ### use write.table
@@ -26,7 +26,7 @@ data <- .jnew("java/lang/String", file)
 #recsystreeclustering <- .jnew("com/movieRecommender/test")
 #result =.jcall(recsystreeclustering,"[I","createRecommender","treeClusteringRecommender",file, as.integer(6012))
 #create a for loop with ids of those users. Return a prediction object. 
-#user <- 6012
+user <- 6012
 
 obj <- .jnew("com/movieRecommender/test")
 result = .jcall(obj,"[I","createRecommender","slopeOneRecommender",data, as.integer(user))
@@ -34,7 +34,7 @@ result
 	
 	#convert result (int array) to an object in topN 
 	#item labels are obtained from data
-	topN <- new(“topNList”, list(user1 = result), colnames(model$data),     		10L)
+	topN <- new("topNList", list(user = result), colnames(model$data),     		10L)
 	topN <- removeKnownItems(model$topN, newdata, replicate=TRUE)
 	topN <- bestN(topN, n) //n is taken from predict
 	return(topN)
