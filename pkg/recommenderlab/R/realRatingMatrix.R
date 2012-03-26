@@ -89,7 +89,7 @@ setMethod("removeKnownRatings", signature(x = "realRatingMatrix"),
 	    }
 
 	    if(nrow(x) != nrow(known))
-		stop("number of rows in x and known do not match!")
+		stop("removeKnownRatings: Number of rows in x and known do not match!")
 
 	    ## FIXME: make sparse
 	    xm <- as(x, "matrix")

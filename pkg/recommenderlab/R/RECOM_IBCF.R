@@ -136,7 +136,7 @@ REAL_IBCF <- function(data, parameter= NULL) {
 	sim <- model$sim 
 	u <- as(newdata, "dgCMatrix")
 	
-	ratings <- as(tcrossprod(sim,u) / tcrossprod(sim, u!=0), "matrix")
+	ratings <- t(as(tcrossprod(sim,u) / tcrossprod(sim, u!=0), "matrix"))
 	
 	ratings <- new("realRatingMatrix", data=dropNA(ratings), 
 		normalize = getNormalize(newdata))
