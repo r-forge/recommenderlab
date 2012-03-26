@@ -1,11 +1,13 @@
 
-library(recommenderlabMahout)
-data(MovieLense)
+test <- function() {
+
+#library(recommenderlabMahout)
+#data(MovieLense)
 
 ### use write.table
 write.csv(file = "data.csv",  as(MovieLense[1:20,], "data.frame"))
 
-
+}
 
 testSlopeOne <- function(file = "data.csv") {
 
