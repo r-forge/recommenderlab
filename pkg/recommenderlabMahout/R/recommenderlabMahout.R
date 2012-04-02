@@ -1,0 +1,21 @@
+library(rJava)
+.jinit("Work/MAHOUT/mahoutrec-1.0-SNAPSHOT.jar",parameters="-Xmx512m")
+.jaddClassPath("inst/java/slf4j-api-1.6.0.jar")
+.jaddClassPath("inst/java/mahout-core-0.4.jar")
+.jaddClassPath("inst/java/google-collections-1.0-rc2.jar")
+.jaddClassPath("inst/java/mahout-collections-1.0.jar")
+.jaddClassPath("inst/java/mahout-utils-0.4.jar")
+.jaddClassPath("inst/java/mahout-math-0.4.jar")
+.jaddClassPath("inst/java/commons-math-1.2.jar")
+.jaddClassPath("inst/java/slf4j-jcl-1.6.0.jar")
+.jaddClassPath("inst/java/commons-logging-1.1.1.jar")
+.jaddClassPath("inst/java/uncommons-math-1.0.2.jar")
+.jaddClassPath("inst/java/uncommons-maths-1.2.jar")
+.jaddClassPath("inst/java/uncommons-maths-1.2.jar")
+.jaddClassPath("inst/java/commons-cli-2.0-mahout.jar")
+
+
+#test <- .jnew("java/lang/String","/usr/local/recommenderlab/userRec/datasets/movieRatings.dat")     
+#recsys <- .jnew("com/movieRecommender/recommender")
+#result = .jcall(recsys,"Ljava/lang/String;","getRecommendations","SlopeOneRecommender",test)
+
