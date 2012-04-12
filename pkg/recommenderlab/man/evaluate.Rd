@@ -63,7 +63,8 @@ plot(ev, type="o", annotate = TRUE)
 algorithms <- list(
 		RANDOM = list(name = "RANDOM", param = NULL),
 		POPULAR = list(name = "POPULAR", param = NULL),
-		UBCF = list(name = "UBCF", param = NULL)
+		UBCF = list(name = "UBCF", param = NULL),
+		IBCF = list(name = "IBCF", param = NULL)
 		)
 
 evlist <- evaluate(es, algorithms)

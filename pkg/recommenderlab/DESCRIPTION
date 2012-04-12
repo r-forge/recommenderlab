@@ -11,4 +11,4 @@ Depends: R (>= 2.10.0), methods, Matrix, registry, arules (>= 1.0-1), proxy
 Suggests: ROCR
 URL: http://R-Forge.R-project.org/projects/recommenderlab/, http://lyle.smu.edu/IDA/recommenderlab/
 License: GPL-2
-Copyright: (C) Michael Hahsler
+Copyright: (C) Michael Hahsler (PCA and SVD implementation (C) Saurabh Bathnagar)

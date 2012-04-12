@@ -103,7 +103,7 @@ REAL_IBCF <- function(data, parameter= NULL) {
 		args=list(alpha=p$alpha, na_as_zero=p$na_as_zero)))
 
     ## normalize rows to 1
-    if(p$normalize_sim_matrix) sim <- sim/rowSums(sim)
+    if(p$normalize_sim_matrix) sim <- sim/rowSums(sim, na.rm=TRUE)
 
     ## reduce similarity matrix to keep only the k highest similarities
     diag(sim) <- NA
