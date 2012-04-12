@@ -17,7 +17,7 @@ setMethod("evaluate", signature(x = "evaluationScheme", method = "character"),
 			    progress=progress, keepModel=keepModel)
                 }
 			
-		#if(progress) cat("\n")
+		if(progress) cat("\n")
 
 		new("evaluationResults", results = cm, 
 			method=recommenderRegistry$get_entry(method)$method)
