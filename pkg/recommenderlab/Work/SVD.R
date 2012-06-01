@@ -9,11 +9,11 @@ es <- evaluationScheme(d, method="cross-validation", goodRating=5,
 
 algorithms <- list(
 	RANDOM = list(name = "RANDOM", param = NULL),
-	POPULAR = list(name = "POPULAR", param = NULL),
-	UBCF = list(name = "UBCF", param = NULL),
-	IBCF = list(name = "IBCF", param = NULL),
-	PCA = list(name = "PCA", param = NULL),
-	SVD = list(name = "SVD", param = NULL)
+	#	POPULAR = list(name = "POPULAR", param = NULL),
+	#UBCF = list(name = "UBCF", param = NULL),
+	#IBCF = list(name = "IBCF", param = NULL),
+	#PCA = list(name = "PCA", param = NULL),
+		SVD_0 = list(name = "SVD", param = list(treat_na="0"))
 	)
 
 evlist <- evaluate(es, algorithms)

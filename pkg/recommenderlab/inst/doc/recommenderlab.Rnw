@@ -1309,7 +1309,8 @@ and the other items will be held out
 for computing the error.
 
 <<>>=
-e <- evaluationScheme(Jester5k[1:1000], method="split", train=0.9, given=15)
+e <- evaluationScheme(Jester5k[1:1000], method="split", train=0.9, 
+    given=15, goodRating=5)
 e
 @
 
