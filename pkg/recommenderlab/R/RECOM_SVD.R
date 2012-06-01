@@ -8,7 +8,7 @@ REAL_SVD <- function(data, parameter= NULL) {
     normalize = "center",
     normalize_sim_matrix = FALSE,
     alpha = 0.5,
-    na_as_zero = FALSE,
+    treat_na = "median",
     minRating = NA
     ), parameter)
   
@@ -35,6 +35,14 @@ REAL_SVD <- function(data, parameter= NULL) {
     data <- rBind(data, newdata@data)
     
     ### FIXME: svd does as.matrix which sets all missing values to 0!
+    data <- as(data, "matrix")
+
+    if(model$treat_na=="min") data[is.na(data)] <- min(data, na.rm=TRUE)
+    else if(model$treat_na=="mean") data[is.na(data)] <- mean(data, na.rm=TRUE)
+    else if(model$treat_na=="median") data[is.na(data)] <- median(data, na.rm=TRUE)
+    else if(model$treat_na=="max") data[is.na(data)] <- max(data, na.rm=TRUE)
+    else if(model$treat_na=="0") data[is.na(data)] <- 0
+    else stop("No valid way to treat NAs specified (treat_na)!")
 
     s<-svd(data)
     # Get Diag
