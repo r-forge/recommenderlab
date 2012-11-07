@@ -1,50 +1,51 @@
-\documentclass[fleqn, a4paper]{article}
-\usepackage{a4wide}
-\usepackage[round,longnamesfirst]{natbib}
-\usepackage{graphicx,keyval,thumbpdf,url}
-\usepackage{hyperref}
-\usepackage{fancyvrb}
-\usepackage{Sweave}
-\SweaveOpts{strip.white=true}
-\AtBeginDocument{\setkeys{Gin}{width=0.6\textwidth}}
+\documentclass[nojss]{jss}
 
-%\documentclass[article]{jss}
+%\documentclass[fleqn, a4paper]{article}
+%\usepackage{a4wide}
+%\usepackage[round,longnamesfirst]{natbib}
+%\usepackage{graphicx,keyval,thumbpdf,url}
+%\usepackage{hyperref}
+%\usepackage{fancyvrb}
+%\usepackage{Sweave}
+%\SweaveOpts{strip.white=true}
+%\AtBeginDocument{\setkeys{Gin}{width=0.6\textwidth}}
 
 \usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
 
 %% end of declarations %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \usepackage{amsmath}
 \usepackage{amsfonts}
 
 
-\newcommand{\strong}[1]{{\normalfont\fontseries{b}\selectfont #1}}
+%\newcommand{\strong}[1]{{\normalfont\fontseries{b}\selectfont #1}}
 \newcommand{\class}[1]{\mbox{\textsf{#1}}}
 \newcommand{\func}[1]{\mbox{\texttt{#1()}}}
-\newcommand{\code}[1]{\mbox{\texttt{#1}}}
-\newcommand{\pkg}[1]{\strong{#1}}
-\newcommand{\samp}[1]{`\mbox{\texttt{#1}}'}
-\newcommand{\proglang}[1]{\textsf{#1}}
+%\newcommand{\code}[1]{\mbox{\texttt{#1}}}
+%\newcommand{\pkg}[1]{\strong{#1}}
+%\newcommand{\samp}[1]{`\mbox{\texttt{#1}}'}
+%\newcommand{\proglang}[1]{\textsf{#1}}
 \newcommand{\set}[1]{\mathcal{#1}}
-\newcommand{\sQuote}[1]{`{#1}'}
-\newcommand{\dQuote}[1]{``{#1}''}
-\newcommand\R{{\mathbb{R}}}
+%\newcommand{\sQuote}[1]{`{#1}'}
+%\newcommand{\dQuote}[1]{``{#1}''}
+%\newcommand\R{{\mathbb{R}}}
 \newcommand{\mat}[1]{{\mathbf{#1}}}
-\renewcommand{\vec}[1]{{\mathbf{#1}}}
-
+%\renewcommand{\vec}[1]{{\mathbf{#1}}}
+%
 \sloppy
 
 %% \VignetteIndexEntry{An introduction to the R package recommenderlab}
 
-\begin{document}
+\author{Michael Hahsler\\Southern Methodist University}
 
-\title{\pkg{recommenderlab}: A Framework for Developing and Testing Recommendation Algorithms\footnote{This research was funded in part by the NSF Industry/University Cooperative Research Center for Net-Centric Software \& Systems.}
-}
-\author{Michael Hahsler}
-\maketitle
-\sloppy
+\title{\pkg{recommenderlab}: A Framework for Developing and Testing Recommendation Algorithms}
 
+%% for pretty printing and a nice hypersummary also set:
+\Plainauthor{Michael Hahsler} %% comma-separated
+\Plaintitle{recommenderlab: A Framework for Developing and Testing Recommendation Algorithms} %% without formatting
+\Shorttitle{Developing and Testing Recommendation Algorithms} %% a short title (if necessary)
 
-\abstract{The problem of creating recommendations given a large data base from
+\Abstract{The problem of creating recommendations given a large data base from
 directly elicited ratings  (e.g., ratings of 1 through 5 stars) is a popular
 research area which was lately boosted by the Netflix Prize
 competition. While several libraries which implement recommender algorithms 
@@ -56,6 +57,46 @@ infrastructure to develop  and test recommender algorithms for rating data and
 0-1 data in a unified framework. The Package provides basic algorithms and 
 allows the user to develop and use his/her own algorithms in
 the framework via a simple registration procedure.}
+
+\Keywords{recommender systems, collaborative filtering, evaluation}
+\Plainkeywords{recommender systems, collaborative filtering, evaluation} %% without formatting
+
+\Address{ 
+    Michael Hahsler\\
+	Engineering Management, Information, and Systems\\
+	Lyle School of Engineering\\
+	Southern Methodist University\\
+	P.O. Box 750123 \\
+	Dallas, TX 75275-0123\\
+	E-mail: \email{mhahsler@lyle.smu.edu}\\
+	URL: \url{http://lyle.smu.edu/~mhahsler}
+}
+
+
+
+
+
+\begin{document}
+
+%\title{\pkg{recommenderlab}: A Framework for Developing and Testing Recommendation Algorithms\footnote{This research was funded in part by the NSF Industry/University Cooperative Research Center for Net-Centric Software \& Systems.}
+%}
+%\author{Michael Hahsler}
+%\maketitle
+%\sloppy
+
+
+%\abstract{The problem of creating recommendations given a large data base from
+%directly elicited ratings  (e.g., ratings of 1 through 5 stars) is a popular
+%research area which was lately boosted by the Netflix Prize
+%competition. While several libraries which implement recommender algorithms 
+%have been developed over the last decade there is still the need for a 
+%framework which facilitates research on recommender systems
+%by providing a common development and evaluation environment.
+%This paper describes \pkg{recommenderlab} which provides the
+%infrastructure to develop  and test recommender algorithms for rating data and 
+%0-1 data in a unified framework. The Package provides basic algorithms and 
+%allows the user to develop and use his/her own algorithms in
+%the framework via a simple registration procedure.}
 
 <<echo=FALSE>>=
 options(scipen=3, digits=4, prompt="R> ", eps=FALSE, width=75)
@@ -1746,12 +1787,17 @@ be contributed by other researchers.
 %    (e.g., vintages differ often significantly and change every year).
 %\item Investigate recommender engines based on consensus rankings.
 
+\section*{Acknowledgments}
+This research was funded in part by the NSF Industry/University Cooperative Research Center for Net-Centric Software \& Systems.
+
+
+
 %
 %\bibliographystyle{abbrvnat}
 %\bibliography{recommenderlab}
 %
 
-\bibliographystyle{abbrvnat}
+%\bibliographystyle{abbrvnat}
 \bibliography{recommender,recom_talk,data,stuff,association_rules}
 
 \end{document}
