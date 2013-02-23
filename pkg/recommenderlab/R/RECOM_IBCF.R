@@ -39,9 +39,18 @@ BIN_IBCF <- function(data, parameter= NULL) {
     
 
     predict <- function(model, newdata, n = 10, 
-	    type=c("topNList", "ratings"), ...) {
+	    data=NULL, type=c("topNList", "ratings"), ...) {
 
 	type <- match.arg(type)
+	
+	## newdata are userid
+	if(is.numeric(newdata)) {
+	    if(is.null(data) || !is(data, "ratingMatrix"))
+		stop("If newdata is a user id then data needes to be the training dataset.")
+	    newdata <- data[newdata,]
+	}
+	
+	
 	n <- as.integer(n)
 	sim <- model$sim 
 	u <- as(newdata, "dgCMatrix")
@@ -124,9 +133,17 @@ REAL_IBCF <- function(data, parameter= NULL) {
 	    )
 
     predict <- function(model, newdata, n = 10, 
-	    type=c("topNList", "ratings"), ...) {
+	    data=NULL, type=c("topNList", "ratings"), ...) {
 	
 	type <- match.arg(type)
+
+	## newdata are userid
+	if(is.numeric(newdata)) {
+	    if(is.null(data) || !is(data, "ratingMatrix"))
+		stop("If newdata is a user id then data needes to be the training dataset.")
+	    newdata <- data[newdata,]
+	}
+
 	n <- as.integer(n)
 	
 	if(!is.null(model$normalize)) 

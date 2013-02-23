@@ -36,8 +36,16 @@ BIN_AR <- function(data, parameter = NULL) {
     ) 
 
     
-    predict <- function(model, newdata, n=10, ...) {
-        n <- as.integer(n)
+    predict <- function(model, newdata, n=10, data=NULL, ...) {
+        
+	## newdata are userid
+	if(is.numeric(newdata)) {
+	    if(is.null(data) || !is(data, "ratingMatrix"))
+		stop("If newdata is a user id then data needes to be the training dataset.")
+	    newdata <- data[newdata,]
+	}
+	
+	n <- as.integer(n)
         measure <- model$measure
 
         reclist <- list()

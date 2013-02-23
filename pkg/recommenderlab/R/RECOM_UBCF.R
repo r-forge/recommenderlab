@@ -20,7 +20,15 @@ BIN_UBCF <- function(data, parameter = NULL){
 	data = data
 	), p )
 
-    predict <- function(model, newdata, n=10, ...) {
+    predict <- function(model, newdata, n=10, data=NULL, ...) {
+
+	## newdata are userid
+	if(is.numeric(newdata)) {
+	    if(is.null(data) || !is(data, "ratingMatrix"))
+		stop("If newdata is a user id then data needes to be the training dataset.")
+	    newdata <- data[newdata,]
+	}
+
 
         ## prediction
         ## FIXME: add Weiss dissimilarity
@@ -86,9 +94,16 @@ REAL_UBCF <- function(data, parameter = NULL){
 	), p)
 
     predict <- function(model, newdata, n=10, 
-	    type=c("topNList", "ratings"), ...) {
+	    data=NULL, type=c("topNList", "ratings"), ...) {
 
 	type <- match.arg(type)
+	
+	## newdata are userid
+	if(is.numeric(newdata)) {
+	    if(is.null(data) || !is(data, "ratingMatrix"))
+		stop("If newdata is a user id then data needes to be the training dataset.")
+	    newdata <- data[newdata,]
+	}
 	
 	if(!is.null(model$normalize)) 
 	    newdata <- normalize(newdata, method=model$normalize)
