@@ -1,7 +1,6 @@
-#import("recommenderlab")
 
-## registry uses S3
-#importFrom("recommenderlab","recommenderRegistry")
+import("recommenderlab")
 
-#export("recommenderRegistry")
+importMethodsFrom("Matrix", "image", "t", "crossprod", "tcrossprod", "which")
+
 
