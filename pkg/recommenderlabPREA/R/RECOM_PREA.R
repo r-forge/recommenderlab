@@ -1,7 +1,7 @@
 
 REAL_PREA <- function(data, parameter= NULL) {
   
-  p <- .get_parameters(list(
+  p <- recommenderlab:::.get_parameters(list(
     k = 30, 
     method="Cosine",
     normalize = "center", 
@@ -92,8 +92,7 @@ REAL_PREA <- function(data, parameter= NULL) {
 
 
 ## register recommender
-recommenderRegistry$set_entry(
-  method="PREA", dataType = "realRatingMatrix", fun=REAL_PREA,
-  description="Recommender based on PREA")
+# is now in onLoad.R
+
 
 

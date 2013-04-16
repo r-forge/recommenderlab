@@ -5,7 +5,7 @@ Title: Interface for recommenderlab to PREA
 Author: Derek Phanekham, Michael Hahsler
 Maintainer: Derek Phanekham <dphanekham@smu.edu>
 Description: Provides an interface to to recommender algorithms implemented in PREA.
-Depends: recommenderlab, rJava
+Depends: recommenderlab, rJava, Matrix
 Imports: rJava (>= 0.6-3)
 SystemRequirements: Java (>= 5.0)
 URL: http://R-Forge.R-project.org/projects/recommenderlab/, http://lyle.smu.edu/IDA/recommenderlab/
