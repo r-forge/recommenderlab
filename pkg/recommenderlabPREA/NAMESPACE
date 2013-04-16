@@ -1,0 +1,7 @@
+#import("recommenderlab")
+
+## registry uses S3
+#importFrom("recommenderlab","recommenderRegistry")
+
+#export("recommenderRegistry")
+
