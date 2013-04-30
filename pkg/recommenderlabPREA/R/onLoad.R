@@ -1,9 +1,10 @@
 ## for Java
 .onLoad <- function(libname, pkgname) {
-  options(java.parameters="-Xrs")
-  .jpackage(pkgname, lib.loc = libname)
+  options(java.parameters="-Xrs -Xmx2048m") ### check for memory
+  .jpackage(pkgname, jars="prea.jar", lib.loc = libname)
   
 }
+
 
 .onAttach <- function(...) {
   recommenderRegistry$set_entry(
