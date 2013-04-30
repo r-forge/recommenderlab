@@ -12,74 +12,49 @@ REAL_PREA <- function(data, parameter= NULL) {
   ), parameter)
   
   
-  if(!is.null(p$normalize))
-    data <- normalize(data, method=p$normalize)
+  trip <- (as(as(data,"dgCMatrix"), "dgTMatrix"))
   
-  ## this might not fit into memory! Maybe use a sample?
-  sim <- as.matrix(similarity(data, method=p$method, which="items", 
-                              args=list(alpha=p$alpha, na_as_zero=p$na_as_zero)))
+  .jinit()
+  options(java.parameters = "-Xmx2048m")
+  #.jaddClassPath("/home/derek/Work/source/prea.jar")
+  .jaddClassPath("/inst/java/prea.jar")
   
-  ## normalize rows to 1
-  if(p$normalize_sim_matrix) sim <- sim/rowSums(sim, na.rm=TRUE)
+  interface <- .jnew("CFInterface", check=TRUE, silent=FALSE)
   
-  ## reduce similarity matrix to keep only the k highest similarities
-  diag(sim) <- NA
-  ##sim[!is.finite(sim)] <- NA
+  rowlength <- trip@Dim[1]
+  columnlength <- trip@Dim[2]
+  column <- (1:columnlength)
+  row <- (1:rowlength)
+    
+  r <-.jcall(interface, returnSig = "LRecContainer;",
+             "createRatingMatrix", rowlength, columnlength,
+             trip@i, trip@j, trip@x, silent=FALSE, check=TRUE)
   
-  for(i in 1:nrow(sim)) 
-    sim[i,head(order(sim[i,], decreasing=FALSE, na.last=FALSE), 
-               ncol(sim) - p$k)] <- NA
-  
-  ## make sparse
-  sim <- dropNA(sim)
+  strings <- .jarray( c("ItemAvg", "simple", "0.2"))
   
   
-  model <- c(list(
-    description = "IBCF: Reduced similarity matrix",
-    sim = sim
-  ), p
-  )
+  #this creates a recommender object in java with above parameters
+  r <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", r, strings)
   
-  predict <- function(model, newdata, n = 10, 
-                      data=NULL, type=c("topNList", "ratings"), ...) {
+
+  model <- c(list(description = "IBCF: Reduced similarity matrix", preaObject = r), p)
+  
+  
+  #make already known values NA
+  #create TopN
+  #do for just one user
+  
+  predict <- function(model, newdata, n = 10, data=NULL, type=c("topNList", "ratings"), ...) {
     
-    type <- match.arg(type)
+    #this should go in predict
+    r <- model$preaObject
+    p <- sapply(.jcall(interface, returnSig = "[[D", "runRecommender", r), .jevalArray, silent=FALSE)
     
-    ## newdata are userid
-    if(is.numeric(newdata)) {
-      if(is.null(data) || !is(data, "ratingMatrix"))
-        stop("If newdata is a user id then data needes to be the training dataset.")
-      newdata <- data[newdata,]
-    }
-    
-    n <- as.integer(n)
-    
-    if(!is.null(model$normalize)) 
-      newdata <- normalize(newdata, method=model$normalize)
-    
-    ## predict all ratings
-    sim <- model$sim 
-    u <- as(newdata, "dgCMatrix")
-    
-    ratings <- t(as(tcrossprod(sim,u) / tcrossprod(sim, u!=0), "matrix"))
-    
-    ratings <- new("realRatingMatrix", data=dropNA(ratings), 
-                   normalize = getNormalize(newdata))
-    ## prediction done
-    
-    ratings <- removeKnownRatings(ratings, newdata)
-    
-    if(!is.null(model$normalize)) 
-      ratings <- denormalize(ratings)
-    
-    if(type=="ratings") return(ratings)
-    
-    getTopNLists(ratings, n=n, minRating=model$minRating)
-    
+    p
   }
   
   ## construct recommender object
-  new("Recommender", method = "IBCF", dataType = class(data),
+  new("Recommender", method = "PREA", dataType = class(data),
       ntrain = nrow(data), model = model, predict = predict)
 }
 
