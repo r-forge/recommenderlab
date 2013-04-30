@@ -1,6 +1,3 @@
-
 import("recommenderlab")
 
 importMethodsFrom("Matrix", "image", "t", "crossprod", "tcrossprod", "which")
-
-

@@ -1,7 +1,7 @@
 ## for Java
 .onLoad <- function(libname, pkgname) {
   options(java.parameters="-Xrs")
-	.jpackage(pkgname, lib.loc = libname)
+  .jpackage(pkgname, lib.loc = libname)
   
 }
 
@@ -10,5 +10,4 @@
     method="PREA", dataType = "realRatingMatrix", fun=REAL_PREA,
     description="Recommender based on PREA")
 }
-
 
