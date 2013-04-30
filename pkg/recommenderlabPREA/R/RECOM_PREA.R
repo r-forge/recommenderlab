@@ -14,10 +14,10 @@ REAL_PREA <- function(data, parameter= NULL) {
   
   trip <- (as(as(data,"dgCMatrix"), "dgTMatrix"))
   
-  .jinit()
-  options(java.parameters = "-Xmx2048m")
+  #.jinit()
+  #options(java.parameters = "-Xmx2048m")
   #.jaddClassPath("/home/derek/Work/source/prea.jar")
-  .jaddClassPath("/inst/java/prea.jar")
+  #.jaddClassPath("/inst/java/prea.jar")
   
   interface <- .jnew("CFInterface", check=TRUE, silent=FALSE)
   
