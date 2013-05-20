@@ -655,14 +655,15 @@ thresholds on measures of significance and interestingness are used. Two widely 
 \begin{equation*}
 \mathrm{support}(\set{X} \rightarrow \set{Y}) = 
 \mathrm{support}(\set{X} \cup \set{Y}) = 
-\mathrm{Freq}(\set{X} \cup \set{Y}) / |\set{D}|
+\mathrm{Freq}(\set{X} \cup \set{Y}) / |\set{D}| = \hat{P}(E_\set{X} \cap E_\set{Y})
 \end{equation*}
 \begin{equation*}
-\mathrm{confidence}(\set{X} \rightarrow \set{Y}) = \mathrm{support}(\set{X} \cup \set{Y}) / \mathrm{support}(\set{X}) = \hat{P}(\set{Y}|\set{X}) 
+\mathrm{confidence}(\set{X} \rightarrow \set{Y}) = \mathrm{support}(\set{X} \cup \set{Y}) / \mathrm{support}(\set{X}) = \hat{P}(E_\set{Y}|E_\set{X}) 
 \end{equation*}
 
-$\mathrm{Freq}(\set{X})$ gives the number of transactions
-in the data base $\set{D}$ that contains all items in $\set{X}$.
+$\mathrm{Freq}(\set{I})$ gives the number of transactions
+in the data base $\set{D}$ that contains all items in $\set{I}$.
+$E_\set{I}$ is the event that the itemset $\set{I}$ is contained in a transaction.
 
 We now require $\mathrm{support}(\set{X} \rightarrow \set{Y}) > s$ and 
 $\mathrm{confidence}(\set{X} \rightarrow \set{Y}) > c$ 
