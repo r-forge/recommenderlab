@@ -70,7 +70,7 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 
 		return(.conditional(as(x, "dgCMatrix"), dist=TRUE, args))
 	    }
-		
+
 
 	    ## do regular distances
 	    ## FIXME: we can do some distances faster
@@ -88,6 +88,13 @@ setMethod("dissimilarity", signature(x = "realRatingMatrix"),
 		y <- as(y, "matrix")
 		if(!args$na_as_zero) y[y==0] <- NA
 	    }
+
+	    if(method == "pearson") {
+		if(!is.null(y)) y <- t(y)
+		pc <- (cor(t(x), y, method="pearson", 
+					use="pairwise.complete.obs")*-1)/-2
+		return(pc)
+		}
 
 	    ## dist in proxy
 	    proxy::dist(x = x, y = y, method = method)
