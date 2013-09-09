@@ -1,3 +1,5 @@
+import("methods")
+
 importFrom("graphics", "plot") ## we need the generic for plot
 importFrom("proxy", "dist")
 
@@ -13,6 +15,7 @@ importFrom("arules", "predict", "nitems", "sample", "LIST",
 importMethodsFrom("arules", "sort", "summary")
 
 ## registry uses S3
+import("registry")
 export("recommenderRegistry")
 S3method("print", "recommender_method")
 

@@ -2,8 +2,8 @@ Package: recommenderlab
 Version: 0.1-4
 Date: 2011-xx-xx
 Title: Lab for Developing and Testing Recommender Algorithms
-Author: Michael Hahsler
-Maintainer: Michael Hahsler <michael@hahsler.net> 
+Authors@R: c(person("Michael", "Hahsler", role = c("aut", "cre", "cph"),
+                email = "mhahsler@lyle.smu.edu"))
 Description: Provides a research infrastructure to test and develop
     recommender algorithms.
 Classification/ACM: G.4, H.2.8
