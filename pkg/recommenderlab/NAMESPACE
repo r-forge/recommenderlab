@@ -31,7 +31,8 @@ exportClasses(
 
 export(
 		"dropNA",
-		"dropNA2matrix"
+		"dropNA2matrix",
+		".get_parameters"
 	    )
 
 exportMethods(
