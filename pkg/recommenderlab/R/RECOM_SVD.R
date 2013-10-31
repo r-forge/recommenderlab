@@ -1,16 +1,19 @@
 ### Contributed by Saurabh Bathnagar (sbhatnagar@book.com)
 
+.REAL_SVD_param <- list(
+  categories = 50,
+  method="Cosine",
+  normalize = "center",
+  normalize_sim_matrix = FALSE,
+  alpha = 0.5,
+  treat_na = "median",
+  minRating = NA
+)
+
+
 REAL_SVD <- function(data, parameter= NULL) {
   
-  p <- .get_parameters(list(
-    categories = 50,
-    method="Cosine",
-    normalize = "center",
-    normalize_sim_matrix = FALSE,
-    alpha = 0.5,
-    treat_na = "median",
-    minRating = NA
-    ), parameter)
+  p <- .get_parameters(.REAL_SVD_param, parameter)
   
   
   if(!is.null(p$normalize))
@@ -84,6 +87,7 @@ REAL_SVD <- function(data, parameter= NULL) {
 
 recommenderRegistry$set_entry(
   method="SVD", dataType = "realRatingMatrix", fun=REAL_SVD,
-  description="Recommender based on SVD approximation (real data).")
+  description="Recommender based on SVD approximation (real data).",
+  parameters = .REAL_SVD_param)
 
 

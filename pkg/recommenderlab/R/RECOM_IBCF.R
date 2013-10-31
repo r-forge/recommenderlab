@@ -1,14 +1,15 @@
 ## item-based top N recomender (see Karypis 2001)
 
+.BIN_IBCF_params <- list(
+	k = 30,
+	method="Jaccard",
+	normalize_sim_matrix = FALSE,
+	alpha = 0.5
+	)
+
 BIN_IBCF <- function(data, parameter= NULL) {
     
-	p <- .get_parameters(list(
-            k = 30, 
-            method="Jaccard",
-	    normalize_sim_matrix = FALSE,
-            alpha = 0.5
-	    ), parameter)
-    
+    p <- .get_parameters(.BIN_IBCF_params, parameter)
     
     ## this might not fit into memory! Maybe use a sample?
     sim <- as.matrix(similarity(data, method=p$method, which="items", 
@@ -85,23 +86,24 @@ BIN_IBCF <- function(data, parameter= NULL) {
 ## register recommender
 recommenderRegistry$set_entry(
 	method="IBCF", dataType = "binaryRatingMatrix", fun=BIN_IBCF, 
-	description="Recommender based on item-based collaborative filtering (binary rating data).")
+	description="Recommender based on item-based collaborative filtering (binary rating data).",
+  parameters=.BIN_IBCF_params)
 
 
-
+.REAL_IBCF_params <- list(
+  k = 30, 
+  method="Cosine",
+  normalize = "center", 
+  normalize_sim_matrix = FALSE,
+  alpha = 0.5,
+  na_as_zero = FALSE,
+  minRating = NA
+)
 
 
 REAL_IBCF <- function(data, parameter= NULL) {
 
-    p <- .get_parameters(list(
-		    k = 30, 
-		    method="Cosine",
-		    normalize = "center", 
-		    normalize_sim_matrix = FALSE,
-		    alpha = 0.5,
-		    na_as_zero = FALSE,
-		    minRating = NA
-		    ), parameter)
+    p <- .get_parameters(.REAL_IBCF_params, parameter)
 
 
     if(!is.null(p$normalize))
@@ -186,7 +188,6 @@ REAL_IBCF <- function(data, parameter= NULL) {
 ## register recommender
 recommenderRegistry$set_entry(
 	method="IBCF", dataType = "realRatingMatrix", fun=REAL_IBCF,
-	description="Recommender based on item-based collaborative filtering (real data).")
-
-
+	description="Recommender based on item-based collaborative filtering (real data).",
+	parameters=.REAL_IBCF_params)
 
