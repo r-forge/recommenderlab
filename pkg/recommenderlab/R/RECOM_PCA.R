@@ -1,16 +1,18 @@
 ### Contributed by Saurabh Bathnagar (sbhatnagar@book.com)
 
+.REAL_PCA_param <- list(
+  categories = 20,
+  method="Cosine",
+  normalize = "center",
+  normalize_sim_matrix = FALSE,
+  alpha = 0.5,
+  na_as_zero = FALSE,
+  minRating = NA
+)
+
 REAL_PCA <- function(data, parameter= NULL) {
   
-  p <- .get_parameters(list(
-    categories = 20,
-    method="Cosine",
-    normalize = "center",
-    normalize_sim_matrix = FALSE,
-    alpha = 0.5,
-    na_as_zero = FALSE,
-    minRating = NA
-    ), parameter)
+  p <- .get_parameters(.REAL_PCA_param, parameter)
   
   
   if(!is.null(p$normalize))
@@ -80,5 +82,6 @@ REAL_PCA <- function(data, parameter= NULL) {
 
 recommenderRegistry$set_entry(
   method="PCA", dataType = "realRatingMatrix", fun=REAL_PCA,
-  description="Recommender based on PCA approximation (real data).")
+  description="Recommender based on PCA approximation (real data).",
+  parameters = .REAL_PCA_param)
 

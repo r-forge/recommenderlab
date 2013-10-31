@@ -182,6 +182,8 @@ MyMediaLite & Recommender system algorithms. & C\#/Mono & \small\url{http://mlos
 \hline
 %RACOFI: A rule-applying collaborative filtering system & Java &  \url{http://lemire.me/fr/abstracts/COLA2003.html}\\
 %\hrule
+PREA: Personalized Recommendation Algorithms Toolkit & Java &  \url{http://prea.gatech.edu/}\\
+%\hrule
 SVDFeature & Toolkit for feature-based matrix factorization& C++ & \small\url{http://mloss.org/software/view/333/}\\
 \hline
 Vogoo PHP LIB & Collaborative filtering engine for personalizing web sites & PHP & \small\url{http://sourceforge.net/projects/vogoo/} \\
