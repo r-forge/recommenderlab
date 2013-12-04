@@ -34,6 +34,22 @@
   recommenderRegistry$set_entry(
     method="PREA_SLOPEONE", dataType = "realRatingMatrix", fun=REAL_PREA_SLOPEONE,
     description="Recommender based on Slope One method in PREA")
+  
+  recommenderRegistry$set_entry(
+    method="PREA_NMF", dataType = "realRatingMatrix", fun=REAL_PREA_NMF,
+    description="Recommender based on NMF method in PREA")
+  
+  recommenderRegistry$set_entry(
+    method="PREA_PMF", dataType = "realRatingMatrix", fun=REAL_PREA_PMF,
+    description="Recommender based on PMF method in PREA")
+  
+  recommenderRegistry$set_entry(
+    method="PREA_BPMF", dataType = "realRatingMatrix", fun=REAL_PREA_BPMF,
+    description="Recommender based on BPMF method in PREA")
+  
+  recommenderRegistry$set_entry(
+    method="PREA_NLPMF", dataType = "realRatingMatrix", fun=REAL_PREA_NLPMF,
+    description="Recommender based on NLPMF method in PREA")
 }
 
 
