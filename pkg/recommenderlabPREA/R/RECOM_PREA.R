@@ -48,6 +48,8 @@ REAL_PREA <- function(data, parameter= NULL) {
   columnlength <- tripletMatrix@Dim[2]
   column <- (1:columnlength)
   row <- (1:rowlength)
+  param$range[1] = rowlength
+  param$range[2] = columnlength
     
   #calls interface.createRatingMatrix(rowlength, columnlength, i[], j[], x[]);
   #basically transfers the matrix to a Java reporesentation of a sparse matrix
@@ -62,20 +64,48 @@ REAL_PREA <- function(data, parameter= NULL) {
     strings <- .jarray( c(method, "simple", "0.2"))
     recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
   }
-  else if (method == "npca"){
-    strings <- .jarray( c(method, "simple", "0.2", arg1, arg2))
+  else if (method == "avg"){
+    strings <- .jarray( c(method, "simple", "0.2"))
+    recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
+  }
+  else if (method == "useravg"){
+    strings <- .jarray( c(method, "simple", "0.2"))
+    recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
+  }
+  else if (method == "itemavg"){
+    strings <- .jarray( c(method, "simple", "0.2"))
+    recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
+  }
+  else if (method == "random"){
+    strings <- .jarray( c(method, "simple", "0.2"))
+    recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
+  }
+  else if (method == "slopeone"){
+    strings <- .jarray( c(method, "simple", "0.2"))
+    recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
+  }
+  else if (method == "regsvd"){
+    strings <- .jarray( c(method, "simple", "0.2", param$arg1, param$arg2, param$arg3, param$arg4))
     recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
   }
   else if (method == "nmf"){
-    strings <- .jarray( c(method, "simple", "0.2"))
+    strings <- .jarray( c(method, "simple", "0.2", param$arg1, param$arg2, param$arg3))
     recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
   }
   else if (method == "pmf"){
-    strings <- .jarray( c(method, "simple", "0.2"))
+    strings <- .jarray( c(method, "simple", "0.2", param$arg1, param$arg2, param$arg3, param$arg4, param$arg5))
     recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
   }
   else if (method == "bpmf"){
-    strings <- .jarray( c(method, "simple", "0.2"))
+    strings <- .jarray( c(method, "simple", "0.2", param$arg1, param$arg2))
+    recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
+  }
+  else if (method == "nlpmf"){
+    strings <- .jarray( c(method, "simple", "0.2", param$arg1, param$arg2, param$arg3, param$arg4, param$arg5, param$arg6, param$arg7, param$arg8))
+    recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
+  }
+  else if (method == "npca"){
+    strings <- .jarray( c(method, "simple", "0.2", param$arg1, param$arg2))
     recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
   }
 
@@ -95,16 +125,16 @@ REAL_PREA <- function(data, parameter= NULL) {
     type <- match.arg(type)
     r <- model$preaObject
     predictedValues <- sapply(.jcall(interface, returnSig = "[[D", "runRecommender", r), .jevalArray, silent=FALSE)
+    predictedValues <- as(predictedValues, "realRatingMatrix")
     
     if(type=="topNList"){
-      if(is.numeric(newdata)) {
-        print("is numeric")
-        #items = lapply(x@items, head, n)
-        #(predictedValues[newdata, ])
-        top = lapply(predictedValues[newdata, ], head, n)
-        print("top")
-        return(top)
-      }
+      ratings <- matrix(runif(nrow(newdata)*ncol(newdata), model$range[1], model$range[2]),nrow=nrow(newdata), ncol=ncol(newdata), 
+                        dimnames=dimnames(newdata))
+      
+      ratings <- as(ratings, "realRatingMatrix")
+      ratings <- removeKnownRatings(ratings, newdata)
+      return(getTopNLists(ratings, n))
+
     }
     else if(type == "ratings"){
       print("compiling ratings")
@@ -121,13 +151,6 @@ REAL_PREA <- function(data, parameter= NULL) {
   new("Recommender", method = "PREA", dataType = class(data),
       ntrain = nrow(data), model = model, predict = predict)
 }
-
-
-## for testing 
-#recommenderRegistry$delete_entry( method="IBCF2", dataType = "realRatingMatrix")
-#recommenderRegistry$set_entry(
-#	method="IBCF2", dataType = "realRatingMatrix", fun=REAL_IBCF,
-#	description="Recommender based on item-based collaborative filtering (real data).")
 
 
 ## register recommender
