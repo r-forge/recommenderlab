@@ -50,6 +50,10 @@
   recommenderRegistry$set_entry(
     method="PREA_NLPMF", dataType = "realRatingMatrix", fun=REAL_PREA_NLPMF,
     description="Recommender based on NLPMF method in PREA")
+  
+  recommenderRegistry$set_entry(
+    method="PREA_NPCA", dataType = "realRatingMatrix", fun=REAL_PREA_NPCA,
+    description="Recommender based on fast NPCA method in PREA")
 }
 
 
