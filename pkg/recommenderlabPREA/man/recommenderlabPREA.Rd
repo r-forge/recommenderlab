@@ -21,31 +21,32 @@ Provides an interface to recommender algorithms implemented in PREA.
 %\value{
 %}
 %\seealso{
+
 %}
+\arguments{
+  \item{data}{training data.}
+	\item{method}{a character string defining the recommender method to use
+	(see details).}
+	\item{parameter}{parameters for the recommender algorithm.}
+	\item{\dots}{further arguments. }
+}
 \examples{
 data("MovieLense")
 MovieLense100 <- MovieLense[rowCounts(MovieLense) >100,1:50]
 train <- MovieLense100[1:100]
 
-rec <- Recommender(train, method = "PREA")
-rec
+a <- Recommender(train, method = "PREA_REGSVD", parameter = list(feature_count = 15))
 
 ## create top-N recommendations for new users
-pre <- predict(rec, MovieLense100[101:102], n = 10)
+pre <- predict(a, MovieLense[400:401], data=a, type="topN")
 pre
 as(pre, "list")
 
 ## predict ratings for new users
-pre <- predict(rec, MovieLense100[101:102], type="ratings")
+pre <- predict(a, MovieLense[400:401], data=a, type="ratings")
 pre
 as(pre, "matrix")
 
-
-## create recommendations using user ids with ids 1..10 in the
-## training data
-pre <- predict(rec, 1:10 , data = train, n = 10)
-pre
-as(pre, "list")
 }
 %\keyword{ ~kwd1 }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
