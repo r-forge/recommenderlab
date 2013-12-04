@@ -2,6 +2,8 @@
 \Rdversion{1.1}
 \alias{recommenderlabPREA}
 \alias{PREA}
+\alias{Recommender}
+\alias{predict}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Recommenderlab Interface to PREA
