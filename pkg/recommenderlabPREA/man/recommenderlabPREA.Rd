@@ -32,13 +32,11 @@ Provides an interface to recommender algorithms implemented in PREA.
 }
 \examples{
 data("MovieLense")
-MovieLense100 <- MovieLense[rowCounts(MovieLense) >100,1:50]
-train <- MovieLense100[1:100]
-
-a <- Recommender(train, method = "PREA_REGSVD", parameter = list(feature_count = 15))
+MovieLense100 <- MovieLense[rowCounts(MovieLense) >100, 1:50]
+a <- Recommender(MovieLense100, method = "PREA_PMF")
 
 ## create top-N recommendations for new users
-pre <- predict(a, MovieLense[400:401], data=a, type="topN")
+pre <- predict(a, 1:10, type="topN")
 pre
 as(pre, "list")
 

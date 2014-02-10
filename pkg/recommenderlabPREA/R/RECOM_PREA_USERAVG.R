@@ -3,7 +3,7 @@
 
 
 #accepts a matrix of type 'realRatingMatrix'
-.REAL_PREA_USERMAVG_PARAM <- list(
+.REAL_PREA_USERAVG_PARAM <- list(
   k = 30, 
   method = "useravg",
   normalize = "center", 
@@ -21,7 +21,7 @@ REAL_PREA_USERAVG<- function(data, parameter= NULL) {
 
   #trip is a triplet (i, j, x) representation of a sparse matrix
   tripletMatrix <- (as(as(data,"dgCMatrix"), "dgTMatrix")) 
-  
+  colAndRowNames <- data@data@Dimnames
   #interface is a Java object of the type CFInterface
   interface <- .jnew("CFInterface", check=TRUE, silent=FALSE)
   
@@ -34,7 +34,7 @@ REAL_PREA_USERAVG<- function(data, parameter= NULL) {
   param$range[2] = columnlength
     
   #calls interface.createRatingMatrix(rowlength, columnlength, i[], j[], x[]);
-  #basically transfers the matrix to a Java reporesentation of a sparse matrix
+  #basically transfers the matrix to a Java representation of a sparse matrix
   ratingMat <-.jcall(interface, returnSig = "LRecContainer;",
              "createRatingMatrix", rowlength, columnlength,
              tripletMatrix@i, tripletMatrix@j, tripletMatrix@x, silent=FALSE, check=TRUE)
@@ -43,7 +43,7 @@ REAL_PREA_USERAVG<- function(data, parameter= NULL) {
   recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
  
   #This describes the model for R.
-  model <- c(list(description = "PREA: ", preaObject = recommenderJObject), param)
+  model <- c(list(description = "PREA: USERAVG", preaObject = recommenderJObject), param)
   
   #This is the predict function that will be used to
   #produce a top N list
@@ -54,13 +54,10 @@ REAL_PREA_USERAVG<- function(data, parameter= NULL) {
     r <- model$preaObject
     predictedValues <- sapply(.jcall(interface, returnSig = "[[D", "runRecommender", r), .jevalArray, silent=FALSE)
     predictedValues <- as(predictedValues, "realRatingMatrix")
+    predictedValues@data@Dimnames <- colAndRowNames
     
     if (type=="topNList") {
-      ratings <- matrix(runif(nrow(newdata)*ncol(newdata), model$range[1], model$range[2]),nrow=nrow(newdata), ncol=ncol(newdata), 
-                        dimnames=dimnames(newdata))
-      
-      ratings <- as(ratings, "realRatingMatrix")
-      ratings <- removeKnownRatings(ratings, newdata)
+      ratings <- predictedValues[newdata,]
       return(getTopNLists(ratings, n))
 
     } else if (type == "ratings") {
