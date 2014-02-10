@@ -47,7 +47,7 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
   recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
   
   #This describes the model for R.
-  model <- c(list(description = "PREA: REGSVD", preaObject = recommenderJObject), param)
+  model <- c(list(description = "PREA: PMF", preaObject = recommenderJObject), param)
   #This is the predict function that will be used to
   #produce a top N list
   #and produce a matrix of ratings
@@ -56,19 +56,17 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
     type <- match.arg(type)
     r <- model$preaObject
     predictedValues <- sapply(.jcall(interface, returnSig = "[[D", "runRecommender", r), .jevalArray, silent=FALSE)
-    predictedValues <- as(predictedValues, "realRatingMatrix")
-    
+    #predictedValues <- as(predictedValues, "realRatingMatrix")
+    #ratings <- removeKnownRatings(predictedValues, newdata)
+    ratings = predictedValues
+    #subset rows here with newdata
     if (type=="topNList") {
-      ratings <- matrix(runif(nrow(newdata)*ncol(newdata), model$range[1], model$range[2]),nrow=nrow(newdata), ncol=ncol(newdata), 
-                        dimnames=dimnames(newdata))
       
-      ratings <- as(ratings, "realRatingMatrix")
-      ratings <- removeKnownRatings(ratings, newdata)
       return(getTopNLists(ratings, n))
       
     } else if (type == "ratings") {
       print("compiling ratings")
-      return(predictedValues)
+      return(ratings)
     }
     #return matrix 1 rating for each item and 1 row for each user
     
