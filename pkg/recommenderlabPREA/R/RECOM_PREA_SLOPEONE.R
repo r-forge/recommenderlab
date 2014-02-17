@@ -51,6 +51,7 @@ REAL_PREA_SLOPEONE<- function(data, parameter= NULL) {
     print("predicting things")
     type <- match.arg(type)
     r <- model$preaObject
+    
     predictedValues <- sapply(.jcall(interface, returnSig = "[[D", "runRecommender", r), .jevalArray, silent=FALSE)
     predictedValues <- as(predictedValues, "realRatingMatrix")
     predictedValues@data@Dimnames <- colAndRowNames

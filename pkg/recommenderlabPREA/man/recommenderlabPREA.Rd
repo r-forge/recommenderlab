@@ -11,39 +11,39 @@ Recommenderlab Interface to PREA
 \description{
 Provides an interface to recommender algorithms implemented in PREA.
 }
-%\usage{
-%}
-%- maybe also 'usage' for other objects documented here.
-%\arguments{
-%}
-%\details{
-%}
+\usage{
+Recommender(data, method="PREA_...")
+## S4 method for signature 'ratingMatrix'
+Recommender(data, method, parameter=NULL)
+Recommender(data, method, parameter = c(...))
+}
+\arguments{
+  \item{data}{rating matrix}
+	\item{method}{a character string defining the method to use. (see details)}
+	\item{parameter}{parameters for the recommender algorithm in a list}
+}
+\details{
+  RecommenderlabPREA is an extension of the package 'recommenderlab' that provides an interface to the recommender algorithms implemented in the java package, PREA
+}
 %\value{
 %}
-%\seealso{
-
-%}
-\arguments{
-  \item{data}{training data.}
-	\item{method}{a character string defining the recommender method to use
-	(see details).}
-	\item{parameter}{parameters for the recommender algorithm.}
-	\item{\dots}{further arguments. }
+\seealso{
+Recommender, ratingMatrix
+http://prea.gatech.edu/documentation.html
 }
+
 \examples{
 data("MovieLense")
 MovieLense100 <- MovieLense[rowCounts(MovieLense) >100, 1:50]
-a <- Recommender(MovieLense100, method = "PREA_PMF")
+rec <- Recommender(MovieLense100, method = "PREA_PMF")
 
-## create top-N recommendations for new users
-pre <- predict(a, 1:10, type="topN")
+## create top-N recommendations for users 1 to 10
+pre <- predict(rec, 1:10, type="topN")
 pre
-as(pre, "list")
 
-## predict ratings for new users
-pre <- predict(a, MovieLense[400:401], data=a, type="ratings")
+## predict ratings for users 1 to 10
+pre <- predict(rec, 1:10, type="ratings")
 pre
-as(pre, "matrix")
 
 }
 %\keyword{ ~kwd1 }
