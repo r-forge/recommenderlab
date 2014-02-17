@@ -24,7 +24,7 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
   
   #trip is a triplet (i, j, x) representation of a sparse matrix
   tripletMatrix <- (as(as(data,"dgCMatrix"), "dgTMatrix")) 
-  
+  colAndRowNames <- data@data@Dimnames
   #interface is a Java object of the type CFInterface
   interface <- .jnew("CFInterface", check=TRUE, silent=FALSE)
   
@@ -55,18 +55,18 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
     print("predicting things")
     type <- match.arg(type)
     r <- model$preaObject
+    
     predictedValues <- sapply(.jcall(interface, returnSig = "[[D", "runRecommender", r), .jevalArray, silent=FALSE)
-    #predictedValues <- as(predictedValues, "realRatingMatrix")
-    #ratings <- removeKnownRatings(predictedValues, newdata)
-    ratings = predictedValues
-    #subset rows here with newdata
+    predictedValues <- as(predictedValues, "realRatingMatrix")
+    predictedValues@data@Dimnames <- colAndRowNames
+    
     if (type=="topNList") {
-      
+      ratings <- predictedValues[newdata,]
       return(getTopNLists(ratings, n))
       
     } else if (type == "ratings") {
       print("compiling ratings")
-      return(ratings)
+      return(predictedValues)
     }
     #return matrix 1 rating for each item and 1 row for each user
     
