@@ -6,6 +6,6 @@ Author: Derek Phanekham, Michael Hahsler
 Maintainer: Derek Phanekham <dphanekham@smu.edu>
 Description: Provides an interface to to recommender algorithms implemented in PREA.
 Depends: recommenderlab, rJava (>= 0.6-3), Matrix
-SystemRequirements: Java (>= 5.0)
+SystemRequirements: Java (>= 7.0)
 URL: http://R-Forge.R-project.org/projects/recommenderlab/, http://lyle.smu.edu/IDA/recommenderlab/
 License: GPL-3
