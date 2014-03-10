@@ -45,7 +45,7 @@ or if \code{method} is a list an object of class \code{"evaluationResultList"}.
 }
 \examples{
 data("MSWeb")
-MSWeb10 <- sample(MSWeb[rowCounts(MSWeb) >10,], 100)
+MSWeb10 <- sample(MSWeb[rowCounts(MSWeb) >10,], 50)
 
 ## create an evaluation scheme
 es <- evaluationScheme(MSWeb10, method="cross-validation",
@@ -63,8 +63,7 @@ plot(ev, type="o", annotate = TRUE)
 algorithms <- list(
 		RANDOM = list(name = "RANDOM", param = NULL),
 		POPULAR = list(name = "POPULAR", param = NULL),
-		UBCF = list(name = "UBCF", param = NULL),
-		IBCF = list(name = "IBCF", param = NULL)
+		UBCF = list(name = "UBCF", param = NULL)
 		)
 
 evlist <- evaluate(es, algorithms)
