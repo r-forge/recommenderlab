@@ -44,7 +44,7 @@ classes.
 \examples{
 data("MovieLense")
 MovieLense100 <- MovieLense[rowCounts(MovieLense) >100,]
-train <- MovieLense100[1:100]
+train <- MovieLense100[1:50]
 
 rec <- Recommender(train, method = "POPULAR")
 rec
