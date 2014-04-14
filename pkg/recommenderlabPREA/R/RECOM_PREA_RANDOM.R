@@ -19,9 +19,10 @@ REAL_PREA_RANDOM<- function(data, parameter= NULL) {
 
   #trip is a triplet (i, j, x) representation of a sparse matrix
   tripletMatrix <- (as(as(data,"dgCMatrix"), "dgTMatrix")) 
-  
+  colAndRowNames <- data@data@Dimnames
   #interface is a Java object of the type CFInterface
   interface <- .jnew("CFInterface", check=TRUE, silent=FALSE)
+  
   
   rowlength <- tripletMatrix@Dim[1]
   columnlength <- tripletMatrix@Dim[2]
@@ -49,17 +50,15 @@ REAL_PREA_RANDOM<- function(data, parameter= NULL) {
     print("predicting things")
     type <- match.arg(type)
     r <- model$preaObject
+    
     predictedValues <- sapply(.jcall(interface, returnSig = "[[D", "runRecommender", r), .jevalArray, silent=FALSE)
     predictedValues <- as(predictedValues, "realRatingMatrix")
+    predictedValues@data@Dimnames <- colAndRowNames
     
     if (type=="topNList") {
-      ratings <- matrix(runif(nrow(newdata)*ncol(newdata), model$range[1], model$range[2]),nrow=nrow(newdata), ncol=ncol(newdata), 
-                        dimnames=dimnames(newdata))
-      
-      ratings <- as(ratings, "realRatingMatrix")
-      ratings <- removeKnownRatings(ratings, newdata)
+      ratings <- predictedValues[newdata,]
       return(getTopNLists(ratings, n))
-
+      
     } else if (type == "ratings") {
       print("compiling ratings")
       return(predictedValues)
