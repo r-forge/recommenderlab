@@ -40,10 +40,25 @@ rec <- Recommender(MovieLense100, method = "PREA_PMF")
 ## create top-N recommendations for users 1 to 10
 pre <- predict(rec, 1:10, type="topN")
 pre
+as(pre, "list")
 
 ## predict ratings for users 1 to 10
 pre <- predict(rec, 1:10, type="ratings")
-pre
+as(pre,"matrix")
+
+#Find parameters for PREA method
+recommenderRegistry$get_entry("PREA_PMF")
+
+#create recommender with own parameters
+rec <- Recommender(MovieLense100, method = "PREA_PMF", param=c(feature_count = 150, learning_rate=45))
+
+#create recommender with lazy predicting
+train <- MovieLense100[1:100]
+test <- MovieLense100[101:105]
+rec <- Recommender(data=train, method = "PREA_PMF", param=c(lazy=TRUE))
+pre <- predict(rec, test, type="topNList")
+
+
 
 }
 %\keyword{ ~kwd1 }

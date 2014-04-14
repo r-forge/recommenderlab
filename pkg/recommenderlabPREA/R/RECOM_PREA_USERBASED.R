@@ -5,7 +5,7 @@
 #accepts a matrix of type 'realRatingMatrix'
 REAL_PREA_USERBASED <- function(data, parameter= NULL) {
   
-  param <- recommenderlab:::.get_parameters(list(
+  param <- .get_parameters(list(
     k = 30, 
     method = "userbased",
     normalize = "center", 
