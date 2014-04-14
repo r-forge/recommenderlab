@@ -4,22 +4,19 @@
 \alias{PREA}
 \alias{Recommender}
 \alias{predict}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-Recommenderlab Interface to PREA
+Recommenders from PREA (Personalized Recommendation Algorithms Toolkit)
 }
 \description{
 Provides an interface to recommender algorithms implemented in PREA.
 }
 \usage{
-Recommender(data, method="PREA_...")
-## S4 method for signature 'ratingMatrix'
 Recommender(data, method, parameter=NULL)
-Recommender(data, method, parameter = c(...))
 }
 \arguments{
   \item{data}{rating matrix}
-	\item{method}{a character string defining the method to use. (see details)}
+	\item{method}{a character string defining the method to use. 
+    PREA metods start with the prefix \code{PREA_} (see details).}
 	\item{parameter}{parameters for the recommender algorithm in a list}
 }
 \details{
@@ -28,15 +25,20 @@ Recommender(data, method, parameter = c(...))
 %\value{
 %}
 \seealso{
-Recommender, ratingMatrix
-http://prea.gatech.edu/documentation.html
+\code{\link[pkg:recommenderlab]{Recommender}},
+\code{\linkS4class{ratingMatrix}}.
 }
+\references{
+PREA Documentation \url{http://prea.gatech.edu/documentation.html}
 
+Joonseok Lee, Mingxuan Sun, Guy Lebanon. PREA: Personalized Recommendation Algorithms Toolkit, Journal of Machine Learning Research, 13(Sep):2699-2703, 2012. \url{http://jmlr.org/papers/v13/lee12b.html}
+}
 \examples{
 data("MovieLense")
 MovieLense100 <- MovieLense[rowCounts(MovieLense) >100, 1:50]
 rec <- Recommender(MovieLense100, method = "PREA_PMF")
-
+rec
+  
 ## create top-N recommendations for users 1 to 10
 pre <- predict(rec, 1:10, type="topN")
 pre
@@ -44,22 +46,23 @@ as(pre, "list")
 
 ## predict ratings for users 1 to 10
 pre <- predict(rec, 1:10, type="ratings")
-as(pre,"matrix")
+as(pre,"matrix")[1:5,1:5]
 
-#Find parameters for PREA method
+## list all available recommender algorithms with prefix PREA_
+grep("^PREA_", recommenderRegistry$get_entry_names(), value=TRUE)
+  
+## find avaialble parameters for PREA method PMF 
 recommenderRegistry$get_entry("PREA_PMF")
 
-#create recommender with own parameters
-rec <- Recommender(MovieLense100, method = "PREA_PMF", param=c(feature_count = 150, learning_rate=45))
+## create recommender with own parameters
+rec <- Recommender(MovieLense100, method = "PREA_PMF", 
+  param=list(feature_count = 150, learning_rate=45))
 
-#create recommender with lazy predicting
+## create recommender with lazy prediction (use new data in predict)
 train <- MovieLense100[1:100]
 test <- MovieLense100[101:105]
-rec <- Recommender(data=train, method = "PREA_PMF", param=c(lazy=TRUE))
+rec <- Recommender(data=train, method = "PREA_PMF", param=list(lazy=TRUE))
 pre <- predict(rec, test, type="topNList")
-
-
-
+pre
 }
 %\keyword{ ~kwd1 }
-%\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

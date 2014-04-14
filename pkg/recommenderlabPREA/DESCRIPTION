@@ -9,3 +9,4 @@ Depends: recommenderlab, rJava (>= 0.6-3), Matrix
 SystemRequirements: Java (>= 7.0)
 URL: http://R-Forge.R-project.org/projects/recommenderlab/, http://lyle.smu.edu/IDA/recommenderlab/
 License: GPL-3
+Copyright: All code except the PREA code is (C) Derelk Phanekam and Michael Hahsler. The PREA Java Code included in this package (C) Joonseok Lee et al nd is distributed under the Free BSD license.  

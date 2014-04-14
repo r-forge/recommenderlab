@@ -63,7 +63,7 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
     OriginalData <- model$data
     
     if(class(newdata) == "integer") {
-      print("integer")
+      #print("integer")
       if(model$lazy == TRUE) {
         strings <- .jarray( c(model$method, "none", "0.2", model$feature_count,
                               model$learning_rate, model$regularizer, model$momentum, model$max_iteration))
@@ -82,14 +82,14 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
         return(getTopNLists(ratings, n))
         
       } else if (type == "ratings") {
-        print("compiling ratings")
+        #print("compiling ratings")
         return(predictedValues)
       }
       
     }
     
     else if(class(newdata) == "realRatingMatrix") {
-      if(model$lazy == FALSE) stop("To add new data when predicting, rebuild the recommender with param=c(lazy=TRUE)")
+      if(model$lazy == FALSE) stop("To add new data when predicting, rebuild the recommender with param=list(lazy=TRUE)")
       
       CombinedMatrix <- as(rbind2(as(newdata,"dgCMatrix"), as(OriginalData, "dgCMatrix")), "dgTMatrix")
       CombinedColAndRowNames <- newdata@data@Dimnames
@@ -120,7 +120,7 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
         return(getTopNLists(ratings, n))
         
       } else if (type == "ratings") {
-        print("compiling ratings")
+        #print("compiling ratings")
         return(predictedValues[1:newdata@data@Dim[1]+1,])
       }
       
