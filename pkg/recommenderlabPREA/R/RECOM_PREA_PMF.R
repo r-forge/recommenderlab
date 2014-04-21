@@ -24,7 +24,7 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
   param <- .get_parameters(.REAL_PREA_PMF_PARAM, parameter)
   
   #trip is a triplet (i, j, x) representation of a sparse matrix
-  RatingsAsTripletMatrix <- (as(as(data,"dgCMatrix"), "dgTMatrix"))  #change name to something else STORE AS REALRATINGMATRIX
+  RatingsAsTripletMatrix <- (as(as(data,"dgCMatrix"), "dgTMatrix")) 
   colAndRowNames <- data@data@Dimnames
   #interface is a Java object of the type CFInterface
   interface <- .jnew("CFInterface", check=TRUE, silent=FALSE)
@@ -67,8 +67,7 @@ REAL_PREA_PMF<- function(data, parameter= NULL) {
       if(model$lazy == TRUE) {
         strings <- .jarray( c(model$method, "none", "0.2", model$feature_count,
                               model$learning_rate, model$regularizer, model$momentum, model$max_iteration))
-        recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)
-        #model <- c(list(description = "PREA: PMF", preaObject = recommenderJObject), param)
+        recommenderJObject <- .jcall(interface, returnSig = "LRecContainer;","createRecommender", ratingMat, strings)        
         r <- recommenderJObject
         
       }

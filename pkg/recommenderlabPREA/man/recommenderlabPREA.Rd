@@ -8,7 +8,7 @@
 Recommenders from PREA (Personalized Recommendation Algorithms Toolkit)
 }
 \description{
-Provides an interface to recommender algorithms implemented in PREA.
+Provides an interface to recommender algorithms implemented in PREA v1.1
 }
 \usage{
 Recommender(data, method, parameter=NULL)
@@ -20,7 +20,7 @@ Recommender(data, method, parameter=NULL)
 	\item{parameter}{parameters for the recommender algorithm in a list}
 }
 \details{
-  RecommenderlabPREA is an extension of the package 'recommenderlab' that provides an interface to the recommender algorithms implemented in the java package, PREA
+  RecommenderlabPREA is an extension of the package 'recommenderlab' that provides an interface to the recommender algorithms implemented in the java package, PREA v1.1
 }
 %\value{
 %}

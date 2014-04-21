@@ -2,18 +2,21 @@
 #11-14-2013
 
 
+.REAL_PREA_USERBASED_PARAM <- list(
+  k = 30, 
+  method = "userbased",
+  normalize = "center", 
+  normalize_sim_matrix = FALSE,
+  alpha = 0.5,
+  na_as_zero = FALSE,
+  minRating = NA
+)
+
+
 #accepts a matrix of type 'realRatingMatrix'
 REAL_PREA_USERBASED <- function(data, parameter= NULL) {
   
-  param <- .get_parameters(list(
-    k = 30, 
-    method = "userbased",
-    normalize = "center", 
-    normalize_sim_matrix = FALSE,
-    alpha = 0.5,
-    na_as_zero = FALSE,
-    minRating = NA
-  ), parameter)
+  param <- .get_parameters(.REAL_PREA_USERAVG_PARAM, parameter)
   
   #trip is a triplet (i, j, x) representation of a sparse matrix
   tripletMatrix <- (as(as(data,"dgCMatrix"), "dgTMatrix")) 
