@@ -2,7 +2,9 @@ setMethod("evaluationScheme", signature(data = "ratingMatrix"),
 	function(data, method="split", train=0.9, k=NULL, 
 		given=3, goodRating=NA) {
 	    goodRating <- as.numeric(goodRating)
-	    
+
+      if(given<1) stop("given needs to be >0!")
+    
 	    if(is(data, "realRatingMatrix") && is.na(goodRating))
 		stop("You need to set goodRating in the evaluationScheme for a realRatingMatrix!")
 	    
