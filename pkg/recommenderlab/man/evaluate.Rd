@@ -12,10 +12,10 @@ Evaluates a single or a list of recommender model given an evaluation scheme.
 \usage{
 evaluate(x, method, ...)
 
-\S4method{evaluate}{evaluationScheme,character}(x, method, n=1:10, parameter=NULL, 
-    progress = TRUE, keepModel=FALSE)
-\S4method{evaluate}{evaluationScheme,list}(x, method, n=1:10, parameter=NULL, 
-    progress = TRUE, keepModel=FALSE)
+\S4method{evaluate}{evaluationScheme,character}(x, method, type="topNList", 
+  n=1:10, parameter=NULL, progress = TRUE, keepModel=FALSE)
+\S4method{evaluate}{evaluationScheme,list}(x, method, type="topNList", 
+  n=1:10, parameter=NULL, progress = TRUE, keepModel=FALSE)
 }
 \arguments{
   \item{x}{an evaluation scheme (class \code{"evaluationScheme"}).}
@@ -27,7 +27,8 @@ evaluate(x, method, ...)
   named \code{"method"} containing the method and a list names 
   \code{"parameters"} containing the parameters used for this recommender method.
   See \code{Recommender} for available methods.}
-  \item{n}{N (number of recommendations) of the top-N lists generated.}
+  \item{type}{evaluate "topNList" or "ratings"?}
+  \item{n}{N (number of recommendations) of the top-N lists generated (only if type="topNList").}
   \item{parameter}{a list with parameters for the recommender algorithm (only
     used when \code{method} is a single method).}
   \item{progress}{logical; report progress?}
@@ -52,10 +53,10 @@ es <- evaluationScheme(MSWeb10, method="cross-validation",
         k=4, given=3)
 
 ## run evaluation
-ev <- evaluate(es, "POPULAR")
+ev <- evaluate(es, "POPULAR", n=1:10)
 ev
 
-## look at the results
+## look at the results (by the length of the topNList)
 avg(ev)
 plot(ev, type="o", annotate = TRUE)
 
@@ -66,11 +67,30 @@ algorithms <- list(
 		UBCF = list(name = "UBCF", param = NULL)
 		)
 
-evlist <- evaluate(es, algorithms)
+evlist <- evaluate(es, algorithms, n=1:10)
 plot(evlist, legend="topright")
 
 ## select the first results
 evlist[[1]]
+
+### Evaluate rating accuracy
+data("Jester5k")
+es <- evaluationScheme(Jester5k[1:100], method="cross-validation",
+  k=4, given=10)
+
+ev <- evaluate(es, "UBCF", type="ratings")
+avg(ev)
+plot(ev)
+
+## now run evaluate with a list
+algorithms <- list(
+    RANDOM = list(name = "RANDOM", param = NULL),
+    UBCF = list(name = "UBCF", param = NULL)
+)
+  
+evlist <- evaluate(es, algorithms, type="ratings")
+avg(evlist)
+plot(evlist)
 }
 %\keyword{ ~kwd1 }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line
