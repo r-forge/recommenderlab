@@ -49,7 +49,7 @@ exportMethods(
 		"sample",
 		"summary",
 
-		"calcPredictionError",
+		"calcPredictionAccuracy",
 		"predict",
 #		"colMeans",
 #		"rowMeans",

@@ -12,7 +12,7 @@ independent bootstrap samples.
 evaluationScheme(data, ...)
 
 \S4method{evaluationScheme}{ratingMatrix}(data, method="split", 
-    train=0.9, k=NULL, given=3, goodRating = NA)
+    train=0.9, k=NULL, given, goodRating = NA)
 }
 \arguments{
 	\item{data}{data set as a ratingMatrix.}

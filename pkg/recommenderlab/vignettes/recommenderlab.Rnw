@@ -1385,8 +1385,8 @@ unknown part of the test data.
 
 <<>>=
 error <- rbind(
-  calcPredictionError(p1, getData(e, "unknown")),
-  calcPredictionError(p2, getData(e, "unknown"))
+  calcPredictionAccuracy(p1, getData(e, "unknown")),
+  calcPredictionAccuracy(p2, getData(e, "unknown"))
 )
 rownames(error) <- c("UBCF","IBCF")
 error
