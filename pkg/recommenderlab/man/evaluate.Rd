@@ -45,6 +45,7 @@ or if \code{method} is a list an object of class \code{"evaluationResultList"}.
 \code{\linkS4class{evaluationResultList}}.
 }
 \examples{
+### evaluate top-N list recommendations on a binary data set  
 data("MSWeb")
 MSWeb10 <- sample(MSWeb[rowCounts(MSWeb) >10,], 50)
 
@@ -73,7 +74,7 @@ plot(evlist, legend="topright")
 ## select the first results
 evlist[[1]]
 
-### Evaluate rating accuracy
+### Evaluate using a rating data set and predicted ratings
 data("Jester5k")
 es <- evaluationScheme(Jester5k[1:100], method="cross-validation",
   k=4, given=10)
