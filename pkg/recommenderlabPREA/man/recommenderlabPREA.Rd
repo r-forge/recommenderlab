@@ -35,13 +35,14 @@ Joonseok Lee, Mingxuan Sun, Guy Lebanon. PREA: Personalized Recommendation Algor
 }
 \examples{
 data("MovieLense")
-MovieLense100 <- MovieLense[rowCounts(MovieLense) >100, 1:50]
+MovieLense100 <- MovieLense[rowCounts(MovieLense) >100,1:100]
 rec <- Recommender(MovieLense100, method = "PREA_PMF")
+rec <- Recommender(MovieLense100, method = "PREA_USERBASED")
 rec
   
 ## create top-N recommendations for users 1 to 10
 ##FIXME
-pre <- predict(rec, 1:10, type="topN")
+pre <- predict(rec, 1:10, type="topNList")
 pre
 as(pre, "list")
 
@@ -62,7 +63,7 @@ rec <- Recommender(MovieLense100, method = "PREA_PMF",
 ## create recommender with lazy prediction (use new data in predict)
 train <- MovieLense100[1:100]
 test <- MovieLense100[101:105]
-rec <- Recommender(data=train, method = "PREA_PMF")
+rec <- Recommender(data=train, method = "PREA_PMF", parameter=list(lazy=TRUE))
 pre <- predict(rec, test, type="topNList")
 pre
 
@@ -71,22 +72,27 @@ MovieLense10 <- sample(MovieLense[rowCounts(MovieLense) >10,], 50)
 
 ## create an evaluation scheme
 es <- evaluationScheme(MovieLense10, method="cross-validation",
-                       k=4, given=0, goodRating=3, param=list(lazy=TRUE))
+                       k=4, given=3, goodRating=3)
 
 ## run evaluation
-ev <- evaluate(es, "PREA_PMF", parameter=c(lazy=TRUE))
+ev <- evaluate(es, "PREA_PMF", type="topNList", parameter=list(lazy=TRUE))
 ev
-
+avg(ev)
+plot(ev, annotate=TRUE)
 
 ### Evaluate using a rating data set and predicted ratings
 data("Jester5k")
 es <- evaluationScheme(Jester5k[1:100], method="cross-validation",
-                       k=4, given=10)
+                       k=4, given=10, goodRating=5)
 
 ev <- evaluate(es, "PREA_PMF", type="ratings", param=list(lazy=TRUE))
 avg(ev)
 plot(ev)
 
+ev <- evaluate(es, "PREA_PMF", type="topNList", param=list(lazy=TRUE))
+avg(ev)
+plot(ev, annotate=TRUE)
+  
 ## now run evaluate with a list
 algorithms <- list(
   RANDOM = list(name = "RANDOM", param = NULL),
@@ -95,6 +101,10 @@ algorithms <- list(
 )
 
 evlist <- evaluate(es, algorithms, type="topNList")
+avg(evlist)
+plot(evlist)
+
+evlist <- evaluate(es, algorithms, type="ratings")
 avg(evlist)
 plot(evlist)
 }
