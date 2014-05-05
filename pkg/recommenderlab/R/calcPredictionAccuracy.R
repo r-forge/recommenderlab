@@ -18,8 +18,8 @@ setMethod("calcPredictionAccuracy", signature(x= "realRatingMatrix",
 setMethod("calcPredictionAccuracy", signature(x= "topNList", 
   data = "realRatingMatrix"),
   
-  function(x, data, byUser=FALSE, given=NULL, goodRating=NULL, ...) {
-    if(is.null(goodRating)) stop("You need to specify goodRating!")
+  function(x, data, byUser=FALSE, given=NULL, goodRating=NA, ...) {
+    if(is.na(goodRating)) stop("You need to specify goodRating!")
 
     data <- binarize(data, goodRating)
     calcPredictionAccuracy(x, data, byUser, given,...)
