@@ -40,6 +40,7 @@ rec <- Recommender(MovieLense100, method = "PREA_PMF")
 rec
   
 ## create top-N recommendations for users 1 to 10
+##FIXME
 pre <- predict(rec, 1:10, type="topN")
 pre
 as(pre, "list")
@@ -54,15 +55,47 @@ grep("^PREA_", recommenderRegistry$get_entry_names(), value=TRUE)
 ## find avaialble parameters for PREA method PMF 
 recommenderRegistry$get_entry("PREA_PMF")
 
-## create recommender with own parameters
+## create recommender with you custom parameters
 rec <- Recommender(MovieLense100, method = "PREA_PMF", 
   param=list(feature_count = 150, learning_rate=45))
 
 ## create recommender with lazy prediction (use new data in predict)
 train <- MovieLense100[1:100]
 test <- MovieLense100[101:105]
-rec <- Recommender(data=train, method = "PREA_PMF", param=list(lazy=TRUE))
+rec <- Recommender(data=train, method = "PREA_PMF")
 pre <- predict(rec, test, type="topNList")
 pre
+
+#use an evaluation scheme 
+MovieLense10 <- sample(MovieLense[rowCounts(MovieLense) >10,], 50)
+
+## create an evaluation scheme
+es <- evaluationScheme(MovieLense10, method="cross-validation",
+                       k=4, given=0, goodRating=3, param=list(lazy=TRUE))
+
+## run evaluation
+ev <- evaluate(es, "PREA_PMF", parameter=c(lazy=TRUE))
+ev
+
+
+### Evaluate using a rating data set and predicted ratings
+data("Jester5k")
+es <- evaluationScheme(Jester5k[1:100], method="cross-validation",
+                       k=4, given=10)
+
+ev <- evaluate(es, "PREA_PMF", type="ratings", param=list(lazy=TRUE))
+avg(ev)
+plot(ev)
+
+## now run evaluate with a list
+algorithms <- list(
+  RANDOM = list(name = "RANDOM", param = NULL),
+  PMF = list(name = "PREA_PMF", param = list(lazy=TRUE)),
+  NMF = list(name = "PREA_NMF", param = list(lazy= TRUE))
+)
+
+evlist <- evaluate(es, algorithms, type="topNList")
+avg(evlist)
+plot(evlist)
 }
 %\keyword{ ~kwd1 }

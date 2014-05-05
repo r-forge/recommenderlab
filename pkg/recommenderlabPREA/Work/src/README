@@ -1,0 +1,3 @@
+This is the source code for version 1.1 of PREA (Personalized Recommendation Algorithm Toolkit).
+
+Also included is source code for the portion of recommenderlabPREA that has been implemented in Java. The code for this interface is in CFInterface.java and RecContainer.java
