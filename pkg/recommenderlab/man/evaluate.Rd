@@ -59,7 +59,7 @@ ev
 
 ## look at the results (by the length of the topNList)
 avg(ev)
-plot(ev, type="o", annotate = TRUE)
+plot(ev, annotate = TRUE)
 
 ## now run evaluate with a list
 algorithms <- list(
@@ -74,19 +74,28 @@ plot(evlist, legend="topright")
 ## select the first results
 evlist[[1]]
 
-### Evaluate using a rating data set and predicted ratings
+### Evaluate top-N list and then rating prediction error on real ratings 
 data("Jester5k")
 es <- evaluationScheme(Jester5k[1:100], method="cross-validation",
-  k=4, given=10)
+  k=4, given=10, goodRating=5)
+## Note: goodRating is used to determine positive ratings  
 
+## top-N list recommendation
+ev <- evaluate(es, "UBCF", type="topNList")
+avg(ev)
+plot(ev, annotate=TRUE)
+  
+## predict missing ratings
 ev <- evaluate(es, "UBCF", type="ratings")
 avg(ev)
 plot(ev)
 
-## now run evaluate with a list
+  
+## compate predicted ratings for several methods
 algorithms <- list(
     RANDOM = list(name = "RANDOM", param = NULL),
-    UBCF = list(name = "UBCF", param = NULL)
+    UBCF = list(name = "UBCF", param = NULL),
+    IBCF = list(name = "IBCF", param = NULL)
 )
   
 evlist <- evaluate(es, algorithms, type="ratings")
