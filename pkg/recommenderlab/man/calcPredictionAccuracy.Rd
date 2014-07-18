@@ -16,7 +16,7 @@
 \usage{
 calcPredictionAccuracy(x, data, ...)
 \S4method{calcPredictionAccuracy}{realRatingMatrix,realRatingMatrix}(x, data, byUser=FALSE,...)
-\S4method{calcPredictionAccuracy}{topNList,realRatingMatrix}(x, data, byUser=FALSE, given=NULL, goodRating=NULL,...)
+\S4method{calcPredictionAccuracy}{topNList,realRatingMatrix}(x, data, byUser=FALSE, given=NULL, goodRating=NA,...)
 \S4method{calcPredictionAccuracy}{topNList,binaryRatingMatrix}(x, data, byUser=FALSE, given=NULL,...)
 }
 \arguments{
