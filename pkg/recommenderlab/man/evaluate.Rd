@@ -47,14 +47,14 @@ or if \code{method} is a list an object of class \code{"evaluationResultList"}.
 \examples{
 ### evaluate top-N list recommendations on a binary data set  
 data("MSWeb")
-MSWeb10 <- sample(MSWeb[rowCounts(MSWeb) >10,], 50)
+MSWeb10 <- sample(MSWeb[rowCounts(MSWeb) >10,], 20)
 
 ## create an evaluation scheme
 es <- evaluationScheme(MSWeb10, method="cross-validation",
         k=4, given=3)
 
 ## run evaluation
-ev <- evaluate(es, "POPULAR", n=1:10)
+ev <- evaluate(es, "POPULAR", n=c(1,3,5,10))
 ev
 
 ## look at the results (by the length of the topNList)
@@ -68,7 +68,7 @@ algorithms <- list(
 		UBCF = list(name = "UBCF", param = NULL)
 		)
 
-evlist <- evaluate(es, algorithms, n=1:10)
+evlist <- evaluate(es, algorithms, n=c(1,3,5,10))
 plot(evlist, legend="topright")
 
 ## select the first results
@@ -76,17 +76,17 @@ evlist[[1]]
 
 ### Evaluate top-N list and then rating prediction error on real ratings 
 data("Jester5k")
-es <- evaluationScheme(Jester5k[1:100], method="cross-validation",
+es <- evaluationScheme(Jester5k[1:50], method="cross-validation",
   k=4, given=10, goodRating=5)
 ## Note: goodRating is used to determine positive ratings  
 
 ## top-N list recommendation
-ev <- evaluate(es, "UBCF", type="topNList")
+ev <- evaluate(es, "RANDOM", type="topNList", n=c(1,3,5,10))
 avg(ev)
 plot(ev, annotate=TRUE)
   
 ## predict missing ratings
-ev <- evaluate(es, "UBCF", type="ratings")
+ev <- evaluate(es, "RANDOM", type="ratings")
 avg(ev)
 plot(ev)
 
@@ -94,8 +94,7 @@ plot(ev)
 ## compate predicted ratings for several methods
 algorithms <- list(
     RANDOM = list(name = "RANDOM", param = NULL),
-    UBCF = list(name = "UBCF", param = NULL),
-    IBCF = list(name = "IBCF", param = NULL)
+    POPULAR = list(name = "POPULAR", param = NULL)
 )
   
 evlist <- evaluate(es, algorithms, type="ratings")
