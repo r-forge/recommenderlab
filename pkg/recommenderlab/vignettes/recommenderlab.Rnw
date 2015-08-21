@@ -182,8 +182,8 @@ MyMediaLite & Recommender system algorithms. & C\#/Mono & \small\url{http://mlos
 \hline
 %RACOFI: A rule-applying collaborative filtering system & Java &  \url{http://lemire.me/fr/abstracts/COLA2003.html}\\
 %\hrule
-PREA: Personalized Recommendation Algorithms Toolkit & Java &  \url{http://prea.gatech.edu/}\\
-%\hrule
+PREA & Personalized Recommendation Algorithms Toolkit & Java &  \url{http://prea.gatech.edu/}\\
+\hline
 SVDFeature & Toolkit for feature-based matrix factorization& C++ & \small\url{http://mloss.org/software/view/333/}\\
 \hline
 Vogoo PHP LIB & Collaborative filtering engine for personalizing web sites & PHP & \small\url{http://sourceforge.net/projects/vogoo/} \\
@@ -245,8 +245,8 @@ Formally, we have a set of
 users $\set{U} = \{u_1, u_2, \ldots, u_m\}$ and a set of 
 items $\set{I} = \{i_1, i_2, \ldots, i_n\}$.
 Ratings are stored in a $m \times n$ user-item rating matrix $\mat{R} = (r_{jk})$ where
-each row represent a user $u_j$ with $1 \ge j\ge m$ and columns represent
-items $i_k$ with $1 \ge k\ge n$. $r_{jk}$ represents the rating of user
+each row represents a user $u_j$ with $1 \le j\le m$ and columns represent
+items $i_k$ with $1 \le k\le n$. $r_{jk}$ represents the rating of user
 $u_j$ for item $i_k$.
 Typically only a small fraction of ratings are
 known and for many cells in $\mat{R}$ the values are missing. 
@@ -499,16 +499,18 @@ To make a recommendation based on the model
 we use the similarities to calculate a weighted sum of the user's ratings
 for related items.
 
-\begin{equation}
-\hat{r}_{ui} =  \frac{1}{\sum_{j \in \set{S}(i)}{s_{ij}}} 
-    \sum_{j \in \set{S}(i)}{s_{ij} r_{uj}}
-\end{equation}
+
 
 \begin{figure}
 \centerline{\includegraphics[width=9cm]{item-based2}}
 \caption{Item-based collaborative filtering}
 \label{fig:IBCF}
 \end{figure}
+
+\begin{equation}
+    \hat{r}_{ai} =  \frac{1}{\sum_{j \in \set{S}(i)\cap \{l\,;\,r_{al} \ne ?\}}{s_{ij}}} 
+    \sum_{j \in \set{S}(i)\cap \{l\,;\,r_{al} \ne ?\}}{s_{ij} r_{aj}}
+\end{equation}
 
 
 Figure~\ref{fig:IBCF} shows an example for $n=8$ items with $k=3$. For the 
