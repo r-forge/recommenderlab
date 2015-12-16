@@ -1,5 +1,7 @@
 Changes in version 0.1-x (xx/xx/2015)
     * fixed several problems in the vignette.
+    * predict for realRatingMatrix accepts now type = "ratingMatrix" to returns
+      a completed rating matrix.
 
 Changes in version 0.1-7 (7/23/2015)
     * NAMESPACE now imports non standard R packags.

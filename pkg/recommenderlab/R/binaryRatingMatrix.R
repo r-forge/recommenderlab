@@ -42,12 +42,8 @@ setAs("data.frame", "binaryRatingMatrix",
 
 ## FIXME: removeKnownRatings should be implemented here!
 #setMethod("removeKnownRatings", signature(x = "binaryRatingMatrix"),
-#	function(x, known, replicate=FALSE) {
+#	function(x, known) {
 #	    if(!is(known, "ratingMatrix")) stop("known needs to be a ratingMatrix!")
-#
-#	    if(replicate && nrow(x)==1) {
-#		stop("replicate not implemented")
-#	    }
 #
 #	    stop("Currently not implemented!")
 #	})
