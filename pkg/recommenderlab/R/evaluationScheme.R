@@ -1,3 +1,6 @@
+
+## FIXME: Implement All-but-1
+
 setMethod("evaluationScheme", signature(data = "ratingMatrix"), 
   function(data, method="split", train=0.9, k=NULL, 
     given, goodRating=NA) {
