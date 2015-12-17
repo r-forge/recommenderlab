@@ -93,10 +93,14 @@ REAL_POPULAR <- function(data, parameter = NULL) {
     
     ratings <- denormalize(ratings)
     
-    ## make one row for new user
-    ratings@data <- as(t(crossprod(ratings@data, 
-      t(rep(1, nrow(newdata))))), "dgCMatrix")
-    rownames(ratings) <- rownames(newdata)
+    ## make one row for each new user
+    triplets <- as(ratings@data, "dgTMatrix")
+    triplets@i <- rep(0:(nrow(newdata)-1), each = length(triplets@i))
+    triplets@j <- rep(triplets@j, times = nrow(newdata))
+    triplets@x <- rep(triplets@x, times = nrow(newdata))
+    triplets@Dim[1] <- nrow(newdata)
+    triplets@Dimnames[[1]] <- rownames(newdata)
+    ratings@data <- as(triplets, "dgCMatrix")
     
     if(type=="ratingMatrix") return(ratings)
     
