@@ -773,7 +773,7 @@ estimates.
 
 The items withheld in the test data are randomly chosen.
 \cite{recommender:Breese:1998} introduced the four experimental protocols
-called {\em Given 2}, {\em Given 5}, {\em Given 10} and {\em All but 1}. For
+called {\em Given 2}, {\em Given 5}, {\em Given 10} and {\em All-but-1}. For
 the Given $x$ protocols for each user $x$ randomly chosen items are given to
 the recommender algorithm and the remaining items are withheld for evaluation.
 For All but $x$ the algorithm gets all but $x$ withheld items.

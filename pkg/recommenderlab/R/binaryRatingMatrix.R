@@ -54,7 +54,16 @@ setMethod(".splitKnownUnknown", signature(data="binaryRatingMatrix"),
 
 		## given might of length one or length(data)
 		if(length(given)==1) given <- rep(given, nrow(data))
-
+		nitems <- rowCounts(data)
+		
+		allBut <- given < 0
+		if(any(allBut)) {
+		  given[allBut] <- nitems[allBut] + given[allBut]
+		}
+		  
+		if(any(given>nitems)) stop("Not enough ratings for user" , 
+		  paste(which(given>nitems), collapse = ", ")) 
+		
 		l <- getList(data, decode=FALSE)
 		known_index <- lapply(1:length(l),
 			FUN = function(i) sample(1:length(l[[i]]), given[i]))
