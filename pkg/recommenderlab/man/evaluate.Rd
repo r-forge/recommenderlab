@@ -81,25 +81,12 @@ es <- evaluationScheme(Jester5k[1:50], method="cross-validation",
 ## Note: goodRating is used to determine positive ratings  
 
 ## top-N list recommendation
-ev <- evaluate(es, "RANDOM", type="topNList", n=c(1,3,5,10))
+ev <- evaluate(es, "RANDOM", type="topNList", n=10)
 avg(ev)
-plot(ev, annotate=TRUE)
   
 ## predict missing ratings
 ev <- evaluate(es, "RANDOM", type="ratings")
 avg(ev)
-plot(ev)
-
-  
-## compate predicted ratings for several methods
-algorithms <- list(
-    RANDOM = list(name = "RANDOM", param = NULL),
-    POPULAR = list(name = "POPULAR", param = NULL)
-)
-  
-evlist <- evaluate(es, algorithms, type="ratings")
-avg(evlist)
-plot(evlist)
 }
 %\keyword{ ~kwd1 }
 %\keyword{ ~kwd2 }% __ONLY ONE__ keyword per line

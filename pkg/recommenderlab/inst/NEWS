@@ -1,9 +1,10 @@
-Changes in version 0.1-x (xx/xx/2015)
+Changes in version 0.1-8 (12/17/2015)
     * fixed several problems in the vignette.
     * predict for realRatingMatrix accepts now type = "ratingMatrix" to returns
       a completed rating matrix.
     * Negative values for given in evaluationScheme implement all-but-given 
       evaluation.
+    * method "SVD" used now EM-based approximation from package bcv.
 
 Changes in version 0.1-7 (7/23/2015)
     * NAMESPACE now imports non standard R packages.
