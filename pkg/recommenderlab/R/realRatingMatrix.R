@@ -120,11 +120,22 @@ setMethod("colSds", signature(x = "realRatingMatrix"),
 
 
 ## create test data
+## Note: negative given means all-but-given
 setMethod(".splitKnownUnknown", signature(data="realRatingMatrix"),
   function(data, given) {
     
     ## given might of length one or length(data)
     if(length(given)==1) given <- rep(given, nrow(data))
+    nitems <- rowCounts(data)
+    
+    allBut <- given < 0
+    if(any(allBut)) {
+      given[allBut] <- nitems[allBut] + given[allBut]
+    }
+    
+    if(any(given>nitems)) stop("Not enough ratings for user" , 
+      paste(which(given>nitems), collapse = ", ")) 
+    
     
     ## we create a logical mask via a triplet Matrix
     trip <- as(data, "dgTMatrix")
