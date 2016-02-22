@@ -61,11 +61,14 @@ BIN_UBCF <- function(data, parameter = NULL){
         colCounts(model$data[neighbors[,i]])
       }))    
     }
-    
+   
+    rownames(ratings) <- rownames(newdata)
+     
     ratings <- new("realRatingMatrix", data=dropNA(ratings))
     ## prediction done
     
     ratings <- removeKnownRatings(ratings, newdata)
+    
     
     getTopNLists(ratings, n=n)
   }
@@ -136,6 +139,8 @@ REAL_UBCF <- function(data, parameter = NULL){
     })	
     
     ratings <- t(r_a_norms)/sum_s_uk
+    
+    rownames(ratings) <- rownames(newdata)
     
     ratings <- new("realRatingMatrix", data=dropNA(ratings),
                    normalize = getNormalize(newdata))

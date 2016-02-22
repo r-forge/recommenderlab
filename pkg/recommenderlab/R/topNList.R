@@ -42,6 +42,8 @@ setMethod("getTopNLists", signature(x = "realRatingMatrix"),
         decreasing=TRUE, na.last=NA), n)
     })
     
+    names(reclist) <- rownames(x)
+    
     new("topNList", items = reclist, itemLabels = colnames(x), n = n)
   })
 
@@ -59,12 +61,16 @@ setMethod("removeKnownItems", signature(x = "topNList"),
     if(length(x) != nrow(known)) 
       stop("length of x and number of rows in known do not match!")
     
+    ns <- names(x@items)
     
     x@items <- lapply(1:length(x), FUN=function(i) {
       setdiff(x@items[[i]], 
         getList(known[i], 
           decode=FALSE, ratings=FALSE)[[1]])
     })
+    
+    
+    names(x@items) <- ns
     x
   })
 

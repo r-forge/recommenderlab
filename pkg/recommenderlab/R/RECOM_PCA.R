@@ -68,6 +68,8 @@ REAL_PCA <- function(data, parameter= NULL) {
     if(!is.null(model$normalize))
       ratings <- denormalize(ratings)
     
+    rownames(ratings) <- rownames(newdata)
+    
     if(type=="ratingMatrix") return(ratings)
     
     ratings <- removeKnownRatings(ratings, newdata)
