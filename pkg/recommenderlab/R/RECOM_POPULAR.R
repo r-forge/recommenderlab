@@ -22,6 +22,7 @@ BIN_POPULAR <- function(data, parameter = NULL) {
     
     topN <- model$topN
     topN@items <- replicate(nrow(newdata), topN@items, simplify = TRUE)
+    names(topN@items) <- rownames(newdata)
     topN <- removeKnownItems(topN, newdata)
     topN <- bestN(topN, n)
     return(topN)
@@ -79,6 +80,7 @@ REAL_POPULAR <- function(data, parameter = NULL) {
     if(type=="topNList") {
       topN <- model$topN
       topN@items <- replicate(nrow(newdata), topN@items, simplify = TRUE)
+      names(topN@items) <- rownames(newdata)
       
       topN <- removeKnownItems(topN, newdata)
       topN <- bestN(topN, n)

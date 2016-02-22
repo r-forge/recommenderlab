@@ -1,3 +1,6 @@
+Changes in version 0.1-8.1 (xx/xx/2015)
+
+
 Changes in version 0.1-8 (12/17/2015)
     * fixed several problems in the vignette.
     * predict for realRatingMatrix accepts now type = "ratingMatrix" to returns

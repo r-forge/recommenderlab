@@ -55,6 +55,7 @@ REAL_SVD <- function(data, parameter= NULL) {
     }
     
     ratings <- s[1:nrow(newdata),]
+    
     rownames(ratings) <- rownames(newdata)
     colnames(ratings) <- colnames(data)
     ratings <- new("realRatingMatrix", data=dropNA(ratings))

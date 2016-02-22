@@ -63,7 +63,9 @@ BIN_IBCF <- function(data, parameter= NULL) {
     
     ## remove known ratings
     ratings[as(t(u!=0), "matrix")] <- NA
-    
+   
+    rownames(ratings) <- rownames(newdata)
+     
     if(type=="ratings") return(as(as.matrix(ratings), "realRatingMatrix"))
     
     
@@ -163,6 +165,8 @@ REAL_IBCF <- function(data, parameter= NULL) {
     
     if(!is.null(model$normalize)) 
       ratings <- denormalize(ratings)
+   
+    rownames(ratings) <- rownames(newdata)
     
     if(type=="ratingMatrix") return(ratings)
     
