@@ -1,5 +1,6 @@
 \name{Jester}
 \alias{Jester}
+\alias{Jester_text}
 \docType{data}
 \title{Jester Dataset}
 \description{
@@ -16,6 +17,9 @@ April 1999 and May 2003.
 24983 x 100 rating matrix (24983 users and 100 jokes)
 with 1,810,455 ratings between -10.00 and +10.00. All selected users have
 rated 15 or more jokes.
+
+The text for the jokes are also available as a character vector of length 100
+via \code{data{Jester_text}}.
 }
 %\source{
 %}
@@ -29,5 +33,11 @@ data(Jester)
 Jester
 
 hist(getRatings(Jester), main="Distribution of ratings")
+
+# what is the best joke? (highest average rating)
+data(Jester_text)
+best <- which.max(colMeans(Jester))
+cat(Jester_text[best])
+
 }
 \keyword{datasets}
